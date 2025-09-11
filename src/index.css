@@ -1,0 +1,29 @@
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import './components/ui/mobile-friendly.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: "Inter", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.category-insumos {
+  @apply bg-blue-500 text-white;
+}
+
+.category-fixas {
+  @apply bg-purple-500 text-white;
+}
+
+.status-paid {
+  @apply bg-green-500 text-white;
+}
+
+.status-pending {
+  @apply bg-yellow-500 text-white;
+}
+
