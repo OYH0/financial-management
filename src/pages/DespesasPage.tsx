@@ -29,7 +29,7 @@ const DespesasPage = () => {
   const [dateTo, setDateTo] = useState('');
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   
-  const { data: despesas = [], isLoading, refetch } = useDespesas({ mode: 'month' });
+  const { data: despesas = [], isLoading, refetch } = useDespesas({ mode: 'all' });
   const { user } = useAuth();
   const { isAdmin } = useAdminAccess();
   const { isAuthenticated, authenticate } = useCamerinoAuth();
@@ -72,24 +72,62 @@ const DespesasPage = () => {
     origem_pagamento: despesa.origem_pagamento
   }));
 
-  // Aplicar filtro do mês atual - excluir Camerino apenas quando não há filtro de empresa específico
-  // Não excluir Camerino por padrão ao visualizar "Todas" as empresas
-  const shouldExcludeCamerino = false;
+  // Aplicar filtro de data apenas quando especificado pelo usuário
   const currentMonthTransactions = useMemo(() => {
-    console.log('=== DEBUG FILTRO MÊS ATUAL ===');
+    console.log('=== DEBUG FILTRO DE DADOS ===');
     console.log('Total de despesas antes do filtro:', allTransactions.length);
     console.log('Filtros de data - De:', dateFrom, 'Até:', dateTo);
     console.log('Filtro empresa:', filterEmpresa);
-    console.log('Deve excluir Camerino?', shouldExcludeCamerino);
     console.log('Usando filtros manuais?', !!(dateFrom || dateTo));
     
-    const filtered = filterDespesasCurrentMonth(allTransactions, dateFrom, dateTo, shouldExcludeCamerino);
+    // Se não há filtros de data, mostrar todas as despesas
+    if (!dateFrom && !dateTo) {
+      console.log('Nenhum filtro de data aplicado - mostrando todas as despesas');
+      return allTransactions;
+    }
     
-    console.log('Despesas após filtro do mês atual:', filtered.length);
+    // Aplicar filtro de data apenas se especificado
+    const filtered = allTransactions.filter(transaction => {
+      if (!dateFrom && !dateTo) return true;
+      
+      // Considerar tanto data de pagamento quanto data de vencimento
+      const paymentDate = transaction.date;
+      const dueDate = transaction.data_vencimento;
+      
+      let matchesDateRange = false;
+      
+      // Verificar data de pagamento se existir
+      if (paymentDate) {
+        const paymentDateStr = paymentDate;
+        if (dateFrom && dateTo) {
+          matchesDateRange = paymentDateStr >= dateFrom && paymentDateStr <= dateTo;
+        } else if (dateFrom) {
+          matchesDateRange = paymentDateStr >= dateFrom;
+        } else if (dateTo) {
+          matchesDateRange = paymentDateStr <= dateTo;
+        }
+      }
+      
+      // Se não há data de pagamento, verificar data de vencimento
+      if (!matchesDateRange && dueDate) {
+        const dueDateStr = dueDate;
+        if (dateFrom && dateTo) {
+          matchesDateRange = dueDateStr >= dateFrom && dueDateStr <= dateTo;
+        } else if (dateFrom) {
+          matchesDateRange = dueDateStr >= dateFrom;
+        } else if (dateTo) {
+          matchesDateRange = dueDateStr <= dateTo;
+        }
+      }
+      
+      return matchesDateRange;
+    });
+    
+    console.log('Despesas após filtro de data:', filtered.length);
     console.log('Total dos valores filtrados:', filtered.reduce((sum, t) => sum + (t.valor_total || t.valor), 0));
     
     return filtered;
-  }, [allTransactions, dateFrom, dateTo, shouldExcludeCamerino]);
+  }, [allTransactions, dateFrom, dateTo, filterEmpresa]);
 
   // Filtrar despesas com base nos outros filtros
   const filteredTransactions = useMemo(() => {
@@ -238,7 +276,7 @@ const DespesasPage = () => {
                 <div>
                   <CardTitle className="text-xl text-gray-800">Lista de Despesas</CardTitle>
                   <CardDescription className="text-gray-600">
-                    {filteredTransactions.length} despesa(s) encontrada(s) - Mês atual e pagamentos recentes
+                    {filteredTransactions.length} despesa(s) encontrada(s) - {dateFrom || dateTo ? 'Período personalizado' : 'Todas as despesas'}
                   </CardDescription>
                  </div>
                  <Button
