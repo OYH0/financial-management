@@ -29,7 +29,7 @@ const DespesasPage = () => {
   const [dateTo, setDateTo] = useState('');
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   
-  const { data: despesas = [], isLoading, refetch } = useDespesas({ mode: 'all' });
+  const { data: despesas = [], isLoading, refetch } = useDespesas({ mode: 'month' });
   const { user } = useAuth();
   const { isAdmin } = useAdminAccess();
   const { isAuthenticated, authenticate } = useCamerinoAuth();
@@ -72,23 +72,24 @@ const DespesasPage = () => {
     origem_pagamento: despesa.origem_pagamento
   }));
 
-  // Aplicar filtro do mês atual por padrão, ou filtro personalizado quando especificado
+  // Aplicar filtro do mês atual - excluir Camerino apenas quando não há filtro de empresa específico
+  // Não excluir Camerino por padrão ao visualizar "Todas" as empresas
+  const shouldExcludeCamerino = false;
   const currentMonthTransactions = useMemo(() => {
-    console.log('=== DEBUG FILTRO DE DADOS ===');
+    console.log('=== DEBUG FILTRO MÊS ATUAL ===');
     console.log('Total de despesas antes do filtro:', allTransactions.length);
     console.log('Filtros de data - De:', dateFrom, 'Até:', dateTo);
     console.log('Filtro empresa:', filterEmpresa);
+    console.log('Deve excluir Camerino?', shouldExcludeCamerino);
     console.log('Usando filtros manuais?', !!(dateFrom || dateTo));
     
-    // Se não há filtros de data, aplicar filtro do mês atual por padrão
-    const shouldExcludeCamerino = false; // Não excluir Camerino por padrão
     const filtered = filterDespesasCurrentMonth(allTransactions, dateFrom, dateTo, shouldExcludeCamerino);
     
-    console.log('Despesas após filtro:', filtered.length);
+    console.log('Despesas após filtro do mês atual:', filtered.length);
     console.log('Total dos valores filtrados:', filtered.reduce((sum, t) => sum + (t.valor_total || t.valor), 0));
     
     return filtered;
-  }, [allTransactions, dateFrom, dateTo]);
+  }, [allTransactions, dateFrom, dateTo, shouldExcludeCamerino]);
 
   // Filtrar despesas com base nos outros filtros
   const filteredTransactions = useMemo(() => {
@@ -237,7 +238,7 @@ const DespesasPage = () => {
                 <div>
                   <CardTitle className="text-xl text-gray-800">Lista de Despesas</CardTitle>
                   <CardDescription className="text-gray-600">
-                    {filteredTransactions.length} despesa(s) encontrada(s) - {dateFrom || dateTo ? 'Período personalizado' : 'Mês atual'}
+                    {filteredTransactions.length} despesa(s) encontrada(s) - Mês atual e pagamentos recentes
                   </CardDescription>
                  </div>
                  <Button
