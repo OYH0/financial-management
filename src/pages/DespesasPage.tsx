@@ -29,7 +29,11 @@ const DespesasPage = () => {
   const [dateTo, setDateTo] = useState('');
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   
-  const { data: despesas = [], isLoading, refetch } = useDespesas({ mode: 'month' });
+  const hasCustomDateRange = !!(dateFrom || dateTo);
+  const { data: despesas = [], isLoading, refetch } = useDespesas({ 
+    mode: 'month', 
+    useCustomDateRange: hasCustomDateRange 
+  });
   const { user } = useAuth();
   const { isAdmin } = useAdminAccess();
   const { isAuthenticated, authenticate } = useCamerinoAuth();

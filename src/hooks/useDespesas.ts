@@ -23,19 +23,21 @@ export interface Despesa {
   origem_pagamento?: string;
 }
 
-export const useDespesas = (options?: { mode?: 'all' | 'month'; start?: Date; end?: Date }) => {
+export const useDespesas = (options?: { mode?: 'all' | 'month'; start?: Date; end?: Date; useCustomDateRange?: boolean }) => {
   const { user } = useAuth();
   
   const query = useQuery({
-    queryKey: ['despesas', options?.mode ?? 'all'],
+    queryKey: ['despesas', options?.mode ?? 'all', options?.useCustomDateRange],
     queryFn: async () => {
       const mode = options?.mode ?? 'all';
+      const useCustomDateRange = options?.useCustomDateRange ?? false;
 
       let queryBuilder = supabase
         .from('despesas')
         .select('*');
 
-      if (mode === 'month') {
+      // Apenas aplicar filtro de servidor se não estiver usando range personalizado
+      if (mode === 'month' && !useCustomDateRange) {
         const now = new Date();
         const start = options?.start ?? new Date(now.getFullYear(), now.getMonth(), 1);
         const end = options?.end ?? new Date(now.getFullYear(), now.getMonth() + 1, 0);
@@ -46,7 +48,7 @@ export const useDespesas = (options?: { mode?: 'all' | 'month'; start?: Date; en
         console.info('=== FETCHING DESPESAS (MODE=MONTH, SERVER FILTER) ===', { startStr, endStr });
         queryBuilder = queryBuilder.or(`and(data.gte.${startStr},data.lte.${endStr}),and(data_vencimento.gte.${startStr},data_vencimento.lte.${endStr})`);
       } else {
-        console.info('=== FETCHING DESPESAS (MODE=ALL) ===');
+        console.info('=== FETCHING DESPESAS (MODE=ALL OR CUSTOM RANGE) ===');
       }
 
       const { data, error } = await queryBuilder
