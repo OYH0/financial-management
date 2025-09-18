@@ -30,9 +30,13 @@ const DespesasPage = () => {
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   
   const hasCustomDateRange = !!(dateFrom || dateTo);
+  const startDate = hasCustomDateRange && dateFrom ? new Date(`${dateFrom}T00:00:00`) : undefined;
+  const endDate = hasCustomDateRange && dateTo ? new Date(`${dateTo}T23:59:59`) : undefined;
   const { data: despesas = [], isLoading, refetch } = useDespesas({ 
     mode: 'month', 
-    useCustomDateRange: hasCustomDateRange 
+    useCustomDateRange: hasCustomDateRange,
+    start: startDate,
+    end: endDate
   });
   const { user } = useAuth();
   const { isAdmin } = useAdminAccess();

@@ -37,6 +37,7 @@ export const useDespesas = (options?: { mode?: 'all' | 'month'; start?: Date; en
         .select('*');
 
       // Apenas aplicar filtro de servidor se não estiver usando range personalizado
+      let serverFiltered = false;
       if (mode === 'month' && !useCustomDateRange) {
         const now = new Date();
         const start = options?.start ?? new Date(now.getFullYear(), now.getMonth(), 1);
@@ -47,20 +48,60 @@ export const useDespesas = (options?: { mode?: 'all' | 'month'; start?: Date; en
 
         console.info('=== FETCHING DESPESAS (MODE=MONTH, SERVER FILTER) ===', { startStr, endStr });
         queryBuilder = queryBuilder.or(`and(data.gte.${startStr},data.lte.${endStr}),and(data_vencimento.gte.${startStr},data_vencimento.lte.${endStr})`);
+        serverFiltered = true;
+      } else if (useCustomDateRange && options?.start && options?.end) {
+        const toYMD = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        const startStr = toYMD(options.start);
+        const endStr = toYMD(options.end);
+        console.info('=== FETCHING DESPESAS (CUSTOM RANGE, SERVER FILTER) ===', { startStr, endStr });
+        queryBuilder = queryBuilder.or(`and(data.gte.${startStr},data.lte.${endStr}),and(data_vencimento.gte.${startStr},data_vencimento.lte.${endStr})`);
+        serverFiltered = true;
       } else {
-        console.info('=== FETCHING DESPESAS (MODE=ALL OR CUSTOM RANGE) ===');
+        console.info('=== FETCHING DESPESAS (MODE=ALL OR CUSTOM RANGE WITHOUT DATES) ===');
       }
 
-      const { data, error } = await queryBuilder
-        .order('data_vencimento', { ascending: true, nullsFirst: false })
-        .order('data', { ascending: false, nullsFirst: false });
-      
-      if (error) {
-        console.error('Error fetching despesas:', error);
-        throw error;
+      if (serverFiltered) {
+        const { data, error } = await queryBuilder
+          .order('data_vencimento', { ascending: true, nullsFirst: false })
+          .order('data', { ascending: false, nullsFirst: false });
+        
+        if (error) {
+          console.error('Error fetching despesas:', error);
+          throw error;
+        }
+        
+        return data as Despesa[];
       }
-      
-      return data as Despesa[];
+
+      // Sem filtro no servidor: fazer paginação para evitar limite de 1000 registros
+      const pageSize = 1000;
+      let from = 0;
+      let to = pageSize - 1;
+      let allData: Despesa[] = [];
+
+      for (let page = 0; page < 50; page++) { // limite de segurança
+        const { data: batch, error: pageError } = await supabase
+          .from('despesas')
+          .select('*')
+          .order('data_vencimento', { ascending: true, nullsFirst: false })
+          .order('data', { ascending: false, nullsFirst: false })
+          .range(from, to);
+
+        if (pageError) {
+          console.error('Error fetching despesas (paged):', pageError);
+          throw pageError;
+        }
+
+        const list = (batch || []) as Despesa[];
+        allData = allData.concat(list);
+
+        if (list.length < pageSize) break; // última página
+        from += pageSize;
+        to += pageSize;
+      }
+
+      console.info('=== FETCHING DESPESAS (PAGINATED, TOTAL) ===', allData.length);
+      return allData;
     },
     enabled: !!user,
     staleTime: 5 * 60 * 1000, // 5 minutes
