@@ -174,12 +174,6 @@ export const useCreateDespesa = () => {
         throw error;
       }
       
-      // Se a despesa foi paga na criação, ajustar o saldo
-      if (data.status === 'PAGO' && data.origem_pagamento) {
-        const valorTotal = (data.valor_total || data.valor || 0);
-        await ajustarSaldo(data.origem_pagamento as 'conta' | 'cofre', -valorTotal);
-      }
-      
       console.log('Despesa created successfully:', data);
       return data;
     },
@@ -270,12 +264,6 @@ export const useDeleteDespesa = () => {
       if (!user) throw new Error('Usuário não autenticado');
       
       console.log('Deleting despesa:', despesa.id);
-      
-      // Se a despesa estava paga, reverter o valor no saldo
-      if (despesa.status === 'PAGO' && despesa.origem_pagamento) {
-        const valorTotal = despesa.valor_total || despesa.valor || 0;
-        await ajustarSaldo(despesa.origem_pagamento as 'conta' | 'cofre', valorTotal);
-      }
       
       const { error } = await supabase
         .from('despesas')
