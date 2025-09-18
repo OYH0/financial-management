@@ -4,7 +4,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMemo } from 'react';
-import { ajustarSaldo, calcularDiferencaSaldo } from '@/utils/saldoUtils';
 
 export interface Despesa {
   id: number;
@@ -186,7 +185,6 @@ export const useCreateDespesa = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['despesas'] });
-      queryClient.invalidateQueries({ queryKey: ['saldos'] });
       queryClient.invalidateQueries({ queryKey: ['receitas'] });
       toast({
         title: "Sucesso",
@@ -239,39 +237,12 @@ export const useUpdateDespesa = () => {
         throw error;
       }
 
-      // Ajustar saldos conforme necessário
-      const originalPago = originalData.status === 'PAGO';
-      const novoPago = data.status === 'PAGO';
-      
-      if (originalPago && novoPago) {
-        // Ambos pagos: ajustar pela diferença de valor
-        const valorOriginal = originalData.valor_total || originalData.valor || 0;
-        const valorNovo = data.valor_total || data.valor || 0;
-        const diferenca = calcularDiferencaSaldo(valorOriginal, valorNovo);
-        
-        if (diferenca !== 0 && data.origem_pagamento) {
-          await ajustarSaldo(data.origem_pagamento as 'conta' | 'cofre', diferenca);
-        }
-      } else if (!originalPago && novoPago) {
-        // Mudou de não pago para pago: subtrair valor total
-        const valorTotal = data.valor_total || data.valor || 0;
-        if (data.origem_pagamento) {
-          await ajustarSaldo(data.origem_pagamento as 'conta' | 'cofre', -valorTotal);
-        }
-      } else if (originalPago && !novoPago) {
-        // Mudou de pago para não pago: somar valor original de volta
-        const valorOriginal = originalData.valor_total || originalData.valor || 0;
-        if (originalData.origem_pagamento) {
-          await ajustarSaldo(originalData.origem_pagamento as 'conta' | 'cofre', valorOriginal);
-        }
-      }
       
       console.log('Despesa updated successfully:', data);
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['despesas'] });
-      queryClient.invalidateQueries({ queryKey: ['saldos'] });
       queryClient.invalidateQueries({ queryKey: ['receitas'] });
       toast({
         title: "Sucesso",
@@ -320,7 +291,6 @@ export const useDeleteDespesa = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['despesas'] });
-      queryClient.invalidateQueries({ queryKey: ['saldos'] });
       queryClient.invalidateQueries({ queryKey: ['receitas'] });
       toast({
         title: "Sucesso",

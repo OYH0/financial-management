@@ -8,7 +8,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
-import { useUpdateSaldo } from '@/hooks/useSaldos';
 
 interface AddTransactionModalProps {
   isOpen: boolean;
@@ -37,7 +36,6 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
-  const updateSaldo = useUpdateSaldo();
 
   // Get categories based on selected company
   const getCategoriesForCompany = (empresa: string) => {
@@ -197,15 +195,9 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
         console.log('Valor juros:', formData.valor_juros);
         
         const valorTotal = parseFloat(formData.valor) + (formData.valor_juros ? parseFloat(formData.valor_juros) : 0);
-        console.log('Valor total a ser debitado:', valorTotal);
+        console.log('Valor total calculado:', valorTotal);
         
-        // Update balance using the new saldos system
-        updateSaldo.mutate({
-          tipo: formData.origem_pagamento,
-          valor: -valorTotal // Negative to subtract from balance
-        });
-        
-        console.log('Comando de débito enviado para saldo');
+        console.log('Transação criada com sucesso');
       } else {
         console.log('=== SALDO NÃO DEBITADO ===');
         console.log('Data de pagamento:', formData.data);

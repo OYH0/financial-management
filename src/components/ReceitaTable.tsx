@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Receita, useDeleteReceita } from '@/hooks/useReceitas';
 import { useAdminAccess } from '@/hooks/useAdminAccess';
 import { useAuth } from '@/contexts/AuthContext';
-import { useUpdateSaldo } from '@/hooks/useSaldos';
 import EditReceitaModal from '@/components/EditReceitaModal';
 import { prettyLabel } from '@/utils/labelUtils';
 import {
@@ -29,7 +28,6 @@ const ReceitaTable: React.FC<ReceitaTableProps> = ({ receitas }) => {
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [editingReceita, setEditingReceita] = useState<Receita | null>(null);
   const deleteReceita = useDeleteReceita();
-  const updateSaldo = useUpdateSaldo();
   const { isAdmin } = useAdminAccess();
   const { user } = useAuth();
 
@@ -39,13 +37,6 @@ const ReceitaTable: React.FC<ReceitaTableProps> = ({ receitas }) => {
       
       deleteReceita.mutate(deleteId, {
         onSuccess: () => {
-          // If receita was deposited to conta or cofre, subtract the value from saldo
-          if (receita && (receita.destino === 'conta' || receita.destino === 'cofre')) {
-            updateSaldo.mutate({
-              tipo: receita.destino,
-              valor: -receita.valor // Negative value to subtract
-            });
-          }
           setDeleteId(null);
         }
       });

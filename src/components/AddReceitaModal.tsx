@@ -14,7 +14,6 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useCreateReceita } from '@/hooks/useReceitas';
-import { useUpdateSaldo } from '@/hooks/useSaldos';
 
 interface AddReceitaModalProps {
   isOpen: boolean;
@@ -38,7 +37,6 @@ const AddReceitaModal: React.FC<AddReceitaModalProps> = ({
   });
 
   const createReceita = useCreateReceita();
-  const updateSaldo = useUpdateSaldo();
 
   // Set default empresa when modal opens
   useEffect(() => {
@@ -63,22 +61,6 @@ const AddReceitaModal: React.FC<AddReceitaModalProps> = ({
     createReceita.mutate(receitaData, {
       onSuccess: () => {
         console.log('Receita created successfully with destino:', formData.destino);
-        
-        // Update saldo only if destino is conta or cofre
-        if (formData.destino === 'conta' || formData.destino === 'cofre') {
-          console.log('Updating saldo - tipo:', formData.destino, 'valor:', parseFloat(formData.valor));
-          updateSaldo.mutate({
-            tipo: formData.destino,
-            valor: parseFloat(formData.valor)
-          }, {
-            onSuccess: () => {
-              console.log('Saldo updated successfully');
-            },
-            onError: (error) => {
-              console.error('Error updating saldo:', error);
-            }
-          });
-        }
         
         setFormData({
           data: '',
@@ -216,8 +198,8 @@ const AddReceitaModal: React.FC<AddReceitaModalProps> = ({
             <Button type="button" variant="outline" onClick={onClose}>
               Cancelar
             </Button>
-            <Button type="submit" disabled={createReceita.isPending || updateSaldo.isPending}>
-              {(createReceita.isPending || updateSaldo.isPending) ? 'Salvando...' : 'Salvar'}
+            <Button type="submit" disabled={createReceita.isPending}>
+              {createReceita.isPending ? 'Salvando...' : 'Salvar'}
             </Button>
           </DialogFooter>
         </form>
