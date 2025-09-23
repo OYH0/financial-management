@@ -283,6 +283,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                     )}
                   </TableHead>
                   <TableHead>Categoria</TableHead>
+                  <TableHead>Subcategoria</TableHead>
                   <TableHead className="cursor-pointer" onClick={() => handleSort('valor')}>
                     Valor
                     {sortConfig.key === 'valor' && (
@@ -312,6 +313,13 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                     </TableCell>
                     <TableCell>
                       <CategoryCell category={transaction.category} />
+                    </TableCell>
+                    <TableCell>
+                      {transaction.subcategoria && (
+                        <Badge variant="outline" className="text-xs">
+                          {transaction.subcategoria}
+                        </Badge>
+                      )}
                     </TableCell>
                     <TableCell className="font-medium">
                       R$ {transaction.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
@@ -352,6 +360,11 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                       {transaction.company}
                     </span>
                     <CategoryCell category={transaction.category} />
+                    {transaction.subcategoria && (
+                      <Badge variant="outline" className="text-xs">
+                        {transaction.subcategoria}
+                      </Badge>
+                    )}
                   </div>
                 </div>
                 <StatusCell transaction={transaction} />
