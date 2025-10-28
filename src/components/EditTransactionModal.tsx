@@ -101,7 +101,7 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
     return subcategories[categoria] || [];
   };
 
-  const companies = ['Churrasco', 'Johnny', 'Camerino', 'Implementação'];
+  const companies = ['Companhia do Churrasco Cariri', 'Companhia do Churrasco Fortaleza', 'Johnny', 'Camerino', 'Implementação'];
 
   // Update form data when transaction changes
   useEffect(() => {
@@ -335,6 +335,27 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
               className="rounded-full"
             />
           </div>
+
+          {/* Mostrar valor total calculado */}
+          {(formData.valor || formData.valor_juros) && (
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+              <div className="flex justify-between items-center">
+                <span className="font-medium text-blue-900">Valor Total (com juros):</span>
+                <span className="text-xl font-bold text-blue-900">
+                  R$ {(
+                    (parseFloat(formData.valor) || 0) + 
+                    (parseFloat(formData.valor_juros) || 0)
+                  ).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                </span>
+              </div>
+              {formData.valor_juros && parseFloat(formData.valor_juros) > 0 && (
+                <div className="text-sm text-blue-700 mt-1">
+                  Valor base: R$ {(parseFloat(formData.valor) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} + 
+                  Juros: R$ {(parseFloat(formData.valor_juros) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="empresa">Empresa *</Label>

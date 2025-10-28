@@ -292,6 +292,8 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                       </span>
                     )}
                   </TableHead>
+                  <TableHead>Juros</TableHead>
+                  <TableHead>Total</TableHead>
                   <TableHead>Vencimento</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Ações</TableHead>
@@ -323,6 +325,16 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                     </TableCell>
                     <TableCell className="font-medium">
                       R$ {transaction.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    </TableCell>
+                    <TableCell className="font-medium text-orange-600">
+                      {transaction.valor_juros && transaction.valor_juros > 0 ? (
+                        <>R$ {transaction.valor_juros.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</>
+                      ) : (
+                        <span className="text-gray-400">-</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="font-bold">
+                      R$ {(transaction.valor_total || transaction.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </TableCell>
                     <TableCell>
                       {formatDate(transaction.data_vencimento || '')}

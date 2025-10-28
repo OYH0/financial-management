@@ -141,7 +141,8 @@ const AddReceitaModal: React.FC<AddReceitaModalProps> = ({
                     <SelectValue placeholder="Selecione a empresa" />
                   </SelectTrigger>
                   <SelectContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg z-50">
-                    <SelectItem value="Churrasco">Companhia do Churrasco</SelectItem>
+                    <SelectItem value="Companhia do Churrasco Cariri">Companhia do Churrasco - Cariri</SelectItem>
+                    <SelectItem value="Companhia do Churrasco Fortaleza">Companhia do Churrasco - Fortaleza</SelectItem>
                     <SelectItem value="Johnny">Johnny Rockets</SelectItem>
                     <SelectItem value="Camerino">Camerino</SelectItem>
                     <SelectItem value="Implementação">Implementação</SelectItem>
