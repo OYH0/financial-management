@@ -14,6 +14,8 @@ import RelatoriosPage from "./pages/RelatoriosPage";
 import ConfiguracoesPage from "./pages/ConfiguracoesPage";
 import CamerinoPage from "./pages/CamerinoPage";
 import CompanhiaPage from "./pages/CompanhiaPage";
+import CompanhiaCaririPage from "./pages/CompanhiaCaririPage";
+import CompanhiaFortalezaPage from "./pages/CompanhiaFortalezaPage";
 import JohnnyPage from "./pages/JohnnyPage";
 import ImplementacaoPage from "./pages/ImplementacaoPage";
 import AdminPage from "./pages/AdminPage";
@@ -82,6 +84,20 @@ const App = () => {
                   <div className="main-content">
                     <ProtectedRoute>
                       <CompanhiaPage />
+                    </ProtectedRoute>
+                  </div>
+                } />
+                <Route path="/companhia/cariri" element={
+                  <div className="main-content">
+                    <ProtectedRoute>
+                      <CompanhiaCaririPage />
+                    </ProtectedRoute>
+                  </div>
+                } />
+                <Route path="/companhia/fortaleza" element={
+                  <div className="main-content">
+                    <ProtectedRoute>
+                      <CompanhiaFortalezaPage />
                     </ProtectedRoute>
                   </div>
                 } />

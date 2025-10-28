@@ -16,7 +16,10 @@ const Sidebar: React.FC = () => {
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/' },
-    ...(tabVisibility.companhia ? [{ id: 'companhia', label: 'Companhia do Churrasco', icon: Settings, path: '/companhia' }] : []),
+    ...(tabVisibility.companhia ? [
+      { id: 'companhia-cariri', label: 'Churrasco - Cariri', icon: Building2, path: '/companhia/cariri' },
+      { id: 'companhia-fortaleza', label: 'Churrasco - Fortaleza', icon: Building2, path: '/companhia/fortaleza' }
+    ] : []),
     ...(tabVisibility.johnny ? [{ id: 'johnny', label: 'Johnny Rockets', icon: Settings, path: '/johnny' }] : []),
     { id: 'camerino', label: 'Camerino', icon: Building2, path: '/camerino' },
     { id: 'implementacao', label: 'Implementação', icon: Building2, path: '/implementacao' },
