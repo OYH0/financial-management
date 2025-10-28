@@ -8,33 +8,39 @@ import { useReceitas } from '@/hooks/useReceitas';
 interface CompanhiaChartsProps {
   despesas: any[];
   receitas: any[];
+  selectedCompany?: 'cariri' | 'fortaleza';
 }
 
-const CompanhiaCharts: React.FC<CompanhiaChartsProps> = ({ despesas, receitas }) => {
+const CompanhiaCharts: React.FC<CompanhiaChartsProps> = ({ despesas, receitas, selectedCompany = 'cariri' }) => {
   // Buscar dados completos diretamente dos hooks para o gráfico de evolução mensal (que sempre mostra dados anuais)
   const { data: todasDespesas } = useDespesas();
   const { data: todasReceitas } = useReceitas();
 
-  // Filtrar dados apenas para Companhia do Churrasco para evolução mensal
+  // Filtrar dados apenas para Companhia do Churrasco selecionada para evolução mensal
   const despesasCompanhia = React.useMemo(() => {
     return todasDespesas?.filter(d => {
       const empresa = d.empresa?.toLowerCase().trim() || '';
-      return empresa.includes('churrasco') || empresa === 'companhia do churrasco' || empresa === 'cia do churrasco';
+      if (selectedCompany === 'cariri') {
+        return empresa.includes('cariri') || empresa === 'companhia do churrasco cariri';
+      } else {
+        return empresa.includes('fortaleza') || empresa === 'companhia do churrasco fortaleza';
+      }
     }) || [];
-  }, [todasDespesas]);
+  }, [todasDespesas, selectedCompany]);
 
   const receitasCompanhia = React.useMemo(() => {
     return todasReceitas?.filter(r => {
       const empresa = r.empresa?.toLowerCase().trim() || '';
-      const isCompanhia = empresa.includes('churrasco') || empresa === 'companhia do churrasco' || empresa === 'cia do churrasco';
-      
-      // Excluir receitas com destino "conta" ou "cofre"
       const destino = (r as any).destino;
       const isDestinoProd = destino === 'total' || !destino;
       
-      return isCompanhia && isDestinoProd;
+      if (selectedCompany === 'cariri') {
+        return (empresa.includes('cariri') || empresa === 'companhia do churrasco cariri') && isDestinoProd;
+      } else {
+        return (empresa.includes('fortaleza') || empresa === 'companhia do churrasco fortaleza') && isDestinoProd;
+      }
     }) || [];
-  }, [todasReceitas]);
+  }, [todasReceitas, selectedCompany]);
 
   const evolucaoMensal = React.useMemo(() => {
     const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
@@ -99,7 +105,10 @@ const CompanhiaCharts: React.FC<CompanhiaChartsProps> = ({ despesas, receitas })
           <CardDescription>Categorias de gastos no período selecionado</CardDescription>
         </CardHeader>
         <CardContent>
-          <ExpenseDistribution despesas={despesas} empresa="Companhia do Churrasco" />
+          <ExpenseDistribution 
+            despesas={despesas} 
+            empresa={selectedCompany === 'cariri' ? 'Companhia do Churrasco Cariri' : 'Companhia do Churrasco Fortaleza'} 
+          />
         </CardContent>
       </Card>
     </div>

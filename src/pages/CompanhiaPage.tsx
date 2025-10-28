@@ -24,28 +24,28 @@ const CompanhiaPage = () => {
   const [selectedPeriod, setSelectedPeriod] = useState<'today' | 'week' | 'month' | 'year' | 'custom'>('month');
   const [customMonth, setCustomMonth] = useState<number>(new Date().getMonth() + 1);
   const [customYear, setCustomYear] = useState<number>(new Date().getFullYear());
+  const [selectedCompany, setSelectedCompany] = useState<'cariri' | 'fortaleza'>('cariri');
 
-  // Filtrar dados da Companhia do Churrasco - usando várias variações possíveis do nome
+  // Filtrar dados da Companhia do Churrasco baseado na seleção (Cariri ou Fortaleza)
   const companhiaDespesas = despesas?.filter(d => {
     const empresa = d.empresa?.toLowerCase().trim() || '';
-    return empresa === 'churrasco' || 
-           empresa === 'companhia do churrasco' || 
-           empresa === 'cia do churrasco' ||
-           empresa.includes('churrasco');
+    if (selectedCompany === 'cariri') {
+      return empresa.includes('cariri') || empresa === 'companhia do churrasco cariri';
+    } else {
+      return empresa.includes('fortaleza') || empresa === 'companhia do churrasco fortaleza';
+    }
   }) || [];
   
   const companhiaReceitas = receitas?.filter(r => {
     const empresa = r.empresa?.toLowerCase().trim() || '';
-    const isCompanhia = empresa === 'churrasco' || 
-           empresa === 'companhia do churrasco' || 
-           empresa === 'cia do churrasco' ||
-           empresa.includes('churrasco');
-    
-    // Excluir receitas com destino "conta" ou "cofre"
     const destino = (r as any).destino;
     const isDestinoProd = destino === 'total' || !destino;
     
-    return isCompanhia && isDestinoProd;
+    if (selectedCompany === 'cariri') {
+      return (empresa.includes('cariri') || empresa === 'companhia do churrasco cariri') && isDestinoProd;
+    } else {
+      return (empresa.includes('fortaleza') || empresa === 'companhia do churrasco fortaleza') && isDestinoProd;
+    }
   }) || [];
 
   // Aplicar filtro de período usando a mesma lógica da aba de receitas
@@ -67,7 +67,7 @@ const CompanhiaPage = () => {
         filteredReceitas: filterDataByPeriod(companhiaReceitas, selectedPeriod, customMonth, customYear)
       };
     }
-  }, [companhiaDespesas, companhiaReceitas, selectedPeriod, customMonth, customYear]);
+  }, [companhiaDespesas, companhiaReceitas, selectedPeriod, customMonth, customYear, selectedCompany]);
 
   console.log('=== COMPANHIA DEBUG ===');
   console.log('Churrasco - Receitas filtradas:', filteredReceitas.length);
@@ -120,15 +120,35 @@ const CompanhiaPage = () => {
           {/* Header Section */}
           <div className="mb-8">
             <div className="flex flex-col gap-4 mb-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 lg:p-3 bg-gradient-to-r from-red-500 to-red-600 rounded-2xl shadow-lg">
-                  <Building2 className="h-6 w-6 lg:h-8 lg:w-8 text-white" />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 lg:p-3 bg-gradient-to-r from-red-500 to-red-600 rounded-2xl shadow-lg">
+                    <Building2 className="h-6 w-6 lg:h-8 lg:w-8 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="text-2xl lg:text-4xl font-bold bg-gradient-to-r from-red-600 via-red-700 to-red-800 bg-clip-text text-transparent">
+                      Companhia do Churrasco
+                    </h1>
+                    <p className="text-gray-600 text-sm lg:text-lg">
+                      {selectedCompany === 'cariri' ? 'Cariri' : 'Fortaleza'}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h1 className="text-2xl lg:text-4xl font-bold bg-gradient-to-r from-red-600 via-red-700 to-red-800 bg-clip-text text-transparent">
-                    Companhia do Churrasco
-                  </h1>
-                  <p className="text-gray-600 text-sm lg:text-lg">Análise financeira detalhada da empresa</p>
+                <div className="flex gap-2">
+                  <Button
+                    variant={selectedCompany === 'cariri' ? 'default' : 'outline'}
+                    onClick={() => setSelectedCompany('cariri')}
+                    className="rounded-xl"
+                  >
+                    Cariri
+                  </Button>
+                  <Button
+                    variant={selectedCompany === 'fortaleza' ? 'default' : 'outline'}
+                    onClick={() => setSelectedCompany('fortaleza')}
+                    className="rounded-xl"
+                  >
+                    Fortaleza
+                  </Button>
                 </div>
               </div>
 
@@ -182,7 +202,11 @@ const CompanhiaPage = () => {
           />
 
           {/* Charts Component */}
-          <CompanhiaCharts despesas={filteredDespesas} receitas={filteredReceitas} />
+          <CompanhiaCharts 
+            despesas={filteredDespesas} 
+            receitas={filteredReceitas}
+            selectedCompany={selectedCompany}
+          />
 
           {/* Informações Adicionais */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
