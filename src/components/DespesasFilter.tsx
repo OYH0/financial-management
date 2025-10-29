@@ -67,8 +67,11 @@ const DespesasFilter: React.FC<DespesasFilterProps> = ({ onFilterChange, onClear
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todas as empresas</SelectItem>
-              <SelectItem value="Churrasco">Churrasco</SelectItem>
+              <SelectItem value="Companhia do Churrasco Cariri">Churrasco - Cariri</SelectItem>
+              <SelectItem value="Companhia do Churrasco Fortaleza">Churrasco - Fortaleza</SelectItem>
               <SelectItem value="Johnny">Johnny</SelectItem>
+              <SelectItem value="Camerino">Camerino</SelectItem>
+              <SelectItem value="Implementação">Implementação</SelectItem>
             </SelectContent>
           </Select>
         </div>
