@@ -5,9 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCreateDespesaRecorrente } from '@/hooks/useDespesasRecorrentes';
 
 interface AddTransactionModalProps {
   isOpen: boolean;
@@ -34,8 +36,11 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
     origem_pagamento: 'conta' as 'conta' | 'cofre'
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [isRecorrente, setIsRecorrente] = useState(false);
+  const [diaVencimento, setDiaVencimento] = useState<number>(1);
   const { toast } = useToast();
   const { user } = useAuth();
+  const createDespesaRecorrente = useCreateDespesaRecorrente();
 
   // Get categories based on selected company
   const getCategoriesForCompany = (empresa: string) => {
@@ -150,7 +155,64 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
       });
       return;
     }
+
+    if (isRecorrente) {
+      // Validar campos para despesa recorrente
+      if (!formData.valor || !formData.empresa) {
+        toast({
+          title: "Erro",
+          description: "Por favor, preencha todos os campos obrigatórios (Valor e Empresa).",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      setIsLoading(true);
+      
+      try {
+        await createDespesaRecorrente.mutateAsync({
+          user_id: user.id,
+          valor: parseFloat(formData.valor),
+          descricao: formData.descricao || 'Despesa fixa mensal',
+          empresa: formData.empresa,
+          categoria: formData.categoria,
+          subcategoria: formData.subcategoria || undefined,
+          origem_pagamento: formData.origem_pagamento || undefined,
+          dia_vencimento: diaVencimento,
+          ativa: true,
+        });
+
+        toast({
+          title: "Sucesso!",
+          description: "Despesa recorrente criada! Ela será gerada automaticamente todo mês no dia " + diaVencimento + ".",
+        });
+
+        // Reset form
+        setFormData({
+          data: '',
+          valor: '',
+          empresa: defaultEmpresa || '',
+          descricao: '',
+          categoria: 'INSUMOS',
+          subcategoria: '',
+          data_vencimento: '',
+          valor_juros: '',
+          origem_pagamento: 'conta'
+        });
+        setIsRecorrente(false);
+        setDiaVencimento(1);
+
+        onTransactionAdded();
+        onClose();
+      } catch (error) {
+        console.error('Error creating recurrent expense:', error);
+      } finally {
+        setIsLoading(false);
+      }
+      return;
+    }
     
+    // Lógica para despesa única
     if (!formData.valor || !formData.empresa || !formData.data_vencimento) {
       toast({
         title: "Erro",
@@ -249,6 +311,8 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
         valor_juros: '',
         origem_pagamento: 'conta'
       });
+      setIsRecorrente(false);
+      setDiaVencimento(1);
 
       onTransactionAdded();
       onClose();
@@ -292,8 +356,44 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="data">Data de Pagamento</Label>
+          {/* Despesa Recorrente Toggle */}
+          <div className="space-y-2 bg-blue-50 p-4 rounded-2xl border border-blue-200">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <Label htmlFor="recorrente">Despesa Fixa Recorrente</Label>
+                <p className="text-xs text-gray-600">
+                  Ativar para criar uma despesa que se repete todo mês automaticamente
+                </p>
+              </div>
+              <Switch
+                id="recorrente"
+                checked={isRecorrente}
+                onCheckedChange={setIsRecorrente}
+              />
+            </div>
+            
+            {isRecorrente && (
+              <div className="mt-4 space-y-2">
+                <Label htmlFor="diaVencimento">Dia do Vencimento (1-28) *</Label>
+                <Input
+                  id="diaVencimento"
+                  type="number"
+                  min="1"
+                  max="28"
+                  value={diaVencimento}
+                  onChange={(e) => setDiaVencimento(parseInt(e.target.value) || 1)}
+                  className="rounded-full"
+                />
+                <p className="text-xs text-gray-500">
+                  A despesa será gerada automaticamente todo dia {diaVencimento} de cada mês
+                </p>
+              </div>
+            )}
+          </div>
+
+          {!isRecorrente && (
+            <div className="space-y-2">
+              <Label htmlFor="data">Data de Pagamento</Label>
             <Input
               id="data"
               type="date"
@@ -307,19 +407,22 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
             ) : (
               <p className="text-xs text-gray-500">Deixe vazio se ainda não foi paga. Será preenchida automaticamente ao marcar como paga.</p>
             )}
-          </div>
+            </div>
+          )}
 
-          <div className="space-y-2">
-            <Label htmlFor="data_vencimento">Data de Vencimento *</Label>
-            <Input
-              id="data_vencimento"
-              type="date"
-              value={formData.data_vencimento}
-              onChange={(e) => handleInputChange('data_vencimento', e.target.value)}
-              required
-              className="rounded-full"
-            />
-          </div>
+          {!isRecorrente && (
+            <div className="space-y-2">
+              <Label htmlFor="data_vencimento">Data de Vencimento *</Label>
+              <Input
+                id="data_vencimento"
+                type="date"
+                value={formData.data_vencimento}
+                onChange={(e) => handleInputChange('data_vencimento', e.target.value)}
+                required
+                className="rounded-full"
+              />
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="valor">Valor (R$) *</Label>
@@ -335,21 +438,23 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="valor_juros">Valor dos Juros (R$)</Label>
-            <Input
-              id="valor_juros"
-              type="number"
-              step="0.01"
-              placeholder="0.00"
-              value={formData.valor_juros}
-              onChange={(e) => handleInputChange('valor_juros', e.target.value)}
-              className="rounded-full"
-            />
-          </div>
+          {!isRecorrente && (
+            <div className="space-y-2">
+              <Label htmlFor="valor_juros">Valor dos Juros (R$)</Label>
+              <Input
+                id="valor_juros"
+                type="number"
+                step="0.01"
+                placeholder="0.00"
+                value={formData.valor_juros}
+                onChange={(e) => handleInputChange('valor_juros', e.target.value)}
+                className="rounded-full"
+              />
+            </div>
+          )}
 
           {/* Mostrar valor total calculado */}
-          {(formData.valor || formData.valor_juros) && (
+          {!isRecorrente && (formData.valor || formData.valor_juros) && (
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
               <div className="flex justify-between items-center">
                 <span className="font-medium text-blue-900">Valor Total (com juros):</span>
@@ -439,7 +544,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
             />
           </div>
 
-          {formData.data && (
+          {!isRecorrente && formData.data && (
             <div className="space-y-2">
               <Label htmlFor="origem_pagamento">Origem do Pagamento *</Label>
               <Select value={formData.origem_pagamento} onValueChange={(value) => handleInputChange('origem_pagamento', value)}>

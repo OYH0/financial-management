@@ -46,7 +46,22 @@ const ReceitasPage = () => {
     return currentMonthReceitas.filter(receita => {
       const matchesSearch = receita.descricao.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            receita.empresa.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesEmpresa = filterEmpresa === 'all' || receita.empresa === filterEmpresa;
+      
+      // Filtro de empresa com suporte a dados legados
+      let matchesEmpresa = filterEmpresa === 'all';
+      if (!matchesEmpresa) {
+        if (filterEmpresa === 'Companhia do Churrasco Cariri') {
+          // Incluir tanto "Companhia do Churrasco Cariri" quanto "Companhia do Churrasco" (dados legados)
+          matchesEmpresa = receita.empresa === 'Companhia do Churrasco Cariri' || 
+                          receita.empresa === 'Companhia do Churrasco';
+        } else if (filterEmpresa === 'Companhia do Churrasco Fortaleza') {
+          // Apenas "Companhia do Churrasco Fortaleza"
+          matchesEmpresa = receita.empresa === 'Companhia do Churrasco Fortaleza';
+        } else {
+          matchesEmpresa = receita.empresa === filterEmpresa;
+        }
+      }
+      
       const matchesCategoria = filterCategoria === 'all' || receita.categoria === filterCategoria;
       
       return matchesSearch && matchesEmpresa && matchesCategoria;

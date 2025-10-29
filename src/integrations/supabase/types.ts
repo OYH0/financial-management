@@ -65,6 +65,51 @@ export type Database = {
         }
         Relationships: []
       }
+      despesas_recorrentes: {
+        Row: {
+          ativa: boolean
+          categoria: string
+          created_at: string
+          descricao: string
+          dia_vencimento: number
+          empresa: string
+          id: string
+          origem_pagamento: string | null
+          subcategoria: string | null
+          updated_at: string
+          user_id: string
+          valor: number
+        }
+        Insert: {
+          ativa?: boolean
+          categoria: string
+          created_at?: string
+          descricao: string
+          dia_vencimento: number
+          empresa: string
+          id?: string
+          origem_pagamento?: string | null
+          subcategoria?: string | null
+          updated_at?: string
+          user_id: string
+          valor: number
+        }
+        Update: {
+          ativa?: boolean
+          categoria?: string
+          created_at?: string
+          descricao?: string
+          dia_vencimento?: number
+          empresa?: string
+          id?: string
+          origem_pagamento?: string | null
+          subcategoria?: string | null
+          updated_at?: string
+          user_id?: string
+          valor?: number
+        }
+        Relationships: []
+      }
       metas_mensais: {
         Row: {
           ano: number
@@ -208,7 +253,7 @@ export type Database = {
           action_type: string
           changed_fields: string[] | null
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           new_data: Json | null
           old_data: Json | null
           timestamp: string
@@ -221,7 +266,7 @@ export type Database = {
           action_type: string
           changed_fields?: string[] | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           new_data?: Json | null
           old_data?: Json | null
           timestamp?: string
@@ -234,7 +279,7 @@ export type Database = {
           action_type?: string
           changed_fields?: string[] | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           new_data?: Json | null
           old_data?: Json | null
           timestamp?: string
@@ -292,14 +337,8 @@ export type Database = {
         }
         Returns: boolean
       }
-      is_admin_or_financeiro: {
-        Args: { user_id: string }
-        Returns: boolean
-      }
-      is_admin_user: {
-        Args: { user_id: string }
-        Returns: boolean
-      }
+      is_admin_or_financeiro: { Args: { user_id: string }; Returns: boolean }
+      is_admin_user: { Args: { user_id: string }; Returns: boolean }
       normalize_category_label: {
         Args: { category_code: string }
         Returns: string
