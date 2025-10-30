@@ -129,20 +129,7 @@ const DespesasPage = () => {
       const matchesSearch = transaction.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            transaction.company.toLowerCase().includes(searchTerm.toLowerCase());
       
-      // Filtro de empresa com suporte a dados legados
-      let matchesEmpresa = filterEmpresa === 'all';
-      if (!matchesEmpresa) {
-        if (filterEmpresa === 'Companhia do Churrasco Cariri') {
-          // Incluir tanto "Companhia do Churrasco Cariri" quanto "Companhia do Churrasco" (dados legados)
-          matchesEmpresa = transaction.company === 'Companhia do Churrasco Cariri' || 
-                          transaction.company === 'Companhia do Churrasco';
-        } else if (filterEmpresa === 'Companhia do Churrasco Fortaleza') {
-          // Apenas "Companhia do Churrasco Fortaleza"
-          matchesEmpresa = transaction.company === 'Companhia do Churrasco Fortaleza';
-        } else {
-          matchesEmpresa = transaction.company === filterEmpresa;
-        }
-      }
+      const matchesEmpresa = filterEmpresa === 'all' || transaction.company === filterEmpresa;
       
       const matchesCategoria = filterCategoria === 'all' || transaction.category === filterCategoria;
       const matchesStatus = filterStatus === 'all' || status === filterStatus;

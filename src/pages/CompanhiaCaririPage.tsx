@@ -23,31 +23,15 @@ const CompanhiaCaririPage = () => {
   const [customMonth, setCustomMonth] = useState<number>(new Date().getMonth() + 1);
   const [customYear, setCustomYear] = useState<number>(new Date().getFullYear());
 
-  // Filtrar dados da Companhia do Churrasco Cariri
-  // Inclui dados antigos sem especificação de unidade (assumidos como Cariri)
-  const companhiaDespesas = despesas?.filter(d => {
-    const empresa = d.empresa?.toLowerCase().trim() || '';
-    return empresa.includes('cariri') || 
-           empresa === 'companhia do churrasco cariri' ||
-           // Dados antigos sem especificação de unidade
-           (empresa.includes('churrasco') && 
-            !empresa.includes('fortaleza') && 
-            empresa !== 'companhia do churrasco fortaleza');
-  }) || [];
+  // Filtrar apenas dados da Companhia do Churrasco Cariri
+  const companhiaDespesas = despesas?.filter(d => 
+    d.empresa === 'Companhia do Churrasco Cariri'
+  ) || [];
   
   const companhiaReceitas = receitas?.filter(r => {
-    const empresa = r.empresa?.toLowerCase().trim() || '';
     const destino = (r as any).destino;
     const isDestinoProd = destino === 'total' || !destino;
-    
-    const isCariri = empresa.includes('cariri') || 
-                     empresa === 'companhia do churrasco cariri' ||
-                     // Dados antigos sem especificação de unidade
-                     (empresa.includes('churrasco') && 
-                      !empresa.includes('fortaleza') && 
-                      empresa !== 'companhia do churrasco fortaleza');
-    
-    return isCariri && isDestinoProd;
+    return r.empresa === 'Companhia do Churrasco Cariri' && isDestinoProd;
   }) || [];
 
   // Aplicar filtro de período

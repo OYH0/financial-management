@@ -23,20 +23,15 @@ const CompanhiaFortalezaPage = () => {
   const [customMonth, setCustomMonth] = useState<number>(new Date().getMonth() + 1);
   const [customYear, setCustomYear] = useState<number>(new Date().getFullYear());
 
-  // Filtrar dados da Companhia do Churrasco Fortaleza
-  const companhiaDespesas = despesas?.filter(d => {
-    const empresa = d.empresa?.toLowerCase().trim() || '';
-    return empresa.includes('fortaleza') || empresa === 'companhia do churrasco fortaleza';
-  }) || [];
+  // Filtrar apenas dados da Companhia do Churrasco Fortaleza
+  const companhiaDespesas = despesas?.filter(d => 
+    d.empresa === 'Companhia do Churrasco Fortaleza'
+  ) || [];
   
   const companhiaReceitas = receitas?.filter(r => {
-    const empresa = r.empresa?.toLowerCase().trim() || '';
     const destino = (r as any).destino;
     const isDestinoProd = destino === 'total' || !destino;
-    
-    const isFortaleza = empresa.includes('fortaleza') || empresa === 'companhia do churrasco fortaleza';
-    
-    return isFortaleza && isDestinoProd;
+    return r.empresa === 'Companhia do Churrasco Fortaleza' && isDestinoProd;
   }) || [];
 
   // Aplicar filtro de período
