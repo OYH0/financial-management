@@ -23,15 +23,18 @@ const CompanhiaCaririPage = () => {
   const [customMonth, setCustomMonth] = useState<number>(new Date().getMonth() + 1);
   const [customYear, setCustomYear] = useState<number>(new Date().getFullYear());
 
-  // Filtrar apenas dados da Companhia do Churrasco Cariri
+  // Filtrar dados da Companhia do Churrasco Cariri (incluindo dados legados)
   const companhiaDespesas = despesas?.filter(d => 
-    d.empresa === 'Companhia do Churrasco Cariri'
+    d.empresa === 'Companhia do Churrasco Cariri' || 
+    d.empresa === 'Companhia do Churrasco'
   ) || [];
   
   const companhiaReceitas = receitas?.filter(r => {
     const destino = (r as any).destino;
     const isDestinoProd = destino === 'total' || !destino;
-    return r.empresa === 'Companhia do Churrasco Cariri' && isDestinoProd;
+    const isCariri = r.empresa === 'Companhia do Churrasco Cariri' || 
+                     r.empresa === 'Companhia do Churrasco';
+    return isCariri && isDestinoProd;
   }) || [];
 
   // Aplicar filtro de período
