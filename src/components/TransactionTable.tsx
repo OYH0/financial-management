@@ -292,7 +292,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                   <span className="text-gray-600">Valor:</span>
                   <span className="font-medium">R$ {transaction.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                 </div>
-                {transaction.valor_juros && transaction.valor_juros > 0 && (
+                {transaction.valor_juros > 0 && (
                   <div className="flex justify-between mb-1">
                     <span className="text-gray-600">Juros:</span>
                     <span className="font-medium text-orange-600">R$ {transaction.valor_juros.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
@@ -371,7 +371,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                 </div>
               </div>
 
-              {transaction.valor_juros && transaction.valor_juros > 0 && (
+              {transaction.valor_juros > 0 && (
                 <div className="text-xs text-gray-600 mb-2">
                   <span className="font-medium">Juros:</span> R$ {transaction.valor_juros.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                 </div>

@@ -168,7 +168,7 @@ const DespesasPage = () => {
       <Sidebar />
       
       <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 lg:p-6">
-        <div className="w-full max-h-screen overflow-y-auto">
+        <div className="w-full">
           {/* Header Section */}
           <div className="mb-4">
             <div className="flex items-center gap-2 mb-3">
