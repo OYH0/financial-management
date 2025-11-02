@@ -5,6 +5,7 @@ import { LineChart, Line, ResponsiveContainer } from 'recharts';
 interface CompanyCardProps {
   name: string;
   totalDespesas: number;
+  totalReceitas?: number;
   status: string;
   statusColor: 'green' | 'yellow';
   periodo: string;
@@ -21,6 +22,7 @@ interface CompanyCardProps {
 const CompanyCard: React.FC<CompanyCardProps> = ({
   name,
   totalDespesas,
+  totalReceitas,
   status,
   statusColor,
   periodo,
@@ -34,6 +36,8 @@ const CompanyCard: React.FC<CompanyCardProps> = ({
   chartColor
 }) => {
   const statusBgColor = statusColor === 'green' ? 'bg-green-500' : 'bg-yellow-500';
+  const lucro = (totalReceitas || 0) - totalDespesas;
+  const lucroColor = lucro >= 0 ? 'text-green-600' : 'text-red-600';
 
   // Criar dados específicos para o gráfico baseado nas categorias
   const categoryData = [
@@ -60,10 +64,27 @@ const CompanyCard: React.FC<CompanyCardProps> = ({
           </span>
         </div>
         
-        <div className="mb-4">
-          <p className="text-sm text-gray-500 mb-1">Total Despesas</p>
-          <p className="text-2xl font-bold text-gray-900">
-            R$ {totalDespesas.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+        {/* Resumo Financeiro */}
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <div>
+            <p className="text-xs text-gray-500 mb-1">Receitas</p>
+            <p className="text-lg font-bold text-green-600">
+              R$ {(totalReceitas || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-500 mb-1">Despesas</p>
+            <p className="text-lg font-bold text-red-600">
+              R$ {totalDespesas.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+            </p>
+          </div>
+        </div>
+
+        {/* Lucro/Prejuízo */}
+        <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+          <p className="text-xs text-gray-500 mb-1">Lucro/Prejuízo</p>
+          <p className={`text-xl font-bold ${lucroColor}`}>
+            R$ {lucro.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
           </p>
         </div>
 

@@ -108,6 +108,7 @@ const Dashboard = () => {
             <>
               <DashboardCards 
                 despesas={filteredDespesas} 
+                receitas={filteredReceitas}
                 period={period} 
                 stats={despesasStats}
               />

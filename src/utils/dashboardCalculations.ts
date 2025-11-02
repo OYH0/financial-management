@@ -185,7 +185,13 @@ export const normalizeCompanyName = (empresa: string | null | undefined): string
   const normalized = empresa.toLowerCase().trim();
   
   if (normalized.includes('camerino')) return 'camerino';
-  if (normalized.includes('churrasco') || normalized.includes('companhia')) return 'churrasco';
+  
+  // Separar Churrasco em Cariri e Fortaleza
+  if (normalized.includes('fortaleza')) return 'churrasco_fortaleza';
+  if (normalized.includes('cariri')) return 'churrasco_cariri';
+  // Dados legados sem especificação vão para Cariri
+  if (normalized.includes('churrasco') || normalized.includes('companhia')) return 'churrasco_cariri';
+  
   if (normalized.includes('johnny')) return 'johnny';
   
   return normalized;
@@ -196,13 +202,33 @@ export const getTransactionValue = (transaction: any): number => {
   return transaction.valor_total || transaction.valor || 0;
 };
 
-// Função para calcular totais por empresa (excluindo Camerino)
-export const calculateCompanyTotals = (despesas: Despesa[]) => {
+// Função para calcular totais por empresa (excluindo Camerino) com receitas
+export const calculateCompanyTotals = (despesas: Despesa[], receitas: any[] = []) => {
   const companies = {
-    churrasco: { total: 0, expenses: [] as Despesa[], categories: { fixas: 0, insumos: 0, variaveis: 0, atrasados: 0, retiradas: 0, sem_categoria: 0 } },
-    johnny: { total: 0, expenses: [] as Despesa[], categories: { fixas: 0, insumos: 0, variaveis: 0, atrasados: 0, retiradas: 0, sem_categoria: 0 } }
+    churrasco_cariri: { 
+      total: 0, 
+      totalReceitas: 0,
+      expenses: [] as Despesa[], 
+      receitas: [] as any[],
+      categories: { fixas: 0, insumos: 0, variaveis: 0, atrasados: 0, retiradas: 0, sem_categoria: 0 } 
+    },
+    churrasco_fortaleza: { 
+      total: 0, 
+      totalReceitas: 0,
+      expenses: [] as Despesa[], 
+      receitas: [] as any[],
+      categories: { fixas: 0, insumos: 0, variaveis: 0, atrasados: 0, retiradas: 0, sem_categoria: 0 } 
+    },
+    johnny: { 
+      total: 0, 
+      totalReceitas: 0,
+      expenses: [] as Despesa[], 
+      receitas: [] as any[],
+      categories: { fixas: 0, insumos: 0, variaveis: 0, atrasados: 0, retiradas: 0, sem_categoria: 0 } 
+    }
   };
 
+  // Processar despesas
   despesas.forEach(despesa => {
     const normalizedCompany = normalizeCompanyName(despesa.empresa);
     const valor = getTransactionValue(despesa);
@@ -232,6 +258,23 @@ export const calculateCompanyTotals = (despesas: Despesa[]) => {
       } else {
         company.categories.sem_categoria += valor;
       }
+    }
+  });
+
+  // Processar receitas
+  receitas.forEach(receita => {
+    const normalizedCompany = normalizeCompanyName(receita.empresa);
+    const valor = receita.valor || 0;
+
+    // Pular receitas da Camerino
+    if (normalizedCompany === 'camerino') {
+      return;
+    }
+
+    if (companies[normalizedCompany as keyof typeof companies]) {
+      const company = companies[normalizedCompany as keyof typeof companies];
+      company.totalReceitas += valor;
+      company.receitas.push(receita);
     }
   });
 
