@@ -5,11 +5,9 @@ import EditTransactionModal from './EditTransactionModal';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 import ViewReceiptModal from './ViewReceiptModal';
 import MarkAsPaidModal from './MarkAsPaidModal';
-import DescriptionCell from './table/DescriptionCell';
 import StatusCell from './table/StatusCell';
 import CategoryCell from './table/CategoryCell';
 import ActionsCell from './table/ActionsCell';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -258,119 +256,87 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
 
   return (
     <>
-      <div className="overflow-x-auto">
-        {/* Versão desktop da tabela */}
-        <div className="hidden lg:block">
-          <div className="rounded-xl border bg-white overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="cursor-pointer" onClick={() => handleSort('date')}>
-                    Data
-                    {sortConfig.key === 'date' && (
-                      <span className="ml-1">
-                        {sortConfig.direction === 'asc' ? '↑' : '↓'}
-                      </span>
-                    )}
-                  </TableHead>
-                  <TableHead>Empresa</TableHead>
-                  <TableHead className="cursor-pointer" onClick={() => handleSort('description')}>
-                    Descrição
-                    {sortConfig.key === 'description' && (
-                      <span className="ml-1">
-                        {sortConfig.direction === 'asc' ? '↑' : '↓'}
-                      </span>
-                    )}
-                  </TableHead>
-                  <TableHead>Categoria</TableHead>
-                  <TableHead>Subcategoria</TableHead>
-                  <TableHead className="cursor-pointer" onClick={() => handleSort('valor')}>
-                    Valor
-                    {sortConfig.key === 'valor' && (
-                      <span className="ml-1">
-                        {sortConfig.direction === 'asc' ? '↑' : '↓'}
-                      </span>
-                    )}
-                  </TableHead>
-                  <TableHead>Juros</TableHead>
-                  <TableHead>Total</TableHead>
-                  <TableHead>Vencimento</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sortedTransactions.map((transaction) => (
-                  <TableRow key={transaction.id}>
-                    <TableCell>
-                      {formatDate(transaction.date)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge className="bg-blue-500 text-white">
-                        {transaction.company}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="max-w-xs truncate">
-                      {transaction.description}
-                    </TableCell>
-                    <TableCell>
-                      <CategoryCell category={transaction.category} />
-                    </TableCell>
-                    <TableCell>
-                      {transaction.subcategoria && (
-                        <Badge variant="outline" className="text-xs">
-                          {transaction.subcategoria}
-                        </Badge>
-                      )}
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      R$ {transaction.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                    </TableCell>
-                    <TableCell className="font-medium text-orange-600">
-                      {transaction.valor_juros && transaction.valor_juros > 0 ? (
-                        <>R$ {transaction.valor_juros.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</>
-                      ) : (
-                        <span className="text-gray-400">-</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="font-bold">
-                      R$ {(transaction.valor_total || transaction.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                    </TableCell>
-                    <TableCell>
-                      {formatDate(transaction.data_vencimento || '')}
-                    </TableCell>
-                    <TableCell>
-                      <StatusCell transaction={transaction} />
-                    </TableCell>
-                    <TableCell>
-                      <ActionsCell
-                        transaction={transaction}
-                        onTransactionUpdated={onTransactionUpdated}
-                        onMarkAsPaidRequest={handleMarkAsPaidRequest}
-                        onAttachReceipt={handleAttachReceipt}
-                        isAdmin={isAdmin}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </div>
+      {/* Versão desktop - Cards compactos ao invés de tabela larga */}
+      <div className="hidden lg:block space-y-3">
+        {sortedTransactions.map((transaction) => (
+          <div key={transaction.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
+            <div className="grid grid-cols-12 gap-3 items-start">
+              {/* Coluna 1: Data e Empresa (2 colunas) */}
+              <div className="col-span-2 text-sm">
+                <div className="text-gray-900 font-medium">
+                  {formatDate(transaction.data_vencimento || transaction.date)}
+                </div>
+                <Badge className="bg-blue-500 text-white text-xs mt-1">
+                  {transaction.company}
+                </Badge>
+              </div>
 
-        {/* Versão mobile - Cards */}
-        <div className="lg:hidden space-y-6">
-          {sortedTransactions.map((transaction) => (
-            <div key={transaction.id} className="bg-white rounded-lg shadow-md p-4 border border-gray-200">
-              <div className="flex justify-between items-start mb-3">
-                <div className="flex-1">
-                  <div className="font-medium text-gray-900 mb-1">
-                    <DescriptionCell description={transaction.description} />
+              {/* Coluna 2: Descrição e Categoria (4 colunas) */}
+              <div className="col-span-4">
+                <div className="text-sm font-medium text-gray-900 mb-1 break-words">
+                  {transaction.description}
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  <CategoryCell category={transaction.category} />
+                  {transaction.subcategoria && (
+                    <Badge variant="outline" className="text-xs">
+                      {transaction.subcategoria}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+
+              {/* Coluna 3: Valores (3 colunas) */}
+              <div className="col-span-3 text-sm">
+                <div className="flex justify-between mb-1">
+                  <span className="text-gray-600">Valor:</span>
+                  <span className="font-medium">R$ {transaction.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                </div>
+                {transaction.valor_juros && transaction.valor_juros > 0 && (
+                  <div className="flex justify-between mb-1">
+                    <span className="text-gray-600">Juros:</span>
+                    <span className="font-medium text-orange-600">R$ {transaction.valor_juros.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                   </div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="px-2 py-1 rounded text-xs bg-blue-500 text-white">
+                )}
+                <div className="flex justify-between border-t pt-1">
+                  <span className="text-gray-700 font-medium">Total:</span>
+                  <span className="font-bold text-gray-900">R$ {(transaction.valor_total || transaction.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                </div>
+              </div>
+
+              {/* Coluna 4: Status (2 colunas) */}
+              <div className="col-span-2 flex justify-center items-start">
+                <StatusCell transaction={transaction} />
+              </div>
+
+              {/* Coluna 5: Ações (1 coluna) */}
+              <div className="col-span-1 flex justify-end">
+                <ActionsCell
+                  transaction={transaction}
+                  onTransactionUpdated={onTransactionUpdated}
+                  onMarkAsPaidRequest={handleMarkAsPaidRequest}
+                  onAttachReceipt={handleAttachReceipt}
+                  isAdmin={isAdmin}
+                />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Versão mobile - Cards */}
+      <div className="lg:hidden space-y-3">
+        {sortedTransactions.map((transaction) => (
+          <div key={transaction.id} className="bg-white rounded-lg shadow-sm p-3 border border-gray-200">
+              <div className="flex justify-between items-start mb-2">
+                <div className="flex-1">
+                  <div className="font-medium text-sm text-gray-900 mb-1 break-words">
+                    {transaction.description}
+                  </div>
+                  <div className="flex flex-wrap items-center gap-1 mb-1">
+                    <Badge className="bg-blue-500 text-white text-xs">
                       {transaction.company}
-                    </span>
+                    </Badge>
                     <CategoryCell category={transaction.category} />
                     {transaction.subcategoria && (
                       <Badge variant="outline" className="text-xs">
@@ -382,7 +348,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                 <StatusCell transaction={transaction} />
               </div>
 
-              <div className="grid grid-cols-2 gap-3 text-sm text-gray-600 mb-3">
+              <div className="grid grid-cols-2 gap-2 text-xs text-gray-600 mb-2">
                 <div>
                   <span className="font-medium">Vencimento:</span>
                   <div>{transaction.data_vencimento ? formatDate(transaction.data_vencimento) : '-'}</div>
@@ -406,12 +372,12 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
               </div>
 
               {transaction.valor_juros && transaction.valor_juros > 0 && (
-                <div className="text-sm text-gray-600 mb-3">
+                <div className="text-xs text-gray-600 mb-2">
                   <span className="font-medium">Juros:</span> R$ {transaction.valor_juros.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                 </div>
               )}
 
-              <div className="flex justify-end">
+              <div className="flex justify-end pt-1 border-t border-gray-100">
                 <ActionsCell
                   transaction={transaction}
                   onTransactionUpdated={onTransactionUpdated}
