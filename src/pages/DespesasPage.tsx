@@ -42,22 +42,7 @@ const DespesasPage = () => {
   const { isAdmin } = useAdminAccess();
   const { isAuthenticated, authenticate } = useCamerinoAuth();
 
-  // Limpar filtros de data ao carregar a página para mostrar todo o mês atual
-  React.useEffect(() => {
-    console.log('=== LIMPANDO FILTROS DE DATA AO CARREGAR ===');
-    console.log('dateFrom antes:', dateFrom);
-    console.log('dateTo antes:', dateTo);
-    setDateFrom('');
-    setDateTo('');
-    console.log('Filtros de data limpos');
-  }, []);
-
-  // Log para monitorar mudanças nos filtros
-  React.useEffect(() => {
-    console.log('=== FILTROS DE DATA MUDARAM ===');
-    console.log('dateFrom:', dateFrom);
-    console.log('dateTo:', dateTo);
-  }, [dateFrom, dateTo]);
+  // Removido useEffect que causava recarregamento ao selecionar datas
 
   // Verificar se precisa autenticar para Camerino
   const needsCamerinoAuth = filterEmpresa === 'Camerino' && !isAuthenticated;
@@ -82,16 +67,8 @@ const DespesasPage = () => {
 
   // Aplicar filtro baseado nas datas selecionadas
   const currentMonthTransactions = useMemo(() => {
-    console.log('=== DEBUG FILTRO TRANSAÇÕES ===');
-    console.log('Total de despesas antes do filtro:', allTransactions.length);
-    console.log('Filtros de data - De:', dateFrom, 'Até:', dateTo);
-    console.log('Filtro empresa:', filterEmpresa);
-    console.log('Usando filtros manuais?', !!(dateFrom || dateTo));
-    
     // Se há filtros de data específicos, aplicar apenas esses filtros
     if (dateFrom || dateTo) {
-      console.log('Aplicando filtros de data específicos');
-      
       const filtered = allTransactions.filter(transaction => {
         const transactionDateStr = transaction.data_vencimento || transaction.date;
         if (!transactionDateStr) return false;
@@ -105,20 +82,12 @@ const DespesasPage = () => {
         return true;
       });
       
-      console.log('Despesas após filtro de data específico:', filtered.length);
-      console.log('Total dos valores filtrados:', filtered.reduce((sum, t) => sum + (t.valor_total || t.valor), 0));
-      
       return filtered;
     }
     
     // Caso contrário, usar o filtro do mês atual (excluindo Camerino apenas se não houver filtro de empresa)
     const shouldExcludeCamerino = filterEmpresa === 'all';
-    const filtered = filterDespesasCurrentMonth(allTransactions, dateFrom, dateTo, shouldExcludeCamerino);
-    
-    console.log('Despesas após filtro do mês atual:', filtered.length);
-    console.log('Total dos valores filtrados:', filtered.reduce((sum, t) => sum + (t.valor_total || t.valor), 0));
-    
-    return filtered;
+    return filterDespesasCurrentMonth(allTransactions, dateFrom, dateTo, shouldExcludeCamerino);
   }, [allTransactions, dateFrom, dateTo, filterEmpresa]);
 
   // Filtrar despesas com base nos outros filtros
@@ -161,14 +130,6 @@ const DespesasPage = () => {
   const valorPago = despesasPagas.reduce((sum, t) => sum + (t.valor_total || t.valor), 0);
   const valorPendente = despesasPendentes.reduce((sum, t) => sum + (t.valor_total || t.valor), 0);
   const valorAtrasado = despesasAtrasadas.reduce((sum, t) => sum + (t.valor_total || t.valor), 0);
-
-  console.log('=== ESTATÍSTICAS FINAIS ===');
-  console.log('Total de despesas filtradas:', filteredTransactions.length);
-  console.log('Total geral (valor_total):', totalDespesas);
-  console.log('Total de juros:', totalJuros);
-  console.log('Valor pago:', valorPago);
-  console.log('Valor pendente:', valorPendente);
-  console.log('Valor atrasado:', valorAtrasado);
 
   const handleTransactionAdded = () => {
     refetch();

@@ -102,9 +102,6 @@ const ReceitasFilter: React.FC<ReceitasFilterProps> = ({
                 <SelectItem value="VENDAS">{prettyLabel('VENDAS')}</SelectItem>
                 <SelectItem value="VENDAS_DIARIAS">{prettyLabel('VENDAS_DIARIAS')}</SelectItem>
                 <SelectItem value="OUTROS">{prettyLabel('OUTROS')}</SelectItem>
-                <SelectItem value="EM_COFRE">{prettyLabel('EM_COFRE')}</SelectItem>
-                <SelectItem value="EM_CONTA">{prettyLabel('EM_CONTA')}</SelectItem>
-                <SelectItem value="PAGAMENTO_DESPESA">Pagamento de Despesa</SelectItem>
               </SelectContent>
             </Select>
           </div>
