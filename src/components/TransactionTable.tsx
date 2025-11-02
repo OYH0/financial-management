@@ -389,7 +389,6 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
             </div>
           ))}
         </div>
-      </div>
 
       <EditTransactionModal
         isOpen={!!editingTransaction}
