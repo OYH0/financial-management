@@ -9,10 +9,10 @@ interface DashboardTransactionsProps {
 }
 
 const DashboardTransactions: React.FC<DashboardTransactionsProps> = ({ despesas }) => {
-  // Filtrar despesas para excluir Camerino
+  // Filtrar despesas para excluir Camerino e Implementação
   const despesasSemCamerino = despesas.filter(despesa => {
     const empresa = despesa.empresa?.toLowerCase().trim() || '';
-    return !empresa.includes('camerino');
+    return !empresa.includes('camerino') && !empresa.includes('implementação') && empresa !== 'implementação';
   });
 
   return (

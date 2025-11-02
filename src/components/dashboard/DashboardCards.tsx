@@ -40,16 +40,16 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ despesas, receitas, per
   console.log('Período:', period);
   console.log('Stats:', stats);
 
-  // Filtrar despesas para excluir Camerino
+  // Filtrar despesas para excluir Camerino e Implementação
   const despesasSemCamerino = despesas.filter(despesa => {
     const empresa = despesa.empresa?.toLowerCase().trim() || '';
-    return !empresa.includes('camerino');
+    return !empresa.includes('camerino') && !empresa.includes('implementação') && empresa !== 'implementação';
   });
 
-  // Filtrar receitas para excluir Camerino
+  // Filtrar receitas para excluir Camerino e Implementação
   const receitasSemCamerino = receitas.filter(receita => {
     const empresa = receita.empresa?.toLowerCase().trim() || '';
-    return !empresa.includes('camerino');
+    return !empresa.includes('camerino') && !empresa.includes('implementação') && empresa !== 'implementação';
   });
 
   console.log('Total de despesas após filtrar Camerino:', despesasSemCamerino.length);

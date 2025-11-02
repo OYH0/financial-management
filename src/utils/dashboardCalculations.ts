@@ -36,10 +36,10 @@ export const calculateDistributionData = (despesas: Despesa[]) => {
     return [];
   }
 
-  // Filtrar despesas para excluir Camerino
+  // Filtrar despesas para excluir Camerino e Implementação
   const despesasSemCamerino = despesas.filter(despesa => {
     const empresa = despesa.empresa?.toLowerCase().trim() || '';
-    return !empresa.includes('camerino');
+    return !empresa.includes('camerino') && !empresa.includes('implementação') && empresa !== 'implementação';
   });
 
   // Agrupar por categoria e subcategoria
@@ -92,16 +92,16 @@ export const calculateMonthlyData = (despesas: Despesa[], receitas: any[]) => {
   
   const monthlyData: { [key: string]: { despesas: number; receitas: number } } = {};
   
-  // Filtrar despesas para excluir Camerino
+  // Filtrar despesas para excluir Camerino e Implementação
   const despesasSemCamerino = despesas.filter(despesa => {
     const empresa = despesa.empresa?.toLowerCase().trim() || '';
-    return !empresa.includes('camerino');
+    return !empresa.includes('camerino') && !empresa.includes('implementação') && empresa !== 'implementação';
   });
 
-  // Filtrar receitas para excluir Camerino
+  // Filtrar receitas para excluir Camerino e Implementação
   const receitasSemCamerino = receitas.filter(receita => {
     const empresa = receita.empresa?.toLowerCase().trim() || '';
-    return !empresa.includes('camerino');
+    return !empresa.includes('camerino') && !empresa.includes('implementação') && empresa !== 'implementação';
   });
   
   // Processar despesas (sem Camerino)
