@@ -262,12 +262,37 @@ export const calculateCompanyTotals = (despesas: Despesa[], receitas: any[] = []
   });
 
   // Processar receitas
+  console.log('\n💰 === PROCESSANDO RECEITAS ===');
+  console.log('Total de receitas para processar:', receitas.length);
+  
+  let receitasRecebidas = 0;
+  let receitasPendentes = 0;
+  
   receitas.forEach(receita => {
     const normalizedCompany = normalizeCompanyName(receita.empresa);
     const valor = receita.valor || 0;
+    const foiRecebida = !!receita.data_recebimento; // Só contar se foi recebida
+    const descricao = (receita.descricao || '').toUpperCase().trim();
+    const isSaldoDia = descricao.includes('SALDO DO DIA') || descricao === 'SALDO DO DIA';
+
+    console.log(`📊 Receita: ${receita.descricao} | Empresa: ${receita.empresa} (normalizado: ${normalizedCompany}) | Valor: R$ ${valor} | Data: ${receita.data} | Data Recebimento: ${receita.data_recebimento || 'Pendente'} | Status: ${foiRecebida ? '✅ RECEBIDA' : '⏳ PENDENTE'}${isSaldoDia ? ' | 💰 SALDO' : ''}`);
 
     // Pular receitas da Camerino
     if (normalizedCompany === 'camerino') {
+      console.log('  ❌ Pulando receita da Camerino');
+      return;
+    }
+
+    // IMPORTANTE: Só contabilizar receitas que já foram recebidas (data_recebimento preenchido)
+    if (!foiRecebida) {
+      console.log('  ⏳ Receita pendente - NÃO será contabilizada no total');
+      receitasPendentes++;
+      return;
+    }
+
+    // IMPORTANTE: NÃO contabilizar "SALDO DO DIA" como receita (é apenas movimentação de caixa)
+    if (isSaldoDia) {
+      console.log('  💰 SALDO DO DIA - NÃO será contabilizado como receita (apenas movimentação de caixa)');
       return;
     }
 
@@ -275,8 +300,21 @@ export const calculateCompanyTotals = (despesas: Despesa[], receitas: any[] = []
       const company = companies[normalizedCompany as keyof typeof companies];
       company.totalReceitas += valor;
       company.receitas.push(receita);
+      receitasRecebidas++;
+      console.log(`  ✅ Receita RECEBIDA adicionada a ${normalizedCompany} | Novo total receitas: R$ ${company.totalReceitas}`);
+    } else {
+      console.log(`  ⚠️ Empresa não reconhecida: ${normalizedCompany}`);
     }
   });
+  
+  console.log('\n📈 === ESTATÍSTICAS DE PROCESSAMENTO ===');
+  console.log('Receitas RECEBIDAS contabilizadas:', receitasRecebidas);
+  console.log('Receitas PENDENTES ignoradas:', receitasPendentes);
+  
+  console.log('\n💰 === RESUMO DE RECEITAS POR EMPRESA ===');
+  console.log('Churrasco Cariri - Total Receitas:', companies.churrasco_cariri.totalReceitas, '| Qtd:', companies.churrasco_cariri.receitas.length);
+  console.log('Churrasco Fortaleza - Total Receitas:', companies.churrasco_fortaleza.totalReceitas, '| Qtd:', companies.churrasco_fortaleza.receitas.length);
+  console.log('Johnny - Total Receitas:', companies.johnny.totalReceitas, '| Qtd:', companies.johnny.receitas.length);
 
   return companies;
 };

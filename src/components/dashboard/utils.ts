@@ -1,3 +1,21 @@
+/**
+ * Sanitiza uma string de data, corrigindo anos mal formatados
+ * Exemplo: "20225-09-23" -> "2025-09-23"
+ */
+const sanitizeDate = (dateStr: string | null | undefined): string | null => {
+  if (!dateStr) return null;
+  
+  // Corrigir anos com 5 dígitos (ex: 20225 -> 2025)
+  // Padrão: NNNNN-MM-DD onde NNNNN começa com 202
+  const invalidYearPattern = /^(202\d)\d-/;
+  if (invalidYearPattern.test(dateStr)) {
+    const correctedDate = dateStr.replace(invalidYearPattern, '$1-');
+    console.warn(`⚠️ Data corrigida: ${dateStr} -> ${correctedDate}`);
+    return correctedDate;
+  }
+  
+  return dateStr;
+};
 
 export const filterDataByPeriod = (data: any[], period: string, customMonth?: number, customYear?: number) => {
   if (!data || data.length === 0) return [];
@@ -58,39 +76,67 @@ export const filterDataByPeriod = (data: any[], period: string, customMonth?: nu
   const filtered = data.filter(item => {
     // Parse da data - PRIORIZAR data_vencimento para despesas
     let itemDate: Date;
+    let tipoItem = 'DESCONHECIDO';
+    
+    // Identificar se é receita ou despesa
+    if (item.data_vencimento || item.valor_total !== undefined) {
+      tipoItem = 'DESPESA';
+    } else if (item.data && !item.data_vencimento) {
+      tipoItem = 'RECEITA';
+    }
     
     // Para despesas, usar data_vencimento primeiro, depois data
     if (item.data_vencimento) {
-      if (item.data_vencimento.includes('/')) {
+      const sanitizedDate = sanitizeDate(item.data_vencimento);
+      if (!sanitizedDate) {
+        console.log('❌ data_vencimento inválida:', item.data_vencimento);
+        return false;
+      }
+      
+      if (sanitizedDate.includes('/')) {
         // Formato DD/MM/YYYY
-        const [dia, mes, ano] = item.data_vencimento.split('/');
+        const [dia, mes, ano] = sanitizedDate.split('/');
         itemDate = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
       } else {
         // Formato YYYY-MM-DD
-        itemDate = new Date(item.data_vencimento + 'T00:00:00');
+        itemDate = new Date(sanitizedDate + 'T00:00:00');
       }
-      console.log('Usando data_vencimento:', item.data_vencimento, 'para item:', item.descricao || item.empresa);
+      console.log(`[${tipoItem}] Usando data_vencimento:`, sanitizedDate, '| Empresa:', item.empresa, '| Descrição:', item.descricao);
     } else if (item.data) {
-      if (item.data.includes('/')) {
+      const sanitizedDate = sanitizeDate(item.data);
+      if (!sanitizedDate) {
+        console.log('❌ data inválida:', item.data);
+        return false;
+      }
+      
+      if (sanitizedDate.includes('/')) {
         // Formato DD/MM/YYYY
-        const [dia, mes, ano] = item.data.split('/');
+        const [dia, mes, ano] = sanitizedDate.split('/');
         itemDate = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
       } else {
         // Formato YYYY-MM-DD
-        itemDate = new Date(item.data + 'T00:00:00');
+        itemDate = new Date(sanitizedDate + 'T00:00:00');
       }
-      console.log('Usando data:', item.data, 'para item:', item.descricao || item.empresa);
+      // Para receitas, mostrar também data_recebimento se existir
+      const dataRecebimentoInfo = item.data_recebimento ? ` | Data Recebimento: ${item.data_recebimento}` : ' | Pendente';
+      console.log(`[${tipoItem}] Usando data:`, sanitizedDate, dataRecebimentoInfo, '| Empresa:', item.empresa, '| Descrição:', item.descricao, '| Valor:', item.valor);
     } else if (item.data_pagamento) {
+      const sanitizedDate = sanitizeDate(item.data_pagamento);
+      if (!sanitizedDate) {
+        console.log('❌ data_pagamento inválida:', item.data_pagamento);
+        return false;
+      }
+      
       // Usar data_pagamento apenas se não houver data_vencimento nem data
-      if (item.data_pagamento.includes('/')) {
-        const [dia, mes, ano] = item.data_pagamento.split('/');
+      if (sanitizedDate.includes('/')) {
+        const [dia, mes, ano] = sanitizedDate.split('/');
         itemDate = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
       } else {
-        itemDate = new Date(item.data_pagamento + 'T00:00:00');
+        itemDate = new Date(sanitizedDate + 'T00:00:00');
       }
-      console.log('Usando data_pagamento:', item.data_pagamento, 'para item:', item.descricao || item.empresa);
+      console.log(`[${tipoItem}] Usando data_pagamento:`, sanitizedDate, '| Empresa:', item.empresa, '| Descrição:', item.descricao);
     } else {
-      console.log('Item sem data válida:', item);
+      console.log('❌ Item sem data válida:', item);
       return false;
     }
     
