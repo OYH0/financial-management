@@ -106,19 +106,19 @@ const ReceitasPage = () => {
     <div className="flex min-h-screen bg-gradient-to-br from-gray-50 via-green-50 to-emerald-100">
       <Sidebar />
       
-      <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 lg:p-8">
+      <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 lg:p-6">
         <div className="w-full">
           {/* Header Section */}
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-4">
+          <div className="mb-4">
+            <div className="flex items-center gap-2 mb-3">
               <div className="p-2 lg:p-3 bg-gradient-to-r from-green-500 to-green-600 rounded-2xl shadow-lg">
                 <TrendingUp className="h-6 w-6 lg:h-8 lg:w-8 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl lg:text-4xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 bg-clip-text text-transparent">
+                <h1 className="text-xl lg:text-3xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 bg-clip-text text-transparent">
                   Receitas
                 </h1>
-                <p className="text-gray-600 text-sm lg:text-lg">Gerencie todas as receitas do negócio</p>
+                <p className="text-gray-600 text-xs lg:text-sm">Gerencie todas as receitas do negócio</p>
               </div>
             </div>
             
@@ -158,23 +158,21 @@ const ReceitasPage = () => {
           />
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 gap-4 lg:gap-6 mb-8">
+          <div className="grid grid-cols-1 gap-3 mb-4">
             <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl rounded-2xl">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-                <CardTitle className="text-sm font-medium text-gray-600">Total de Receitas</CardTitle>
-                <div className="p-2 bg-gradient-to-r from-green-100 to-green-200 rounded-xl">
-                  <TrendingUp className="h-4 w-4 text-green-600" />
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-xs font-medium text-gray-600">Total de Receitas</CardTitle>
+                <div className="p-1.5 bg-gradient-to-r from-green-100 to-green-200 rounded-lg">
+                  <TrendingUp className="h-3 w-3 text-green-600" />
                 </div>
               </CardHeader>
-              <CardContent>
-                <div className="text-xl lg:text-3xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
+              <CardContent className="pb-3">
+                <div className="text-lg lg:text-2xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
                   R$ {totalReceitas.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                 </div>
-                <p className="text-xs text-gray-500 mt-1">{receitasVendas.length} receitas encontradas</p>
+                <p className="text-xs text-gray-500 mt-0.5">{receitasVendas.length} receitas encontradas</p>
               </CardContent>
             </Card>
-
-
           </div>
 
           {/* Main Content Card */}

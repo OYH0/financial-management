@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
 import { Edit, Trash2, Lock } from 'lucide-react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Receita, useDeleteReceita } from '@/hooks/useReceitas';
@@ -87,90 +86,173 @@ const ReceitaTable: React.FC<ReceitaTableProps> = ({ receitas }) => {
 
   return (
     <>
-      <div className="rounded-xl border bg-white overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Data</TableHead>
-              <TableHead>Empresa</TableHead>
-              <TableHead>Descrição</TableHead>
-              <TableHead>Categoria</TableHead>
-              <TableHead>Valor</TableHead>
-              <TableHead>Recebimento</TableHead>
-              <TableHead>Ações</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {receitas.map((receita) => {
-              const canEdit = canEditReceita(receita);
-              
-              return (
-                <TableRow key={receita.id}>
-                  <TableCell>
+      {/* Versão desktop - Cards compactos ao invés de tabela larga */}
+      <div className="hidden lg:block space-y-3">
+        {receitas.map((receita) => {
+          const canEdit = canEditReceita(receita);
+          
+          return (
+            <div key={receita.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
+              <div className="grid grid-cols-12 gap-3 items-start">
+                {/* Coluna 1: Data e Empresa (2 colunas) */}
+                <div className="col-span-2 text-sm">
+                  <div className="text-gray-900 font-medium">
                     {formatDate(receita.data)}
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={`${getEmpresaBadge(receita.empresa)} text-white`}>
-                      {receita.empresa}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="max-w-xs truncate">
+                  </div>
+                  <Badge className={`${getEmpresaBadge(receita.empresa)} text-white text-xs mt-1`}>
+                    {receita.empresa}
+                  </Badge>
+                </div>
+
+                {/* Coluna 2: Descrição e Categoria (4 colunas) */}
+                <div className="col-span-4">
+                  <div className="text-sm font-medium text-gray-900 mb-1 break-words">
                     {receita.descricao}
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={`${getCategoryBadge(receita.categoria)} text-white`}>
-                      {prettyLabel(receita.categoria)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="font-medium">
+                  </div>
+                  <Badge className={`${getCategoryBadge(receita.categoria)} text-white text-xs`}>
+                    {prettyLabel(receita.categoria)}
+                  </Badge>
+                </div>
+
+                {/* Coluna 3: Valor (2 colunas) */}
+                <div className="col-span-2 text-sm">
+                  <div className="text-gray-600 text-xs mb-1">Valor:</div>
+                  <div className="font-bold text-gray-900">
                     R$ {receita.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                  </TableCell>
-                  <TableCell>
-                    {receita.data_recebimento ? (
-                      <Badge className="bg-green-500 text-white">
+                  </div>
+                </div>
+
+                {/* Coluna 4: Status de Recebimento (2 colunas) */}
+                <div className="col-span-2 flex justify-center items-start">
+                  {receita.data_recebimento ? (
+                    <div className="text-center">
+                      <div className="text-xs text-gray-600 mb-1">Recebido em:</div>
+                      <Badge className="bg-green-500 text-white text-xs">
                         {formatDate(receita.data_recebimento)}
                       </Badge>
-                    ) : (
-                      <Badge className="bg-yellow-500 text-white">Pendente</Badge>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      {canEdit ? (
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => setEditingReceita(receita)}
-                        >
-                          <Edit size={16} />
-                        </Button>
-                      ) : (
-                        <Button variant="ghost" size="sm" disabled className="opacity-50">
-                          <Lock size={16} className="text-gray-400" />
-                        </Button>
-                      )}
-                      
-                      {canEdit ? (
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => setDeleteId(receita.id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <Trash2 size={16} />
-                        </Button>
-                      ) : (
-                        <Button variant="ghost" size="sm" disabled className="opacity-50">
-                          <Lock size={16} className="text-gray-400" />
-                        </Button>
-                      )}
                     </div>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+                  ) : (
+                    <Badge className="bg-yellow-500 text-white text-xs">Pendente</Badge>
+                  )}
+                </div>
+
+                {/* Coluna 5: Ações (2 colunas) */}
+                <div className="col-span-2 flex justify-end gap-2">
+                  {canEdit ? (
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => setEditingReceita(receita)}
+                    >
+                      <Edit size={16} />
+                    </Button>
+                  ) : (
+                    <Button variant="ghost" size="sm" disabled className="opacity-50">
+                      <Lock size={16} className="text-gray-400" />
+                    </Button>
+                  )}
+                  
+                  {canEdit ? (
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => setDeleteId(receita.id)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <Trash2 size={16} />
+                    </Button>
+                  ) : (
+                    <Button variant="ghost" size="sm" disabled className="opacity-50">
+                      <Lock size={16} className="text-gray-400" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Versão mobile - Cards */}
+      <div className="lg:hidden space-y-3">
+        {receitas.map((receita) => {
+          const canEdit = canEditReceita(receita);
+          
+          return (
+            <div key={receita.id} className="bg-white rounded-lg shadow-sm p-3 border border-gray-200">
+              <div className="flex justify-between items-start mb-2">
+                <div className="flex-1">
+                  <div className="font-medium text-sm text-gray-900 mb-1 break-words">
+                    {receita.descricao}
+                  </div>
+                  <div className="flex flex-wrap items-center gap-1 mb-1">
+                    <Badge className={`${getEmpresaBadge(receita.empresa)} text-white text-xs`}>
+                      {receita.empresa}
+                    </Badge>
+                    <Badge className={`${getCategoryBadge(receita.categoria)} text-white text-xs`}>
+                      {prettyLabel(receita.categoria)}
+                    </Badge>
+                  </div>
+                </div>
+                {receita.data_recebimento ? (
+                  <Badge className="bg-green-500 text-white text-xs">
+                    Recebido
+                  </Badge>
+                ) : (
+                  <Badge className="bg-yellow-500 text-white text-xs">Pendente</Badge>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-xs text-gray-600 mb-2">
+                <div>
+                  <span className="font-medium">Data:</span>
+                  <div>{formatDate(receita.data)}</div>
+                </div>
+                <div>
+                  <span className="font-medium">Recebimento:</span>
+                  <div>{receita.data_recebimento ? formatDate(receita.data_recebimento) : '-'}</div>
+                </div>
+                <div className="col-span-2">
+                  <span className="font-medium">Valor:</span>
+                  <div className="text-gray-900 font-medium">
+                    R$ {receita.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-1 border-t border-gray-100">
+                {canEdit ? (
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => setEditingReceita(receita)}
+                  >
+                    <Edit size={16} />
+                  </Button>
+                ) : (
+                  <Button variant="ghost" size="sm" disabled className="opacity-50">
+                    <Lock size={16} className="text-gray-400" />
+                  </Button>
+                )}
+                
+                {canEdit ? (
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => setDeleteId(receita.id)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <Trash2 size={16} />
+                  </Button>
+                ) : (
+                  <Button variant="ghost" size="sm" disabled className="opacity-50">
+                    <Lock size={16} className="text-gray-400" />
+                  </Button>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Edit Modal */}
