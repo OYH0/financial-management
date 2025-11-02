@@ -30,9 +30,14 @@ const CompanhiaPage = () => {
   const companhiaDespesas = despesas?.filter(d => {
     const empresa = d.empresa?.toLowerCase().trim() || '';
     if (selectedCompany === 'cariri') {
-      return empresa.includes('cariri') || empresa === 'companhia do churrasco cariri';
+      // Incluir dados legados "Companhia do Churrasco" (sem especificar unidade)
+      return empresa.includes('cariri') || 
+             empresa === 'companhia do churrasco cariri' ||
+             empresa === 'companhia do churrasco' || // DADOS LEGADOS
+             empresa === 'churrasco'; // DADOS LEGADOS
     } else {
-      return empresa.includes('fortaleza') || empresa === 'companhia do churrasco fortaleza';
+      return empresa.includes('fortaleza') || 
+             empresa === 'companhia do churrasco fortaleza';
     }
   }) || [];
   
@@ -42,9 +47,16 @@ const CompanhiaPage = () => {
     const isDestinoProd = destino === 'total' || !destino;
     
     if (selectedCompany === 'cariri') {
-      return (empresa.includes('cariri') || empresa === 'companhia do churrasco cariri') && isDestinoProd;
+      // Incluir dados legados "Companhia do Churrasco" (sem especificar unidade)
+      const isCariri = empresa.includes('cariri') || 
+                       empresa === 'companhia do churrasco cariri' ||
+                       empresa === 'companhia do churrasco' || // DADOS LEGADOS
+                       empresa === 'churrasco'; // DADOS LEGADOS
+      return isCariri && isDestinoProd;
     } else {
-      return (empresa.includes('fortaleza') || empresa === 'companhia do churrasco fortaleza') && isDestinoProd;
+      const isFortaleza = empresa.includes('fortaleza') || 
+                          empresa === 'companhia do churrasco fortaleza';
+      return isFortaleza && isDestinoProd;
     }
   }) || [];
 

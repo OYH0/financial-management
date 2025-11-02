@@ -180,10 +180,11 @@ const ConfiguracoesPage = () => {
                       <SelectValue placeholder="Selecione sua empresa principal" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="churrasco">Companhia do Churrasco</SelectItem>
+                      <SelectItem value="churrasco-cariri">Companhia do Churrasco - Cariri</SelectItem>
+                      <SelectItem value="churrasco-fortaleza">Companhia do Churrasco - Fortaleza</SelectItem>
                       <SelectItem value="johnny">Johnny Rockets</SelectItem>
                       <SelectItem value="camerino">Camerino</SelectItem>
-                      <SelectItem value="ambas">Todas</SelectItem>
+                      <SelectItem value="todas">Todas</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
