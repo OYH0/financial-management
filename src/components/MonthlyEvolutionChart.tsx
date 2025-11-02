@@ -160,41 +160,123 @@ const MonthlyEvolutionChart: React.FC<MonthlyEvolutionChartProps> = ({ despesas,
           />
           <Tooltip content={<CustomTooltip />} />
           <Legend 
-            wrapperStyle={{ fontSize: '12px' }}
+            wrapperStyle={{ fontSize: '11px' }}
             formatter={(value) => {
-              if (value === 'lucro_cariri') return 'Lucro Cariri';
-              if (value === 'lucro_fortaleza') return 'Lucro Fortaleza';
-              if (value === 'lucro_johnny') return 'Lucro Johnny';
+              // Cariri
+              if (value === 'receita_cariri') return '💰 Receita Cariri';
+              if (value === 'despesa_cariri') return '💸 Despesa Cariri';
+              if (value === 'lucro_cariri') return '📈 Lucro Cariri';
+              // Fortaleza
+              if (value === 'receita_fortaleza') return '💰 Receita Fortaleza';
+              if (value === 'despesa_fortaleza') return '💸 Despesa Fortaleza';
+              if (value === 'lucro_fortaleza') return '📈 Lucro Fortaleza';
+              // Johnny
+              if (value === 'receita_johnny') return '💰 Receita Johnny';
+              if (value === 'despesa_johnny') return '💸 Despesa Johnny';
+              if (value === 'lucro_johnny') return '📈 Lucro Johnny';
               return value;
             }}
           />
           
-          {/* Linhas de Lucro */}
+          {/* ========== CARIRI ========== */}
+          {/* Receita Cariri */}
+          <Line 
+            type="monotone"
+            name="receita_cariri"
+            dataKey="receita_cariri" 
+            stroke="#22c55e" 
+            strokeWidth={2}
+            strokeDasharray="5 5"
+            dot={{ r: 2, fill: '#22c55e' }}
+            activeDot={{ r: 4 }}
+          />
+          {/* Despesa Cariri */}
+          <Line 
+            type="monotone"
+            name="despesa_cariri"
+            dataKey="despesa_cariri" 
+            stroke="#dc2626" 
+            strokeWidth={2}
+            strokeDasharray="3 3"
+            dot={{ r: 2, fill: '#dc2626' }}
+            activeDot={{ r: 4 }}
+          />
+          {/* Lucro Cariri */}
           <Line 
             type="monotone"
             name="lucro_cariri"
             dataKey="lucro_cariri" 
             stroke="#ef4444" 
-            strokeWidth={2}
-            dot={{ r: 3 }}
+            strokeWidth={3}
+            dot={{ r: 3, fill: '#ef4444' }}
             activeDot={{ r: 5 }}
           />
+          
+          {/* ========== FORTALEZA ========== */}
+          {/* Receita Fortaleza */}
+          <Line 
+            type="monotone"
+            name="receita_fortaleza"
+            dataKey="receita_fortaleza" 
+            stroke="#10b981" 
+            strokeWidth={2}
+            strokeDasharray="5 5"
+            dot={{ r: 2, fill: '#10b981' }}
+            activeDot={{ r: 4 }}
+          />
+          {/* Despesa Fortaleza */}
+          <Line 
+            type="monotone"
+            name="despesa_fortaleza"
+            dataKey="despesa_fortaleza" 
+            stroke="#ea580c" 
+            strokeWidth={2}
+            strokeDasharray="3 3"
+            dot={{ r: 2, fill: '#ea580c' }}
+            activeDot={{ r: 4 }}
+          />
+          {/* Lucro Fortaleza */}
           <Line 
             type="monotone"
             name="lucro_fortaleza"
             dataKey="lucro_fortaleza" 
             stroke="#f97316" 
-            strokeWidth={2}
-            dot={{ r: 3 }}
+            strokeWidth={3}
+            dot={{ r: 3, fill: '#f97316' }}
             activeDot={{ r: 5 }}
           />
+          
+          {/* ========== JOHNNY ========== */}
+          {/* Receita Johnny */}
+          <Line 
+            type="monotone"
+            name="receita_johnny"
+            dataKey="receita_johnny" 
+            stroke="#34d399" 
+            strokeWidth={2}
+            strokeDasharray="5 5"
+            dot={{ r: 2, fill: '#34d399' }}
+            activeDot={{ r: 4 }}
+          />
+          {/* Despesa Johnny */}
+          <Line 
+            type="monotone"
+            name="despesa_johnny"
+            dataKey="despesa_johnny" 
+            stroke="#1e40af" 
+            strokeWidth={2}
+            strokeDasharray="3 3"
+            dot={{ r: 2, fill: '#1e40af' }}
+            activeDot={{ r: 4 }}
+          />
+          {/* Lucro Johnny */}
           <Line 
             type="monotone"
             name="lucro_johnny"
             dataKey="lucro_johnny" 
             stroke="#3b82f6" 
-            strokeWidth={2}
-            dot={{ r: 3 }}
+            strokeWidth={3}
+            dot={{ r: 3, fill: '#3b82f6' }}
             activeDot={{ r: 5 }}
           />
         </LineChart>
