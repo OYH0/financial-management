@@ -167,19 +167,19 @@ const DespesasPage = () => {
     <div className="flex min-h-screen bg-gradient-to-br from-gray-50 via-red-50 to-red-100">
       <Sidebar />
       
-      <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 lg:p-8">
-        <div className="w-full">
+      <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 lg:p-6">
+        <div className="w-full max-h-screen overflow-y-auto">
           {/* Header Section */}
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-4">
+          <div className="mb-4">
+            <div className="flex items-center gap-2 mb-3">
               <div className="p-2 lg:p-3 bg-gradient-to-r from-red-500 to-red-600 rounded-2xl shadow-lg">
                 <TrendingDown className="h-6 w-6 lg:h-8 lg:w-8 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl lg:text-4xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 bg-clip-text text-transparent">
+                <h1 className="text-xl lg:text-3xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 bg-clip-text text-transparent">
                   Despesas
                 </h1>
-                <p className="text-gray-600 text-sm lg:text-lg">Gerencie todas as despesas do negócio</p>
+                <p className="text-gray-600 text-xs lg:text-sm">Gerencie todas as despesas do negócio</p>
               </div>
             </div>
             

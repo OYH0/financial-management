@@ -43,67 +43,30 @@ const DespesasFilterSimple: React.FC<DespesasFilterSimpleProps> = ({
     setDateTo('');
   };
 
-  const clearDateFilters = () => {
-    console.log('=== FORÇANDO LIMPEZA DOS FILTROS DE DATA ===');
-    console.log('dateFrom atual:', dateFrom);
-    console.log('dateTo atual:', dateTo);
-    setDateFrom('');
-    setDateTo('');
-    console.log('Filtros de data FORÇADAMENTE limpos');
-  };
-
   const hasActiveFilters = searchTerm || filterEmpresa !== 'all' || filterCategoria !== 'all' || 
                           filterStatus !== 'all' || dateFrom || dateTo;
-  
-  const hasDateFilters = dateFrom || dateTo;
-
-  // Limpar filtros de data automaticamente quando o componente for montado
-  React.useEffect(() => {
-    if (dateFrom || dateTo) {
-      console.log('🚨 FILTROS DE DATA ENCONTRADOS NA MONTAGEM - LIMPANDO:', { dateFrom, dateTo });
-      clearDateFilters();
-    }
-  }, []);
-
-  // Log dos filtros atuais
-  React.useEffect(() => {
-    if (dateFrom || dateTo) {
-      console.log('⚠️ FILTROS DE DATA DETECTADOS:', { dateFrom, dateTo });
-    }
-  }, [dateFrom, dateTo]);
 
   return (
-    <div className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl rounded-2xl p-6 mb-6">
-      <div className="flex items-center gap-3 mb-4">
-        <Filter className="h-5 w-5 text-gray-600" />
-        <h3 className="text-lg font-semibold text-gray-800">Filtros</h3>
+    <div className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl rounded-xl p-4 mb-4">
+      <div className="flex items-center gap-2 mb-3">
+        <Filter className="h-4 w-4 text-gray-600" />
+        <h3 className="text-sm font-semibold text-gray-800">Filtros</h3>
         <div className="ml-auto flex gap-2">
-          {hasDateFilters && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={clearDateFilters}
-              className="text-blue-600 hover:text-blue-700 border-blue-200 hover:border-blue-300 rounded-xl"
-            >
-              <X className="h-4 w-4 mr-1" />
-              Mostrar Mês Completo
-            </Button>
-          )}
           {hasActiveFilters && (
             <Button
               variant="ghost"
               size="sm"
               onClick={clearFilters}
-              className="text-gray-500 hover:text-gray-700 rounded-xl"
+              className="text-gray-500 hover:text-gray-700 rounded-xl text-xs"
             >
-              <X className="h-4 w-4 mr-1" />
-              Limpar Todos
+              <X className="h-3 w-3 mr-1" />
+              Limpar
             </Button>
           )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-2">
         {/* Search */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
