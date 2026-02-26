@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TrendingUp, DollarSign, BarChart3, Package, Eye } from 'lucide-react';
+import { TrendingUp, DollarSign, BarChart3, Package, Eye, Wallet } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import TransactionsModal from '@/components/TransactionsModal';
@@ -37,6 +37,21 @@ const CompanhiaStats: React.FC<CompanhiaStatsProps> = ({ despesas, receitas, sel
   const lucroLiquido = totalReceitas - totalDespesas;
   const margemLucro = totalReceitas > 0 ? (lucroLiquido / totalReceitas) * 100 : 0;
 
+  // Lucro líquido acumulado a partir de janeiro de 2026
+  const lucroAcumulado = (() => {
+    const dataInicio = '2026-01-01';
+    const despesasAcum = allDespesas.filter(d => d.data && d.data >= dataInicio);
+    const receitasAcum = allReceitas.filter(r => {
+      const isVenda = r.categoria !== 'EM_COFRE' && r.categoria !== 'EM_CONTA' &&
+        !r.descricao?.toUpperCase().includes('PAGAMENTO DE DESPESA') &&
+        ((r as any).destino === 'total' || !(r as any).destino);
+      return isVenda && r.data && r.data >= dataInicio;
+    });
+    const totalRec = receitasAcum.reduce((sum: number, r: any) => sum + (r.valor || 0), 0);
+    const totalDesp = despesasAcum.reduce((sum: number, d: any) => sum + (d.valor_total || d.valor || 0), 0);
+    return totalRec - totalDesp;
+  })();
+
   // CMV baseado no período selecionado
   const cmvTotal = despesas
     .filter(d => d.categoria?.toUpperCase().includes('INSUMOS'))
@@ -60,7 +75,7 @@ const CompanhiaStats: React.FC<CompanhiaStatsProps> = ({ despesas, receitas, sel
 
   return (
     <>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-6 mb-8">
         <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl rounded-2xl">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
             <CardTitle className="text-sm font-medium text-gray-600">Receita Total</CardTitle>
@@ -129,6 +144,19 @@ const CompanhiaStats: React.FC<CompanhiaStatsProps> = ({ despesas, receitas, sel
               R$ {cmvTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
             </div>
             <p className="text-xs text-gray-500">das vendas</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl rounded-2xl">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-sm font-medium text-gray-600">Lucro Acumulado</CardTitle>
+            <Wallet className="h-5 w-5 text-purple-500" />
+          </CardHeader>
+          <CardContent>
+            <div className={`text-xl lg:text-3xl font-bold ${lucroAcumulado >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              R$ {lucroAcumulado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+            </div>
+            <p className="text-xs text-gray-500 mt-1">A partir de Jan/2026</p>
           </CardContent>
         </Card>
       </div>
