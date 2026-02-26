@@ -50,7 +50,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
       case 'Implementação':
         return ['OBRA', 'EQUIPAMENTO', 'SERVIÇO', 'CUSTO EXTRA'];
       default:
-        return ['INSUMOS', 'FIXAS', 'VARIÁVEIS', 'RETIRADAS'];
+        return ['INSUMOS', 'FIXAS', 'VARIÁVEIS', 'RETIRADAS', 'FUNDO DE CAIXA'];
     }
   };
 
