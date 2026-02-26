@@ -40,12 +40,15 @@ const CompanhiaStats: React.FC<CompanhiaStatsProps> = ({ despesas, receitas, sel
   // Lucro líquido acumulado a partir de janeiro de 2026
   const lucroAcumulado = (() => {
     const dataInicio = '2026-01-01';
-    const despesasAcum = allDespesas.filter(d => d.data && d.data >= dataInicio);
+    const despesasAcum = allDespesas.filter(d => {
+      const dateRef = d.data_vencimento || d.data;
+      return dateRef && dateRef >= dataInicio && dateRef <= '2099-12-31';
+    });
     const receitasAcum = allReceitas.filter(r => {
       const isVenda = r.categoria !== 'EM_COFRE' && r.categoria !== 'EM_CONTA' &&
         !r.descricao?.toUpperCase().includes('PAGAMENTO DE DESPESA') &&
         ((r as any).destino === 'total' || !(r as any).destino);
-      return isVenda && r.data && r.data >= dataInicio;
+      return isVenda && r.data && r.data >= dataInicio && r.data <= '2099-12-31';
     });
     const totalRec = receitasAcum.reduce((sum: number, r: any) => sum + (r.valor || 0), 0);
     const totalDesp = despesasAcum.reduce((sum: number, d: any) => sum + (d.valor_total || d.valor || 0), 0);
