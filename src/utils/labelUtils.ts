@@ -24,6 +24,7 @@ export const prettyLabel = (code?: string): string => {
     OUTROS: 'Outros',
     EM_COFRE: 'Em Cofre',
     EM_CONTA: 'Em Conta',
+    SALDO_MES_ANTERIOR: 'Saldo Mês Anterior',
   };
 
   const key = code.toUpperCase();
