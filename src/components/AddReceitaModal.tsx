@@ -33,7 +33,8 @@ const AddReceitaModal: React.FC<AddReceitaModalProps> = ({
     descricao: '',
     empresa: '',
     categoria: 'VENDAS',
-    destino: 'total' as 'conta' | 'cofre' | 'total'
+    destino: 'total' as 'conta' | 'cofre' | 'total',
+    mes_referencia: ''
   });
 
   const createReceita = useCreateReceita();
@@ -55,7 +56,8 @@ const AddReceitaModal: React.FC<AddReceitaModalProps> = ({
       descricao: formData.descricao,
       empresa: formData.empresa,
       categoria: formData.categoria,
-      destino: formData.destino
+      destino: formData.destino,
+      mes_referencia: formData.mes_referencia || undefined
     };
 
     createReceita.mutate(receitaData, {
@@ -69,7 +71,8 @@ const AddReceitaModal: React.FC<AddReceitaModalProps> = ({
           descricao: '',
           empresa: defaultEmpresa || '',
           categoria: 'VENDAS',
-          destino: 'total'
+          destino: 'total',
+          mes_referencia: ''
         });
         onClose();
       }
@@ -192,6 +195,19 @@ const AddReceitaModal: React.FC<AddReceitaModalProps> = ({
                   placeholder="Opcional"
                 />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="mes_referencia" className="text-sm font-medium">Mês de Referência</Label>
+              <p className="text-xs text-muted-foreground">Se preenchido, a receita será contabilizada neste mês ao invés da data de lançamento.</p>
+              <Input
+                id="mes_referencia"
+                type="month"
+                value={formData.mes_referencia ? formData.mes_referencia.substring(0, 7) : ''}
+                onChange={(e) => setFormData({ ...formData, mes_referencia: e.target.value ? e.target.value + '-01' : '' })}
+                className="w-full"
+                placeholder="Opcional"
+              />
             </div>
           </div>
 

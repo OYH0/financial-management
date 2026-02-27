@@ -1,0 +1,1 @@
+ALTER TABLE public.receitas ADD COLUMN mes_referencia date NULL;

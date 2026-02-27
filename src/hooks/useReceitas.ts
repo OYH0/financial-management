@@ -13,6 +13,7 @@ export interface Receita {
   empresa: string;
   categoria: string;
   destino?: string;
+  mes_referencia?: string;
   user_id: string;
   created_at?: string;
   updated_at?: string;
