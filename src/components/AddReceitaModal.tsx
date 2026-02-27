@@ -163,6 +163,7 @@ const AddReceitaModal: React.FC<AddReceitaModalProps> = ({
                   <SelectContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg z-50">
                     <SelectItem value="VENDAS">Vendas</SelectItem>
                     <SelectItem value="VENDAS_DIARIAS">Vendas Diárias</SelectItem>
+                    <SelectItem value="SALDO_MES_ANTERIOR">Saldo Mês Anterior</SelectItem>
                     <SelectItem value="OUTROS">Outros</SelectItem>
                   </SelectContent>
                 </Select>
