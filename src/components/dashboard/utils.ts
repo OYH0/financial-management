@@ -103,23 +103,25 @@ export const filterDataByPeriod = (data: any[], period: string, customMonth?: nu
       }
       console.log(`[${tipoItem}] Usando data_vencimento:`, sanitizedDate, '| Empresa:', item.empresa, '| Descrição:', item.descricao);
     } else if (item.data) {
-      const sanitizedDate = sanitizeDate(item.data);
-      if (!sanitizedDate) {
+      // Para receitas com mes_referencia, usar mes_referencia como data de filtro
+      const dateToUse = item.mes_referencia ? sanitizeDate(item.mes_referencia) : sanitizeDate(item.data);
+      if (!dateToUse) {
         console.log('❌ data inválida:', item.data);
         return false;
       }
       
-      if (sanitizedDate.includes('/')) {
+      if (dateToUse.includes('/')) {
         // Formato DD/MM/YYYY
-        const [dia, mes, ano] = sanitizedDate.split('/');
+        const [dia, mes, ano] = dateToUse.split('/');
         itemDate = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
       } else {
         // Formato YYYY-MM-DD
-        itemDate = new Date(sanitizedDate + 'T00:00:00');
+        itemDate = new Date(dateToUse + 'T00:00:00');
       }
       // Para receitas, mostrar também data_recebimento se existir
       const dataRecebimentoInfo = item.data_recebimento ? ` | Data Recebimento: ${item.data_recebimento}` : ' | Pendente';
-      console.log(`[${tipoItem}] Usando data:`, sanitizedDate, dataRecebimentoInfo, '| Empresa:', item.empresa, '| Descrição:', item.descricao, '| Valor:', item.valor);
+      const mesRefInfo = item.mes_referencia ? ` | Mês Ref: ${item.mes_referencia}` : '';
+      console.log(`[${tipoItem}] Usando data:`, dateToUse, dataRecebimentoInfo, mesRefInfo, '| Empresa:', item.empresa, '| Descrição:', item.descricao, '| Valor:', item.valor);
     } else if (item.data_pagamento) {
       const sanitizedDate = sanitizeDate(item.data_pagamento);
       if (!sanitizedDate) {

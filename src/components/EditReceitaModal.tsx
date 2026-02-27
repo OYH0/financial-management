@@ -23,7 +23,8 @@ const EditReceitaModal: React.FC<EditReceitaModalProps> = ({ isOpen, onClose, re
     categoria: '',
     valor: '',
     data_recebimento: '',
-    destino: 'total' as 'conta' | 'cofre' | 'total'
+    destino: 'total' as 'conta' | 'cofre' | 'total',
+    mes_referencia: ''
   });
 
   const { toast } = useToast();
@@ -38,7 +39,8 @@ const EditReceitaModal: React.FC<EditReceitaModalProps> = ({ isOpen, onClose, re
         categoria: receita.categoria || '',
         valor: receita.valor?.toString() || '',
         data_recebimento: receita.data_recebimento || '',
-        destino: (receita as any).destino || 'total'
+        destino: (receita as any).destino || 'total',
+        mes_referencia: receita.mes_referencia || ''
       });
     }
   }, [receita]);
@@ -72,7 +74,8 @@ const EditReceitaModal: React.FC<EditReceitaModalProps> = ({ isOpen, onClose, re
         categoria: formData.categoria,
         valor: valor,
         data_recebimento: formData.data_recebimento || null,
-        destino: formData.destino
+        destino: formData.destino,
+        mes_referencia: formData.mes_referencia || null
       });
 
       // Handle saldo updates if destino or valor changed and involves conta/cofre
@@ -206,6 +209,19 @@ const EditReceitaModal: React.FC<EditReceitaModalProps> = ({ isOpen, onClose, re
                   placeholder="Opcional"
                 />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="mes_referencia" className="text-sm font-medium">Mês de Referência</Label>
+              <p className="text-xs text-muted-foreground">Se preenchido, a receita será contabilizada neste mês ao invés da data de lançamento.</p>
+              <Input
+                id="mes_referencia"
+                type="month"
+                value={formData.mes_referencia ? formData.mes_referencia.substring(0, 7) : ''}
+                onChange={(e) => handleChange('mes_referencia', e.target.value ? e.target.value + '-01' : '')}
+                className="w-full"
+                placeholder="Opcional"
+              />
             </div>
           </div>
 

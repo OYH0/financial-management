@@ -192,6 +192,7 @@ export type Database = {
           destino: string | null
           empresa: string | null
           id: number
+          mes_referencia: string | null
           updated_at: string | null
           user_id: string
           valor: number | null
@@ -205,6 +206,7 @@ export type Database = {
           destino?: string | null
           empresa?: string | null
           id?: number
+          mes_referencia?: string | null
           updated_at?: string | null
           user_id: string
           valor?: number | null
@@ -218,6 +220,7 @@ export type Database = {
           destino?: string | null
           empresa?: string | null
           id?: number
+          mes_referencia?: string | null
           updated_at?: string | null
           user_id?: string
           valor?: number | null
