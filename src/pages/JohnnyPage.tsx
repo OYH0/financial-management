@@ -27,23 +27,23 @@ const JohnnyPage = () => {
   // Filtrar dados do Johnny Rockets - usando várias variações possíveis do nome
   const johnnyDespesas = despesas?.filter(d => {
     const empresa = d.empresa?.toLowerCase().trim() || '';
-    return empresa === 'johnny' || 
-           empresa === 'johnny rockets' || 
-           empresa === 'johnny rocket' ||
-           empresa.includes('johnny');
+    return empresa === 'johnny' ||
+      empresa === 'johnny rockets' ||
+      empresa === 'johnny rocket' ||
+      empresa.includes('johnny');
   }) || [];
-  
+
   const johnnyReceitas = receitas?.filter(r => {
     const empresa = r.empresa?.toLowerCase().trim() || '';
-    const isJohnny = empresa === 'johnny' || 
-           empresa === 'johnny rockets' || 
-           empresa === 'johnny rocket' ||
-           empresa.includes('johnny');
-    
+    const isJohnny = empresa === 'johnny' ||
+      empresa === 'johnny rockets' ||
+      empresa === 'johnny rocket' ||
+      empresa.includes('johnny');
+
     // Excluir receitas com destino "conta" ou "cofre"
     const destino = (r as any).destino;
     const isDestinoProd = destino === 'total' || !destino;
-    
+
     return isJohnny && isDestinoProd;
   }) || [];
 
@@ -54,22 +54,22 @@ const JohnnyPage = () => {
     console.log('Receitas Johnny antes do filtro de período:', johnnyReceitas.length);
     console.log('Período selecionado:', selectedPeriod);
     console.log('Mês customizado:', customMonth, 'Ano customizado:', customYear);
-    
+
     const filtered = {
       filteredDespesas: filterDataByPeriod(johnnyDespesas, selectedPeriod, customMonth, customYear),
       filteredReceitas: filterDataByPeriod(johnnyReceitas, selectedPeriod, customMonth, customYear)
     };
-    
+
     console.log('Despesas Johnny após filtro de período:', filtered.filteredDespesas.length);
     console.log('Receitas Johnny após filtro de período:', filtered.filteredReceitas.length);
-    
+
     // Debug dos totais
     const totalDespesasJohnny = filtered.filteredDespesas.reduce((sum, d) => sum + (d.valor_total || d.valor || 0), 0);
     const totalReceitasJohnny = filtered.filteredReceitas.reduce((sum, r) => sum + (r.valor || 0), 0);
-    
+
     console.log('Total Despesas Johnny:', totalDespesasJohnny.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
     console.log('Total Receitas Johnny:', totalReceitasJohnny.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
-    
+
     return filtered;
   }, [johnnyDespesas, johnnyReceitas, selectedPeriod, customMonth, customYear]);
 
@@ -81,7 +81,7 @@ const JohnnyPage = () => {
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <Sidebar />
-      
+
       <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 lg:p-8">
         <div className="w-full">
           <div className="mb-8">
@@ -109,27 +109,27 @@ const JohnnyPage = () => {
                 />
               </div>
             </div>
-            
+
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-4">
               <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-2xl h-10 lg:h-12 text-sm lg:text-base">
                 Relatório Mensal
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="rounded-2xl h-10 lg:h-12 text-sm lg:text-base"
                 onClick={() => setActiveModal('costs')}
               >
                 Análise de Custos
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="rounded-2xl h-10 lg:h-12 text-sm lg:text-base"
                 onClick={() => setActiveModal('projections')}
               >
                 Projeções
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="rounded-2xl h-10 lg:h-12 text-sm lg:text-base"
                 onClick={() => setActiveModal('comparative')}
               >
@@ -137,17 +137,17 @@ const JohnnyPage = () => {
               </Button>
             </div>
           </div>
-          
-          <JohnnyStats 
-            despesas={filteredDespesas} 
-            receitas={filteredReceitas} 
+
+          <JohnnyStats
+            despesas={filteredDespesas}
+            receitas={filteredReceitas}
             selectedPeriod={selectedPeriod}
             allDespesas={johnnyDespesas}
             allReceitas={johnnyReceitas}
           />
           <JohnnyCharts despesas={filteredDespesas} receitas={filteredReceitas} />
-          <JohnnyInsights 
-            despesas={filteredDespesas} 
+          <JohnnyInsights
+            despesas={filteredDespesas}
             receitas={filteredReceitas}
             selectedPeriod={selectedPeriod}
             customMonth={customMonth}

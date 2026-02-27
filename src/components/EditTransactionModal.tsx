@@ -32,6 +32,7 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
     descricao: '',
     categoria: '',
     subcategoria: '',
+    detalhe_subcategoria: '',
     data_vencimento: '',
     valor_juros: '',
     origem_pagamento: ''
@@ -80,8 +81,10 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
         { value: 'HORTIFRUTI', label: 'Hortifrúti' },
         { value: 'BEBIDAS', label: 'Bebidas' },
         { value: 'MERCADO_COMUM', label: 'Mercado Comum' },
-        { value: 'DESCARTAVEIS_LIMPEZA', label: 'Descartáveis e Limpeza' },
-        { value: 'COMBUSTIVEL_TRANSPORTE', label: 'Combustível e Transporte' }
+        { value: 'DESCARTAVEIS', label: 'Descartáveis' },
+        { value: 'LIMPEZA', label: 'Limpeza' },
+        { value: 'COMBUSTIVEL', label: 'Combustível' },
+        { value: 'TRANSPORTE', label: 'Transporte' }
       ],
       'FIXAS': [
         { value: 'TAXA_OCUPACAO', label: 'Taxa de Ocupação' },
@@ -113,6 +116,7 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
         descricao: transaction.description || '',
         categoria: transaction.category || '',
         subcategoria: transaction.subcategoria || '',
+        detalhe_subcategoria: transaction.detalhe_subcategoria || '',
         data_vencimento: transaction.data_vencimento || '',
         valor_juros: transaction.valor_juros?.toString() || '',
         origem_pagamento: transaction.origem_pagamento || ''
@@ -124,7 +128,7 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
   const createImplementacaoReceita = async (despesaData: any) => {
     try {
       console.log('Creating Implementação receita from edit with data:', despesaData);
-      
+
       const receitaData = {
         data: despesaData.data_vencimento,
         valor: despesaData.valor,
@@ -169,7 +173,7 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!user || !transaction) {
       toast({
         title: "Erro",
@@ -178,7 +182,7 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
       });
       return;
     }
-    
+
     if (!formData.valor || !formData.empresa || !formData.data_vencimento) {
       toast({
         title: "Erro",
@@ -189,7 +193,7 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
     }
 
     setIsLoading(true);
-    
+
     try {
       console.log('=== EDITANDO DESPESA ===');
       console.log('Valores originais:', {
@@ -213,6 +217,7 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
         descricao: formData.descricao,
         categoria: formData.categoria,
         subcategoria: formData.subcategoria || null,
+        detalhe_subcategoria: formData.detalhe_subcategoria || null,
         data_vencimento: formData.data_vencimento,
         valor_juros: formData.valor_juros ? parseFloat(formData.valor_juros) : 0,
         status: transaction.status,
@@ -231,7 +236,7 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
       // If categoria changed to RETIRADAS with subcategoria Implementação and it wasn't before
       const wasImplementacao = transaction.category === 'RETIRADAS' && transaction.subcategoria === 'IMPLEMENTACAO';
       const isImplementacao = formData.categoria === 'RETIRADAS' && formData.subcategoria === 'IMPLEMENTACAO';
-      
+
       if (isImplementacao && !wasImplementacao) {
         await createImplementacaoReceita(updateData);
       }
@@ -260,19 +265,26 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => {
       const newData = { ...prev, [field]: value };
-      
+
       // Reset subcategoria when categoria changes
       if (field === 'categoria') {
         newData.subcategoria = '';
+        newData.detalhe_subcategoria = '';
       }
-      
+
+      // Reset detalhe when subcategoria changes
+      if (field === 'subcategoria') {
+        newData.detalhe_subcategoria = '';
+      }
+
       // Reset categoria and subcategoria when empresa changes
       if (field === 'empresa') {
         const availableCategories = getCategoriesForCompany(value);
         newData.categoria = availableCategories[0]?.value || '';
         newData.subcategoria = '';
+        newData.detalhe_subcategoria = '';
       }
-      
+
       return newData;
     });
   };
@@ -283,7 +295,7 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
         <DialogHeader>
           <DialogTitle>Editar Transação</DialogTitle>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="data">Data de Pagamento</Label>
@@ -343,14 +355,14 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
                 <span className="font-medium text-blue-900">Valor Total (com juros):</span>
                 <span className="text-xl font-bold text-blue-900">
                   R$ {(
-                    (parseFloat(formData.valor) || 0) + 
+                    (parseFloat(formData.valor) || 0) +
                     (parseFloat(formData.valor_juros) || 0)
                   ).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                 </span>
               </div>
               {formData.valor_juros && parseFloat(formData.valor_juros) > 0 && (
                 <div className="text-sm text-blue-700 mt-1">
-                  Valor base: R$ {(parseFloat(formData.valor) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} + 
+                  Valor base: R$ {(parseFloat(formData.valor) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} +
                   Juros: R$ {(parseFloat(formData.valor_juros) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                 </div>
               )}
@@ -389,14 +401,14 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
             </Select>
           </div>
 
-          {formData.categoria === 'RETIRADAS' && formData.subcategoria === 'IMPLEMENTACAO' && 
-           !(transaction?.category === 'RETIRADAS' && transaction?.subcategoria === 'IMPLEMENTACAO') && (
-            <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-              <p className="text-sm text-blue-700">
-                <strong>Nota:</strong> Ao alterar para subcategoria Implementação em Retiradas, será criada uma receita correspondente para a empresa Implementação.
-              </p>
-            </div>
-          )}
+          {formData.categoria === 'RETIRADAS' && formData.subcategoria === 'IMPLEMENTACAO' &&
+            !(transaction?.category === 'RETIRADAS' && transaction?.subcategoria === 'IMPLEMENTACAO') && (
+              <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                <p className="text-sm text-blue-700">
+                  <strong>Nota:</strong> Ao alterar para subcategoria Implementação em Retiradas, será criada uma receita correspondente para a empresa Implementação.
+                </p>
+              </div>
+            )}
 
           {formData.categoria && getSubcategoriesForCompanyAndCategory(formData.empresa, formData.categoria).length > 0 && (
             <div className="space-y-2">
@@ -411,6 +423,38 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
                       {subcategory.label}
                     </SelectItem>
                   ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {formData.categoria === 'INSUMOS' && formData.subcategoria === 'PROTEINAS' && (
+            <div className="space-y-2">
+              <Label htmlFor="detalhe_subcategoria">Tipo de Proteína</Label>
+              <Select value={formData.detalhe_subcategoria} onValueChange={(value) => handleInputChange('detalhe_subcategoria', value)}>
+                <SelectTrigger className="rounded-full">
+                  <SelectValue placeholder="Bovina, Suína, Aves..." />
+                </SelectTrigger>
+                <SelectContent className="rounded-2xl">
+                  <SelectItem value="BOVINA">Bovina</SelectItem>
+                  <SelectItem value="SUINA">Suína</SelectItem>
+                  <SelectItem value="AVES">Aves</SelectItem>
+                  <SelectItem value="EMBUTIDOS">Embutidos</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {formData.categoria === 'INSUMOS' && formData.subcategoria === 'BEBIDAS' && (
+            <div className="space-y-2">
+              <Label htmlFor="detalhe_subcategoria">Tipo de Bebida</Label>
+              <Select value={formData.detalhe_subcategoria} onValueChange={(value) => handleInputChange('detalhe_subcategoria', value)}>
+                <SelectTrigger className="rounded-full">
+                  <SelectValue placeholder="Alcoólicas ou Não alcoólicas..." />
+                </SelectTrigger>
+                <SelectContent className="rounded-2xl">
+                  <SelectItem value="ALCOOLICA">Alcoólicas</SelectItem>
+                  <SelectItem value="NAO_ALCOOLICA">Não alcoólicas</SelectItem>
                 </SelectContent>
               </Select>
             </div>

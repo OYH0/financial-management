@@ -27,16 +27,16 @@ const CamerinoPage = () => {
       return empresa === 'camerino' || empresa.includes('camerino');
     }) || [];
   }, [despesas]);
-  
+
   const camerinoReceitas = useMemo(() => {
     return receitas?.filter(r => {
       const empresa = r.empresa?.toLowerCase().trim() || '';
       const isCamerino = empresa === 'camerino' || empresa.includes('camerino');
-      
+
       // Excluir receitas com destino "conta" ou "cofre"
       const destino = (r as any).destino;
       const isDestinoProd = destino === 'total' || !destino;
-      
+
       return isCamerino && isDestinoProd;
     }) || [];
   }, [receitas]);
@@ -50,13 +50,13 @@ const CamerinoPage = () => {
   }, [camerinoDespesas, camerinoReceitas, selectedPeriod, customMonth, customYear]);
 
   // Calcular estatísticas
-  const totalDespesasPeriodo = useMemo(() => 
-    filteredDespesas.reduce((sum, d) => sum + (d.valor_total || d.valor), 0), 
+  const totalDespesasPeriodo = useMemo(() =>
+    filteredDespesas.reduce((sum, d) => sum + (d.valor_total || d.valor), 0),
     [filteredDespesas]
   );
-  
-  const totalReceitasPeriodo = useMemo(() => 
-    filteredReceitas.reduce((sum, r) => sum + r.valor, 0), 
+
+  const totalReceitasPeriodo = useMemo(() =>
+    filteredReceitas.reduce((sum, r) => sum + r.valor, 0),
     [filteredReceitas]
   );
 
@@ -80,7 +80,7 @@ const CamerinoPage = () => {
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50">
       <Sidebar />
-      
+
       <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 lg:p-8">
         <div className="w-full">
           {/* Header Section */}
@@ -112,9 +112,9 @@ const CamerinoPage = () => {
           </div>
 
           {/* Stats Cards */}
-          <CamerinoStats 
-            despesas={filteredDespesas} 
-            receitas={filteredReceitas} 
+          <CamerinoStats
+            despesas={filteredDespesas}
+            receitas={filteredReceitas}
             selectedPeriod={selectedPeriod}
             allDespesas={camerinoDespesas}
             allReceitas={camerinoReceitas}

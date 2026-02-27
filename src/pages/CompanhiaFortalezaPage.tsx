@@ -24,10 +24,10 @@ const CompanhiaFortalezaPage = () => {
   const [customYear, setCustomYear] = useState<number>(new Date().getFullYear());
 
   // Filtrar apenas dados da Companhia do Churrasco Fortaleza
-  const companhiaDespesas = despesas?.filter(d => 
+  const companhiaDespesas = despesas?.filter(d =>
     d.empresa === 'Companhia do Churrasco Fortaleza'
   ) || [];
-  
+
   const companhiaReceitas = receitas?.filter(r => {
     const destino = (r as any).destino;
     const isDestinoProd = destino === 'total' || !destino;
@@ -39,7 +39,7 @@ const CompanhiaFortalezaPage = () => {
     if (selectedPeriod === 'month') {
       const currentMonthDespesas = filterDataByPeriod(companhiaDespesas, selectedPeriod, customMonth, customYear);
       const currentMonthReceitas = filterDataByPeriod(companhiaReceitas, selectedPeriod, customMonth, customYear);
-      
+
       return {
         filteredDespesas: currentMonthDespesas,
         filteredReceitas: currentMonthReceitas
@@ -69,7 +69,7 @@ const CompanhiaFortalezaPage = () => {
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50">
       <Sidebar />
-      
+
       <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 lg:p-8">
         <div className="w-full">
           {/* Header Section */}
@@ -103,22 +103,22 @@ const CompanhiaFortalezaPage = () => {
               <Button className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-2xl h-10 lg:h-12 text-sm lg:text-base">
                 Relatório Mensal
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="rounded-2xl h-10 lg:h-12 text-sm lg:text-base"
                 onClick={() => setActiveModal('costs')}
               >
                 Análise de Custos
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="rounded-2xl h-10 lg:h-12 text-sm lg:text-base"
                 onClick={() => setActiveModal('projections')}
               >
                 Projeções
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="rounded-2xl h-10 lg:h-12 text-sm lg:text-base"
                 onClick={() => setActiveModal('comparative')}
               >
@@ -128,17 +128,17 @@ const CompanhiaFortalezaPage = () => {
           </div>
 
           {/* Stats Cards */}
-          <CompanhiaStats 
-            despesas={filteredDespesas} 
-            receitas={filteredReceitas} 
+          <CompanhiaStats
+            despesas={filteredDespesas}
+            receitas={filteredReceitas}
             selectedPeriod={selectedPeriod}
             allDespesas={companhiaDespesas}
             allReceitas={companhiaReceitas}
           />
 
           {/* Charts Component */}
-          <CompanhiaCharts 
-            despesas={filteredDespesas} 
+          <CompanhiaCharts
+            despesas={filteredDespesas}
             receitas={filteredReceitas}
             selectedCompany="fortaleza"
           />
@@ -158,14 +158,14 @@ const CompanhiaFortalezaPage = () => {
                     {totalDespesasAcumulado > 0 ? (((totalReceitasAcumulado - totalDespesasAcumulado) / totalDespesasAcumulado) * 100).toFixed(1) : '0'}%
                   </span>
                 </div>
-                
+
                 <div className="flex justify-between items-center p-3 bg-orange-50 rounded-xl">
                   <span className="text-orange-700 font-medium">Break Even</span>
                   <span className="text-orange-800 font-bold">
                     R$ {totalDespesasAcumulado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
-                
+
                 <div className="flex justify-between items-center p-3 bg-yellow-50 rounded-xl">
                   <span className="text-yellow-700 font-medium">Crescimento</span>
                   <span className="text-yellow-800 font-bold">+12.5%</span>
@@ -174,8 +174,8 @@ const CompanhiaFortalezaPage = () => {
             </Card>
 
             {/* Metas e Objetivos */}
-            <MonthlyGoals 
-              empresa="Churrasco" 
+            <MonthlyGoals
+              empresa="Churrasco"
               selectedPeriod={selectedPeriod}
               customMonth={customMonth}
               customYear={customYear}

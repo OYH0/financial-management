@@ -31,31 +31,31 @@ const CompanhiaPage = () => {
     const empresa = d.empresa?.toLowerCase().trim() || '';
     if (selectedCompany === 'cariri') {
       // Incluir dados legados "Companhia do Churrasco" (sem especificar unidade)
-      return empresa.includes('cariri') || 
-             empresa === 'companhia do churrasco cariri' ||
-             empresa === 'companhia do churrasco' || // DADOS LEGADOS
-             empresa === 'churrasco'; // DADOS LEGADOS
+      return empresa.includes('cariri') ||
+        empresa === 'companhia do churrasco cariri' ||
+        empresa === 'companhia do churrasco' || // DADOS LEGADOS
+        empresa === 'churrasco'; // DADOS LEGADOS
     } else {
-      return empresa.includes('fortaleza') || 
-             empresa === 'companhia do churrasco fortaleza';
+      return empresa.includes('fortaleza') ||
+        empresa === 'companhia do churrasco fortaleza';
     }
   }) || [];
-  
+
   const companhiaReceitas = receitas?.filter(r => {
     const empresa = r.empresa?.toLowerCase().trim() || '';
     const destino = (r as any).destino;
     const isDestinoProd = destino === 'total' || !destino;
-    
+
     if (selectedCompany === 'cariri') {
       // Incluir dados legados "Companhia do Churrasco" (sem especificar unidade)
-      const isCariri = empresa.includes('cariri') || 
-                       empresa === 'companhia do churrasco cariri' ||
-                       empresa === 'companhia do churrasco' || // DADOS LEGADOS
-                       empresa === 'churrasco'; // DADOS LEGADOS
+      const isCariri = empresa.includes('cariri') ||
+        empresa === 'companhia do churrasco cariri' ||
+        empresa === 'companhia do churrasco' || // DADOS LEGADOS
+        empresa === 'churrasco'; // DADOS LEGADOS
       return isCariri && isDestinoProd;
     } else {
-      const isFortaleza = empresa.includes('fortaleza') || 
-                          empresa === 'companhia do churrasco fortaleza';
+      const isFortaleza = empresa.includes('fortaleza') ||
+        empresa === 'companhia do churrasco fortaleza';
       return isFortaleza && isDestinoProd;
     }
   }) || [];
@@ -67,7 +67,7 @@ const CompanhiaPage = () => {
       console.log('=== COMPANHIA - Usando filtro mês atual igual ReceitasPage ===');
       const currentMonthDespesas = filterDataByPeriod(companhiaDespesas, selectedPeriod, customMonth, customYear);
       const currentMonthReceitas = filterDataByPeriod(companhiaReceitas, selectedPeriod, customMonth, customYear);
-      
+
       return {
         filteredDespesas: currentMonthDespesas,
         filteredReceitas: currentMonthReceitas
@@ -90,7 +90,7 @@ const CompanhiaPage = () => {
   // Calcular estatísticas - usar nova lógica de lucro por período
   const totalDespesasPeriodo = filteredDespesas.reduce((sum, d) => sum + (d.valor_total || d.valor), 0);
   const totalReceitasPeriodo = filteredReceitas.reduce((sum, r) => sum + r.valor, 0);
-  
+
   // Calcular lucro simples baseado nos dados já filtrados pelo período
   const lucroCalculado = totalReceitasPeriodo - totalDespesasPeriodo;
   const margemLucro = totalReceitasPeriodo > 0 ? (lucroCalculado / totalReceitasPeriodo) * 100 : 0;
@@ -99,7 +99,7 @@ const CompanhiaPage = () => {
   const cmvTotal = filteredDespesas
     .filter(d => d.categoria?.toUpperCase().includes('INSUMOS'))
     .reduce((sum, d) => sum + (d.valor_total || d.valor), 0);
-  
+
   const percentualCMV = totalReceitasPeriodo > 0 ? (cmvTotal / totalReceitasPeriodo) * 100 : 0;
 
   // Para os indicadores (ROI e Break Even), usar dados acumulados totais
@@ -126,7 +126,7 @@ const CompanhiaPage = () => {
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50">
       <Sidebar />
-      
+
       <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 lg:p-8">
         <div className="w-full">
           {/* Header Section */}
@@ -180,22 +180,22 @@ const CompanhiaPage = () => {
               <Button className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-2xl h-10 lg:h-12 text-sm lg:text-base">
                 Relatório Mensal
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="rounded-2xl h-10 lg:h-12 text-sm lg:text-base"
                 onClick={() => setActiveModal('costs')}
               >
                 Análise de Custos
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="rounded-2xl h-10 lg:h-12 text-sm lg:text-base"
                 onClick={() => setActiveModal('projections')}
               >
                 Projeções
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="rounded-2xl h-10 lg:h-12 text-sm lg:text-base"
                 onClick={() => setActiveModal('comparative')}
               >
@@ -205,17 +205,17 @@ const CompanhiaPage = () => {
           </div>
 
           {/* Stats Cards */}
-          <CompanhiaStats 
-            despesas={filteredDespesas} 
-            receitas={filteredReceitas} 
+          <CompanhiaStats
+            despesas={filteredDespesas}
+            receitas={filteredReceitas}
             selectedPeriod={selectedPeriod}
             allDespesas={companhiaDespesas}
             allReceitas={companhiaReceitas}
           />
 
           {/* Charts Component */}
-          <CompanhiaCharts 
-            despesas={filteredDespesas} 
+          <CompanhiaCharts
+            despesas={filteredDespesas}
             receitas={filteredReceitas}
             selectedCompany={selectedCompany}
           />
@@ -235,14 +235,14 @@ const CompanhiaPage = () => {
                     {totalDespesasAcumulado > 0 ? (((totalReceitasAcumulado - totalDespesasAcumulado) / totalDespesasAcumulado) * 100).toFixed(1) : '0'}%
                   </span>
                 </div>
-                
+
                 <div className="flex justify-between items-center p-3 bg-orange-50 rounded-xl">
                   <span className="text-orange-700 font-medium">Break Even</span>
                   <span className="text-orange-800 font-bold">
                     R$ {totalDespesasAcumulado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
-                
+
                 <div className="flex justify-between items-center p-3 bg-yellow-50 rounded-xl">
                   <span className="text-yellow-700 font-medium">Crescimento</span>
                   <span className="text-yellow-800 font-bold">+12.5%</span>
@@ -251,8 +251,8 @@ const CompanhiaPage = () => {
             </Card>
 
             {/* Metas e Objetivos - Now properly connected to period selection */}
-            <MonthlyGoals 
-              empresa="Churrasco" 
+            <MonthlyGoals
+              empresa="Churrasco"
               selectedPeriod={selectedPeriod}
               customMonth={customMonth}
               customYear={customYear}

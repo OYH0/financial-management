@@ -26,10 +26,10 @@ const JohnnyStats: React.FC<JohnnyStatsProps> = ({ despesas, receitas, selectedP
 
   const { saldoMesAnterior, saldoRestante, despesasEfetivas, receitasVendas: totalReceitas } = calcularSaldoMesAnterior(receitas, despesas);
 
-  const receitasVendas = receitas.filter(r => 
+  const receitasVendas = receitas.filter(r =>
     r.categoria !== 'SALDO_MES_ANTERIOR' &&
-    r.categoria !== 'EM_COFRE' && 
-    r.categoria !== 'EM_CONTA' && 
+    r.categoria !== 'EM_COFRE' &&
+    r.categoria !== 'EM_CONTA' &&
     !r.descricao?.toUpperCase().includes('PAGAMENTO DE DESPESA') &&
     ((r as any).destino === 'total' || !(r as any).destino)
   );
@@ -61,7 +61,7 @@ const JohnnyStats: React.FC<JohnnyStatsProps> = ({ despesas, receitas, selectedP
   const cmvTotal = despesas
     .filter(d => d.categoria?.toUpperCase().includes('INSUMOS'))
     .reduce((sum, d) => sum + (d.valor_total || d.valor), 0);
-  
+
   const percentualCMV = totalReceitas > 0 ? (cmvTotal / totalReceitas) * 100 : 0;
 
   const getCMVColor = (percentage: number) => {
@@ -80,7 +80,7 @@ const JohnnyStats: React.FC<JohnnyStatsProps> = ({ despesas, receitas, selectedP
 
   return (
     <>
-      <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 lg:gap-6 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-6 mb-8">
         <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl rounded-2xl">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
             <CardTitle className="text-sm font-medium text-gray-600">Receita Total</CardTitle>
@@ -116,8 +116,8 @@ const JohnnyStats: React.FC<JohnnyStatsProps> = ({ despesas, receitas, selectedP
               </p>
             )}
             <p className="text-xs text-gray-500 mt-1">
-              {saldoRestante > 0 
-                ? `R$ ${Math.min(saldoMesAnterior, totalDespesas).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} abatido` 
+              {saldoRestante > 0
+                ? `R$ ${Math.min(saldoMesAnterior, totalDespesas).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} abatido`
                 : saldoMesAnterior > 0 ? 'Totalmente consumido' : 'Sem saldo'}
             </p>
           </CardContent>
@@ -134,8 +134,8 @@ const JohnnyStats: React.FC<JohnnyStatsProps> = ({ despesas, receitas, selectedP
             </div>
             <div className="flex items-center justify-between">
               <p className="text-xs text-gray-500">
-                {totalDespesas !== despesasEfetivas 
-                  ? `Total: R$ ${totalDespesas.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` 
+                {totalDespesas !== despesasEfetivas
+                  ? `Total: R$ ${totalDespesas.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
                   : selectedPeriod === 'month' ? 'Este mês' : 'Período selecionado'}
               </p>
               <Button size="sm" variant="outline" onClick={() => openModal('despesas', 'Despesas')} className="h-6 px-2 text-xs">
@@ -176,18 +176,6 @@ const JohnnyStats: React.FC<JohnnyStatsProps> = ({ despesas, receitas, selectedP
           </CardContent>
         </Card>
 
-        <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl rounded-2xl">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-medium text-gray-600">Lucro Acumulado</CardTitle>
-            <Wallet className="h-5 w-5 text-purple-500" />
-          </CardHeader>
-          <CardContent>
-            <div className={`text-xl lg:text-3xl font-bold ${lucroAcumulado >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              R$ {lucroAcumulado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-            </div>
-            <p className="text-xs text-gray-500 mt-1">A partir de Jan/2026</p>
-          </CardContent>
-        </Card>
       </div>
 
       <TransactionsModal

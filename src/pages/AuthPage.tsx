@@ -43,7 +43,7 @@ const AuthPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email || !password) {
       toast({
         title: "Erro",
@@ -74,13 +74,13 @@ const AuthPage = () => {
     setLoading(true);
 
     try {
-      const { error } = isSignUp 
+      const { error } = isSignUp
         ? await signUp(email, password)
         : await signIn(email, password);
 
       if (error) {
         console.error('Auth error:', error);
-        
+
         let errorMessage = "Erro ao fazer login/cadastro.";
         if (error.message.includes('Invalid login credentials')) {
           errorMessage = "Email ou senha incorretos.";
@@ -91,7 +91,7 @@ const AuthPage = () => {
         } else if (error.message.includes('signup_disabled')) {
           errorMessage = "Cadastro desabilitado. Entre em contato com o administrador.";
         }
-        
+
         toast({
           title: "Erro de autenticação",
           description: errorMessage,
@@ -132,7 +132,7 @@ const AuthPage = () => {
             Gestão Financeira
           </h1>
           <p className="text-xl text-blue-100 text-center max-w-md">
-            Controle suas finanças de forma simples e eficiente. 
+            Controle suas finanças de forma simples e eficiente.
             Acompanhe despesas, receitas e tenha relatórios completos.
           </p>
           <div className="mt-8 grid grid-cols-1 gap-4 text-sm">
@@ -171,13 +171,13 @@ const AuthPage = () => {
                 {isSignUp ? 'Criar Conta' : 'Bem-vindo'}
               </CardTitle>
               <CardDescription className="text-gray-600 text-base">
-                {isSignUp 
-                  ? 'Preencha os dados para criar sua conta' 
+                {isSignUp
+                  ? 'Preencha os dados para criar sua conta'
                   : 'Entre com suas credenciais para continuar'
                 }
               </CardDescription>
             </CardHeader>
-            
+
             <CardContent className="space-y-6">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
@@ -197,7 +197,7 @@ const AuthPage = () => {
                     />
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="password" className="text-sm font-medium text-gray-700">
                     Senha
@@ -254,10 +254,10 @@ const AuthPage = () => {
                     </div>
                   </div>
                 )}
-                
-                <Button 
-                  type="submit" 
-                  className="w-full h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-lg transition-all duration-200 transform hover:scale-[1.02]" 
+
+                <Button
+                  type="submit"
+                  className="w-full h-12 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-lg transition-all duration-200 transform hover:scale-[1.02]"
                   disabled={loading}
                 >
                   {loading ? (
@@ -270,7 +270,7 @@ const AuthPage = () => {
                   )}
                 </Button>
               </form>
-              
+
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-200"></div>
@@ -279,7 +279,7 @@ const AuthPage = () => {
                   <span className="px-4 bg-white text-gray-500">ou</span>
                 </div>
               </div>
-              
+
               <button
                 type="button"
                 onClick={() => {
@@ -290,14 +290,14 @@ const AuthPage = () => {
                 }}
                 className="w-full text-center text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
               >
-                {isSignUp 
-                  ? 'Já tem uma conta? Faça login' 
+                {isSignUp
+                  ? 'Já tem uma conta? Faça login'
                   : 'Não tem uma conta? Cadastre-se'
                 }
               </button>
             </CardContent>
           </Card>
-          
+
           <p className="text-center text-sm text-gray-500 mt-8">
             Ao continuar, você concorda com nossos{' '}
             <a href="#" className="text-blue-600 hover:text-blue-700">Termos de Uso</a>

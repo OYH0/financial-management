@@ -31,6 +31,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
     descricao: '',
     categoria: 'INSUMOS',
     subcategoria: '',
+    detalhe_subcategoria: '',
     data_vencimento: '',
     valor_juros: '',
     origem_pagamento: 'conta' as 'conta' | 'cofre'
@@ -67,8 +68,10 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
         { value: 'HORTIFRUTI', label: 'Hortifrúti' },
         { value: 'BEBIDAS', label: 'Bebidas' },
         { value: 'MERCADO_COMUM', label: 'Mercado Comum' },
-        { value: 'DESCARTAVEIS_LIMPEZA', label: 'Descartáveis e Limpeza' },
-        { value: 'COMBUSTIVEL_TRANSPORTE', label: 'Combustível e Transporte' }
+        { value: 'DESCARTAVEIS', label: 'Descartáveis' },
+        { value: 'LIMPEZA', label: 'Limpeza' },
+        { value: 'COMBUSTIVEL', label: 'Combustível' },
+        { value: 'TRANSPORTE', label: 'Transporte' }
       ],
       'FIXAS': [
         { value: 'TAXA_OCUPACAO', label: 'Taxa de Ocupação' },
@@ -101,7 +104,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
   const createImplementacaoReceita = async (despesaData: any) => {
     try {
       console.log('Creating Implementação receita with data:', despesaData);
-      
+
       const receitaData = {
         data: despesaData.data_vencimento,
         valor: despesaData.valor,
@@ -146,7 +149,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!user) {
       toast({
         title: "Erro",
@@ -168,7 +171,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
       }
 
       setIsLoading(true);
-      
+
       try {
         await createDespesaRecorrente.mutateAsync({
           user_id: user.id,
@@ -177,6 +180,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
           empresa: formData.empresa,
           categoria: formData.categoria,
           subcategoria: formData.subcategoria || undefined,
+          detalhe_subcategoria: formData.detalhe_subcategoria || undefined,
           origem_pagamento: formData.origem_pagamento || undefined,
           dia_vencimento: diaVencimento,
           ativa: true,
@@ -195,6 +199,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
           descricao: '',
           categoria: 'INSUMOS',
           subcategoria: '',
+          detalhe_subcategoria: '',
           data_vencimento: '',
           valor_juros: '',
           origem_pagamento: 'conta'
@@ -211,7 +216,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
       }
       return;
     }
-    
+
     // Lógica para despesa única
     if (!formData.valor || !formData.empresa || !formData.data_vencimento) {
       toast({
@@ -232,7 +237,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
     }
 
     setIsLoading(true);
-    
+
     try {
       const insertData: any = {
         data: formData.data || null,
@@ -241,6 +246,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
         descricao: formData.descricao || 'Sem descrição',
         categoria: formData.categoria,
         subcategoria: formData.subcategoria || null,
+        detalhe_subcategoria: formData.detalhe_subcategoria || null,
         data_vencimento: formData.data_vencimento,
         valor_juros: formData.valor_juros ? parseFloat(formData.valor_juros) : 0,
         status: formData.data ? 'PAGO' : null,
@@ -255,10 +261,10 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
         console.log('Origem do pagamento:', formData.origem_pagamento);
         console.log('Valor:', formData.valor);
         console.log('Valor juros:', formData.valor_juros);
-        
+
         const valorTotal = parseFloat(formData.valor) + (formData.valor_juros ? parseFloat(formData.valor_juros) : 0);
         console.log('Valor total calculado:', valorTotal);
-        
+
         console.log('Transação criada com sucesso');
       } else {
         console.log('=== SALDO NÃO DEBITADO ===');
@@ -307,6 +313,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
         descricao: '',
         categoria: 'INSUMOS',
         subcategoria: '',
+        detalhe_subcategoria: '',
         data_vencimento: '',
         valor_juros: '',
         origem_pagamento: 'conta'
@@ -331,19 +338,26 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => {
       const newData = { ...prev, [field]: value };
-      
+
       // Reset subcategoria when categoria changes
       if (field === 'categoria') {
         newData.subcategoria = '';
+        newData.detalhe_subcategoria = '';
       }
-      
+
+      // Reset detalhe when subcategoria changes
+      if (field === 'subcategoria') {
+        newData.detalhe_subcategoria = '';
+      }
+
       // Reset categoria and subcategoria when empresa changes
       if (field === 'empresa') {
         const availableCategories = getCategoriesForCompany(value);
         newData.categoria = availableCategories[0] || '';
         newData.subcategoria = '';
+        newData.detalhe_subcategoria = '';
       }
-      
+
       return newData;
     });
   };
@@ -354,7 +368,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
         <DialogHeader>
           <DialogTitle>Nova Transação</DialogTitle>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Despesa Recorrente Toggle */}
           <div className="space-y-2 bg-blue-50 p-4 rounded-2xl border border-blue-200">
@@ -371,7 +385,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
                 onCheckedChange={setIsRecorrente}
               />
             </div>
-            
+
             {isRecorrente && (
               <div className="mt-4 space-y-2">
                 <Label htmlFor="diaVencimento">Dia do Vencimento (1-28) *</Label>
@@ -394,19 +408,19 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
           {!isRecorrente && (
             <div className="space-y-2">
               <Label htmlFor="data">Data de Pagamento</Label>
-            <Input
-              id="data"
-              type="date"
-              value={formData.data}
-              onChange={(e) => handleInputChange('data', e.target.value)}
-              disabled={formData.categoria === 'IMPLEMENTACAO'}
-              className="rounded-full"
-            />
-            {formData.categoria === 'IMPLEMENTACAO' ? (
-              <p className="text-xs text-blue-600">Preenchida automaticamente com a data de vencimento para categoria Implementação.</p>
-            ) : (
-              <p className="text-xs text-gray-500">Deixe vazio se ainda não foi paga. Será preenchida automaticamente ao marcar como paga.</p>
-            )}
+              <Input
+                id="data"
+                type="date"
+                value={formData.data}
+                onChange={(e) => handleInputChange('data', e.target.value)}
+                disabled={formData.categoria === 'IMPLEMENTACAO'}
+                className="rounded-full"
+              />
+              {formData.categoria === 'IMPLEMENTACAO' ? (
+                <p className="text-xs text-blue-600">Preenchida automaticamente com a data de vencimento para categoria Implementação.</p>
+              ) : (
+                <p className="text-xs text-gray-500">Deixe vazio se ainda não foi paga. Será preenchida automaticamente ao marcar como paga.</p>
+              )}
             </div>
           )}
 
@@ -460,14 +474,14 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
                 <span className="font-medium text-blue-900">Valor Total (com juros):</span>
                 <span className="text-xl font-bold text-blue-900">
                   R$ {(
-                    (parseFloat(formData.valor) || 0) + 
+                    (parseFloat(formData.valor) || 0) +
                     (parseFloat(formData.valor_juros) || 0)
                   ).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                 </span>
               </div>
               {formData.valor_juros && parseFloat(formData.valor_juros) > 0 && (
                 <div className="text-sm text-blue-700 mt-1">
-                  Valor base: R$ {(parseFloat(formData.valor) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} + 
+                  Valor base: R$ {(parseFloat(formData.valor) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} +
                   Juros: R$ {(parseFloat(formData.valor_juros) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                 </div>
               )}
@@ -527,6 +541,38 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
                       {subcategory.label}
                     </SelectItem>
                   ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {formData.categoria === 'INSUMOS' && formData.subcategoria === 'PROTEINAS' && (
+            <div className="space-y-2">
+              <Label htmlFor="detalhe_subcategoria">Tipo de Proteína</Label>
+              <Select value={formData.detalhe_subcategoria} onValueChange={(value) => handleInputChange('detalhe_subcategoria', value)}>
+                <SelectTrigger className="rounded-full">
+                  <SelectValue placeholder="Bovina, Suína, Aves..." />
+                </SelectTrigger>
+                <SelectContent className="rounded-2xl">
+                  <SelectItem value="BOVINA">Bovina</SelectItem>
+                  <SelectItem value="SUINA">Suína</SelectItem>
+                  <SelectItem value="AVES">Aves</SelectItem>
+                  <SelectItem value="EMBUTIDOS">Embutidos</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {formData.categoria === 'INSUMOS' && formData.subcategoria === 'BEBIDAS' && (
+            <div className="space-y-2">
+              <Label htmlFor="detalhe_subcategoria">Tipo de Bebida</Label>
+              <Select value={formData.detalhe_subcategoria} onValueChange={(value) => handleInputChange('detalhe_subcategoria', value)}>
+                <SelectTrigger className="rounded-full">
+                  <SelectValue placeholder="Alcoólicas ou Não alcoólicas..." />
+                </SelectTrigger>
+                <SelectContent className="rounded-2xl">
+                  <SelectItem value="ALCOOLICA">Alcoólicas</SelectItem>
+                  <SelectItem value="NAO_ALCOOLICA">Não alcoólicas</SelectItem>
                 </SelectContent>
               </Select>
             </div>

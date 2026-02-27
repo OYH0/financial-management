@@ -7,6 +7,7 @@ export interface Transaction {
   description: string;
   category: string;
   subcategoria?: string;
+  detalhe_subcategoria?: string;
   data_vencimento?: string;
   comprovante?: string;
   status?: string;

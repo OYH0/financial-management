@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAdminAccess } from '@/hooks/useAdminAccess';
 import { useUpdateDespesa } from '@/hooks/useDespesas';
+import { prettyLabel } from '@/utils/labelUtils';
 
 interface TransactionTableProps {
   transactions: Transaction[];
@@ -21,8 +22,8 @@ interface TransactionTableProps {
   type?: 'despesa' | 'receita';
 }
 
-const TransactionTable: React.FC<TransactionTableProps> = ({ 
-  transactions, 
+const TransactionTable: React.FC<TransactionTableProps> = ({
+  transactions,
   onTransactionUpdated,
   type = 'despesa'
 }) => {
@@ -34,7 +35,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
     key: keyof Transaction | null;
     direction: 'asc' | 'desc';
   }>({ key: null, direction: 'asc' });
-  
+
   const { toast } = useToast();
   const { user } = useAuth();
   const { isAdmin } = useAdminAccess();
@@ -76,7 +77,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
 
   const handleMarkAsPaidRequest = (transaction: Transaction) => {
     if (!user) return;
-    
+
     // Only allow marking as paid if user is admin or owns the transaction
     if (!isAdmin && transaction.user_id !== user?.id) {
       toast({
@@ -95,9 +96,9 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
 
     try {
       const today = getCurrentDate();
-      
+
       console.log('Marking transaction as paid:', transaction.id, 'Setting payment date to:', today);
-      
+
       const updateData: any = {
         data: today, // Now this represents the payment date
         categoria: transaction.category === 'ATRASADOS' ? 'FIXAS' : transaction.category,
@@ -153,7 +154,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
 
   const handleAttachReceipt = async (transaction: Transaction) => {
     if (!user) return;
-    
+
     // Only allow attaching receipt if user is admin or owns the transaction
     if (!isAdmin && transaction.user_id !== user?.id) {
       toast({
@@ -174,9 +175,9 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
       try {
         const fileExt = file.name.split('.').pop();
         const fileName = `${user.id}/${transaction.id}_${Date.now()}.${fileExt}`;
-        
+
         console.log('Uploading file:', fileName);
-        
+
         const { error: uploadError } = await supabase.storage
           .from('receipts')
           .upload(fileName, file);
@@ -280,7 +281,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                   <CategoryCell category={transaction.category} />
                   {transaction.subcategoria && (
                     <Badge variant="outline" className="text-xs">
-                      {transaction.subcategoria}
+                      {prettyLabel(transaction.subcategoria)} {transaction.detalhe_subcategoria ? `- ${prettyLabel(transaction.detalhe_subcategoria)}` : ''}
                     </Badge>
                   )}
                 </div>
@@ -328,67 +329,67 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
       <div className="lg:hidden space-y-3">
         {sortedTransactions.map((transaction) => (
           <div key={transaction.id} className="bg-white rounded-lg shadow-sm p-3 border border-gray-200">
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex-1">
-                  <div className="font-medium text-sm text-gray-900 mb-1 break-words">
-                    {transaction.description}
-                  </div>
-                  <div className="flex flex-wrap items-center gap-1 mb-1">
-                    <Badge className="bg-blue-500 text-white text-xs">
-                      {transaction.company}
+            <div className="flex justify-between items-start mb-2">
+              <div className="flex-1">
+                <div className="font-medium text-sm text-gray-900 mb-1 break-words">
+                  {transaction.description}
+                </div>
+                <div className="flex flex-wrap items-center gap-1 mb-1">
+                  <Badge className="bg-blue-500 text-white text-xs">
+                    {transaction.company}
+                  </Badge>
+                  <CategoryCell category={transaction.category} />
+                  {transaction.subcategoria && (
+                    <Badge variant="outline" className="text-xs">
+                      {prettyLabel(transaction.subcategoria)} {transaction.detalhe_subcategoria ? `- ${prettyLabel(transaction.detalhe_subcategoria)}` : ''}
                     </Badge>
-                    <CategoryCell category={transaction.category} />
-                    {transaction.subcategoria && (
-                      <Badge variant="outline" className="text-xs">
-                        {transaction.subcategoria}
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-                <StatusCell transaction={transaction} />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 text-xs text-gray-600 mb-2">
-                <div>
-                  <span className="font-medium">Vencimento:</span>
-                  <div>{transaction.data_vencimento ? formatDate(transaction.data_vencimento) : '-'}</div>
-                </div>
-                <div>
-                  <span className="font-medium">Pagamento:</span>
-                  <div>{transaction.status === 'PAGO' ? formatDate(transaction.date) : '-'}</div>
-                </div>
-                <div>
-                  <span className="font-medium">Valor:</span>
-                  <div className="text-gray-900 font-medium">
-                    R$ {transaction.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                  </div>
-                </div>
-                <div>
-                  <span className="font-medium">Total:</span>
-                  <div className="text-gray-900 font-medium">
-                    R$ {(transaction.valor_total || transaction.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                  </div>
+                  )}
                 </div>
               </div>
+              <StatusCell transaction={transaction} />
+            </div>
 
-              {transaction.valor_juros > 0 && (
-                <div className="text-xs text-gray-600 mb-2">
-                  <span className="font-medium">Juros:</span> R$ {transaction.valor_juros.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+            <div className="grid grid-cols-2 gap-2 text-xs text-gray-600 mb-2">
+              <div>
+                <span className="font-medium">Vencimento:</span>
+                <div>{transaction.data_vencimento ? formatDate(transaction.data_vencimento) : '-'}</div>
+              </div>
+              <div>
+                <span className="font-medium">Pagamento:</span>
+                <div>{transaction.status === 'PAGO' ? formatDate(transaction.date) : '-'}</div>
+              </div>
+              <div>
+                <span className="font-medium">Valor:</span>
+                <div className="text-gray-900 font-medium">
+                  R$ {transaction.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                 </div>
-              )}
-
-              <div className="flex justify-end pt-1 border-t border-gray-100">
-                <ActionsCell
-                  transaction={transaction}
-                  onTransactionUpdated={onTransactionUpdated}
-                  onMarkAsPaidRequest={handleMarkAsPaidRequest}
-                  onAttachReceipt={handleAttachReceipt}
-                  isAdmin={isAdmin}
-                />
+              </div>
+              <div>
+                <span className="font-medium">Total:</span>
+                <div className="text-gray-900 font-medium">
+                  R$ {(transaction.valor_total || transaction.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                </div>
               </div>
             </div>
-          ))}
-        </div>
+
+            {transaction.valor_juros > 0 && (
+              <div className="text-xs text-gray-600 mb-2">
+                <span className="font-medium">Juros:</span> R$ {transaction.valor_juros.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              </div>
+            )}
+
+            <div className="flex justify-end pt-1 border-t border-gray-100">
+              <ActionsCell
+                transaction={transaction}
+                onTransactionUpdated={onTransactionUpdated}
+                onMarkAsPaidRequest={handleMarkAsPaidRequest}
+                onAttachReceipt={handleAttachReceipt}
+                isAdmin={isAdmin}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
 
       <EditTransactionModal
         isOpen={!!editingTransaction}

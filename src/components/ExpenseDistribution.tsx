@@ -26,14 +26,18 @@ const ExpenseDistribution: React.FC<ExpenseDistributionProps> = ({ despesas, emp
     despesas.forEach(despesa => {
       const valor = despesa.valor_total || despesa.valor || 0;
       const categoria = despesa.categoria || 'Sem categoria';
-      const subcategoria = despesa.subcategoria || 'Outros';
+      let subcategoria = despesa.subcategoria || 'Outros';
+
+      if (despesa.detalhe_subcategoria) {
+        subcategoria = `${subcategoria}|||${despesa.detalhe_subcategoria}`;
+      }
 
       if (!categoryGroups[categoria]) {
         categoryGroups[categoria] = { total: 0, subcategorias: {} };
       }
 
       categoryGroups[categoria].total += valor;
-      
+
       if (!categoryGroups[categoria].subcategorias[subcategoria]) {
         categoryGroups[categoria].subcategorias[subcategoria] = 0;
       }
@@ -43,7 +47,7 @@ const ExpenseDistribution: React.FC<ExpenseDistributionProps> = ({ despesas, emp
     // Cores para as categorias
     const colors: { [key: string]: string } = {
       'INSUMOS': '#10B981',
-      'FIXAS': '#EF4444', 
+      'FIXAS': '#EF4444',
       'VARIÁVEIS': '#F59E0B',
       'ATRASADOS': '#DC2626',
       'RETIRADAS': '#8B5CF6',
@@ -69,7 +73,7 @@ const ExpenseDistribution: React.FC<ExpenseDistributionProps> = ({ despesas, emp
     if (active && payload && payload.length) {
       const data = payload[0];
       const subcategorias = data.payload.subcategorias;
-      
+
       return (
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
           <p className="font-medium">{data.payload.name}</p>
@@ -84,9 +88,18 @@ const ExpenseDistribution: React.FC<ExpenseDistributionProps> = ({ despesas, emp
               <p className="text-xs font-medium text-gray-700 mb-1">Subcategorias:</p>
               {Object.entries(subcategorias).map(([subcat, valor]: [string, any]) => {
                 const percentualSub = ((valor / data.value) * 100);
+
+                let displayCat = '';
+                if (subcat.includes('|||')) {
+                  const parts = subcat.split('|||');
+                  displayCat = `${prettyLabel(parts[0])} - ${prettyLabel(parts[1])}`;
+                } else {
+                  displayCat = prettyLabel(subcat);
+                }
+
                 return (
                   <p key={subcat} className="text-xs text-gray-600">
-                    {prettyLabel(subcat)}: R$ {valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} 
+                    {displayCat}: R$ {valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     <span className="text-gray-500"> ({percentualSub.toFixed(1)}%)</span>
                   </p>
                 );
@@ -128,7 +141,7 @@ const ExpenseDistribution: React.FC<ExpenseDistributionProps> = ({ despesas, emp
             ))}
           </Pie>
           <Tooltip content={<CustomTooltip />} />
-          <Legend 
+          <Legend
             formatter={(value) => <span className="text-sm">{value}</span>}
           />
         </PieChart>

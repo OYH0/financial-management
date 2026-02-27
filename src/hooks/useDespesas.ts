@@ -13,6 +13,7 @@ export interface Despesa {
   descricao: string;
   categoria: string;
   subcategoria?: string;
+  detalhe_subcategoria?: string;
   data_vencimento?: string;
   comprovante?: string;
   status?: string;
@@ -24,7 +25,7 @@ export interface Despesa {
 
 export const useDespesas = (options?: { mode?: 'all' | 'month'; start?: Date; end?: Date; useCustomDateRange?: boolean }) => {
   const { user } = useAuth();
-  
+
   const query = useQuery({
     queryKey: ['despesas', options?.mode ?? 'all', options?.useCustomDateRange],
     queryFn: async () => {
@@ -63,12 +64,12 @@ export const useDespesas = (options?: { mode?: 'all' | 'month'; start?: Date; en
         const { data, error } = await queryBuilder
           .order('data_vencimento', { ascending: true, nullsFirst: false })
           .order('data', { ascending: false, nullsFirst: false });
-        
+
         if (error) {
           console.error('Error fetching despesas:', error);
           throw error;
         }
-        
+
         return data as Despesa[];
       }
 
@@ -141,6 +142,40 @@ export const useDespesas = (options?: { mode?: 'all' | 'month'; start?: Date; en
   };
 };
 
+export const useDespesasAtrasadas = (beforeDate?: Date) => {
+  const { user } = useAuth();
+
+  const query = useQuery({
+    queryKey: ['despesas_atrasadas', beforeDate],
+    queryFn: async () => {
+      if (!beforeDate) return [];
+
+      const toYMD = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      const beforeStr = toYMD(beforeDate);
+
+      console.info('=== FETCHING ATRASADAS (BEFORE) ===', beforeStr);
+
+      const { data, error } = await supabase
+        .from('despesas')
+        .select('*')
+        .or(`status.eq.PENDENTE,status.eq.ATRASADO,status.is.null`)
+        .lt('data_vencimento', beforeStr)
+        .order('data_vencimento', { ascending: true, nullsFirst: false });
+
+      if (error) {
+        console.error('Error fetching despesas atrasadas:', error);
+        throw error;
+      }
+
+      return data as Despesa[];
+    },
+    enabled: !!user && !!beforeDate,
+    refetchOnWindowFocus: false,
+  });
+
+  return query;
+};
+
 export const useCreateDespesa = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -149,9 +184,9 @@ export const useCreateDespesa = () => {
   return useMutation({
     mutationFn: async (despesa: Omit<Despesa, 'id' | 'user_id'>) => {
       if (!user) throw new Error('Usuário não autenticado');
-      
+
       console.log('Creating despesa for user:', user.id);
-      
+
       // Validate required fields
       if (!despesa.valor || despesa.valor <= 0) {
         throw new Error('Valor deve ser maior que zero');
@@ -173,7 +208,7 @@ export const useCreateDespesa = () => {
         console.error('Error creating despesa:', error);
         throw error;
       }
-      
+
       console.log('Despesa created successfully:', data);
       return data;
     },
@@ -204,7 +239,7 @@ export const useUpdateDespesa = () => {
   return useMutation({
     mutationFn: async ({ id, originalData, ...despesa }: Partial<Despesa> & { id: number; originalData?: Despesa }) => {
       if (!user) throw new Error('Usuário não autenticado');
-      
+
       console.log('Updating despesa:', id);
 
       // Buscar dados originais se não fornecidos
@@ -231,7 +266,7 @@ export const useUpdateDespesa = () => {
         throw error;
       }
 
-      
+
       console.log('Despesa updated successfully:', data);
       return data;
     },
@@ -262,9 +297,9 @@ export const useDeleteDespesa = () => {
   return useMutation({
     mutationFn: async (despesa: Despesa) => {
       if (!user) throw new Error('Usuário não autenticado');
-      
+
       console.log('Deleting despesa:', despesa.id);
-      
+
       const { error } = await supabase
         .from('despesas')
         .delete()
@@ -274,7 +309,7 @@ export const useDeleteDespesa = () => {
         console.error('Error deleting despesa:', error);
         throw error;
       }
-      
+
       console.log('Despesa deleted successfully');
     },
     onSuccess: () => {

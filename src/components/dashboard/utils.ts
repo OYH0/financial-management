@@ -4,7 +4,7 @@
  */
 const sanitizeDate = (dateStr: string | null | undefined): string | null => {
   if (!dateStr) return null;
-  
+
   // Corrigir anos com 5 dígitos (ex: 20225 -> 2025)
   // Padrão: NNNNN-MM-DD onde NNNNN começa com 202
   const invalidYearPattern = /^(202\d)\d-/;
@@ -13,16 +13,16 @@ const sanitizeDate = (dateStr: string | null | undefined): string | null => {
     console.warn(`⚠️ Data corrigida: ${dateStr} -> ${correctedDate}`);
     return correctedDate;
   }
-  
+
   return dateStr;
 };
 
 export const filterDataByPeriod = (data: any[], period: string, customMonth?: number, customYear?: number) => {
   if (!data || data.length === 0) return [];
-  
+
   console.log(`\n=== FILTRO DE PERÍODO: ${period.toUpperCase()} ===`);
   console.log('Total de dados para filtrar:', data.length);
-  
+
   const now = new Date();
   let startDate: Date;
   let endDate: Date;
@@ -77,14 +77,14 @@ export const filterDataByPeriod = (data: any[], period: string, customMonth?: nu
     // Parse da data - PRIORIZAR data_vencimento para despesas
     let itemDate: Date;
     let tipoItem = 'DESCONHECIDO';
-    
+
     // Identificar se é receita ou despesa
     if (item.data_vencimento || item.valor_total !== undefined) {
       tipoItem = 'DESPESA';
     } else if (item.data && !item.data_vencimento) {
       tipoItem = 'RECEITA';
     }
-    
+
     // Para despesas, usar data_vencimento primeiro, depois data
     if (item.data_vencimento) {
       const sanitizedDate = sanitizeDate(item.data_vencimento);
@@ -92,14 +92,15 @@ export const filterDataByPeriod = (data: any[], period: string, customMonth?: nu
         console.log('❌ data_vencimento inválida:', item.data_vencimento);
         return false;
       }
-      
+
       if (sanitizedDate.includes('/')) {
         // Formato DD/MM/YYYY
         const [dia, mes, ano] = sanitizedDate.split('/');
         itemDate = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
       } else {
         // Formato YYYY-MM-DD
-        itemDate = new Date(sanitizedDate + 'T00:00:00');
+        const [ano, mes, dia] = sanitizedDate.split('-');
+        itemDate = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia || "1"));
       }
       console.log(`[${tipoItem}] Usando data_vencimento:`, sanitizedDate, '| Empresa:', item.empresa, '| Descrição:', item.descricao);
     } else if (item.data) {
@@ -109,14 +110,15 @@ export const filterDataByPeriod = (data: any[], period: string, customMonth?: nu
         console.log('❌ data inválida:', item.data);
         return false;
       }
-      
+
       if (dateToUse.includes('/')) {
         // Formato DD/MM/YYYY
         const [dia, mes, ano] = dateToUse.split('/');
         itemDate = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
       } else {
         // Formato YYYY-MM-DD
-        itemDate = new Date(dateToUse + 'T00:00:00');
+        const [ano, mes, dia] = dateToUse.split('-');
+        itemDate = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia || "1"));
       }
       // Para receitas, mostrar também data_recebimento se existir
       const dataRecebimentoInfo = item.data_recebimento ? ` | Data Recebimento: ${item.data_recebimento}` : ' | Pendente';
@@ -128,42 +130,43 @@ export const filterDataByPeriod = (data: any[], period: string, customMonth?: nu
         console.log('❌ data_pagamento inválida:', item.data_pagamento);
         return false;
       }
-      
+
       // Usar data_pagamento apenas se não houver data_vencimento nem data
       if (sanitizedDate.includes('/')) {
         const [dia, mes, ano] = sanitizedDate.split('/');
         itemDate = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
       } else {
-        itemDate = new Date(sanitizedDate + 'T00:00:00');
+        const [ano, mes, dia] = sanitizedDate.split('-');
+        itemDate = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia || "1"));
       }
       console.log(`[${tipoItem}] Usando data_pagamento:`, sanitizedDate, '| Empresa:', item.empresa, '| Descrição:', item.descricao);
     } else {
       console.log('❌ Item sem data válida:', item);
       return false;
     }
-    
+
     if (period === 'today') {
       // Para hoje, comparar apenas a data (ano, mês, dia)
       const itemDateOnly = new Date(itemDate.getFullYear(), itemDate.getMonth(), itemDate.getDate());
       const todayOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const match = itemDateOnly.getTime() === todayOnly.getTime();
-      
+
       if (match) {
         console.log('Item de HOJE encontrado:', item.data_vencimento || item.data || item.data_pagamento, item.descricao || item.empresa);
       }
-      
+
       return match;
     }
-    
+
     const match = itemDate >= startDate && itemDate <= endDate;
-    
+
     if (match) {
       console.log(`Item do período ${period} encontrado:`, item.data_vencimento || item.data || item.data_pagamento, item.descricao || item.empresa);
     }
-    
+
     return match;
   });
-  
+
   console.log(`Dados filtrados para ${period}:`, filtered.length, 'de', data.length);
   return filtered;
 };
@@ -172,7 +175,7 @@ export const getPeriodString = (selectedPeriod: string, customMonth?: number, cu
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
-  
+
   switch (selectedPeriod) {
     case 'today':
       return `Hoje - ${currentDate.toLocaleDateString('pt-BR')}`;

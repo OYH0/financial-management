@@ -10,6 +10,7 @@ export interface DespesaRecorrente {
   empresa: string;
   categoria: string;
   subcategoria?: string;
+  detalhe_subcategoria?: string;
   origem_pagamento?: string;
   dia_vencimento: number;
   ativa: boolean;

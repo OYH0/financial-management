@@ -4,14 +4,16 @@ import { Despesa } from '@/hooks/useDespesas';
 // Função para normalizar subcategorias
 const normalizeSubcategoria = (subcategoria: string): string => {
   if (!subcategoria) return 'Outros';
-  
-  // Mapeamento para normalizar subcategorias inconsistentes
+
+  // Mapeamento para normalizar subcategorias
   const normalizationMap: { [key: string]: string } = {
     'MERCADO_COMUM': 'Mercado Comum',
-    'DESCARTAVEIS_LIMPEZA': 'Descartáveis e Limpeza',
-    'DESCARTAVEIS': 'Descartáveis e Limpeza',
-    'Descartáveis': 'Descartáveis e Limpeza',
-    'COMBUSTIVEL_TRANSPORTE': 'Combustível e Transporte',
+    'DESCARTAVEIS_LIMPEZA': 'Descartáveis e Limpeza (Antigo)',
+    'DESCARTAVEIS': 'Descartáveis',
+    'LIMPEZA': 'Limpeza',
+    'COMBUSTIVEL_TRANSPORTE': 'Combustível e Transporte (Antigo)',
+    'COMBUSTIVEL': 'Combustível',
+    'TRANSPORTE': 'Transporte',
     'EMPRESTIMOS_PRESTACOES': 'Empréstimos e Prestações',
     'EMPRESTIMOS': 'Empréstimos e Prestações',
     'FOLHA_SALARIAL': 'Folha Salarial',
@@ -22,9 +24,15 @@ const normalizeSubcategoria = (subcategoria: string): string => {
     'MANUTENCAO': 'Manutenção',
     'SAZONAIS': 'Sazonais',
     'PROLABORE': 'Pró-labore',
-    'SUPERMERCADO': 'Supermercado'
+    'SUPERMERCADO': 'Supermercado',
+    'BOVINA': 'Bovina',
+    'SUINA': 'Suína',
+    'AVES': 'Aves',
+    'EMBUTIDOS': 'Embutidos',
+    'ALCOOLICA': 'Alcoólicas',
+    'NAO_ALCOOLICA': 'Não Alcoólicas',
   };
-  
+
   return normalizationMap[subcategoria] || subcategoria;
 };
 
@@ -49,14 +57,20 @@ export const calculateDistributionData = (despesas: Despesa[]) => {
     const valor = despesa.valor_total || despesa.valor || 0;
     const categoria = despesa.categoria || 'Sem categoria';
     const subcategoriaOriginal = despesa.subcategoria || 'Outros';
-    const subcategoria = normalizeSubcategoria(subcategoriaOriginal);
+    let subcategoria = normalizeSubcategoria(subcategoriaOriginal);
+
+    // Adicionar nível de detalhe na legenda caso exista (ex: Proteínas - Bovina)
+    if (despesa.detalhe_subcategoria) {
+      const detalheNormalizado = normalizeSubcategoria(despesa.detalhe_subcategoria);
+      subcategoria = `${subcategoria} - ${detalheNormalizado}`;
+    }
 
     if (!categoryGroups[categoria]) {
       categoryGroups[categoria] = { total: 0, subcategorias: {} };
     }
 
     categoryGroups[categoria].total += valor;
-    
+
     if (!categoryGroups[categoria].subcategorias[subcategoria]) {
       categoryGroups[categoria].subcategorias[subcategoria] = 0;
     }
@@ -66,7 +80,7 @@ export const calculateDistributionData = (despesas: Despesa[]) => {
   // Cores para as categorias
   const colors: { [key: string]: string } = {
     'INSUMOS': '#10B981',
-    'FIXAS': '#EF4444', 
+    'FIXAS': '#EF4444',
     'VARIÁVEIS': '#F59E0B',
     'ATRASADOS': '#DC2626',
     'RETIRADAS': '#8B5CF6',
@@ -89,9 +103,9 @@ export const calculateDistributionData = (despesas: Despesa[]) => {
 
 export const calculateMonthlyData = (despesas: Despesa[], receitas: any[]) => {
   console.log('=== CALCULATING MONTHLY DATA ===');
-  
+
   const monthlyData: { [key: string]: { despesas: number; receitas: number } } = {};
-  
+
   // Filtrar despesas para excluir Camerino e Implementação
   const despesasSemCamerino = despesas.filter(despesa => {
     const empresa = despesa.empresa?.toLowerCase().trim() || '';
@@ -103,42 +117,42 @@ export const calculateMonthlyData = (despesas: Despesa[], receitas: any[]) => {
     const empresa = receita.empresa?.toLowerCase().trim() || '';
     return !empresa.includes('camerino') && !empresa.includes('implementação') && empresa !== 'implementação';
   });
-  
+
   // Processar despesas (sem Camerino)
   despesasSemCamerino.forEach(despesa => {
     if (despesa.data_vencimento) {
       const date = new Date(despesa.data_vencimento + 'T00:00:00');
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-      
+
       if (!monthlyData[monthKey]) {
         monthlyData[monthKey] = { despesas: 0, receitas: 0 };
       }
-      
+
       monthlyData[monthKey].despesas += despesa.valor_total || despesa.valor || 0;
     }
   });
-  
+
   // Processar receitas (sem Camerino)
   receitasSemCamerino.forEach(receita => {
     if (receita.data) {
       const date = new Date(receita.data + 'T00:00:00');
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-      
+
       if (!monthlyData[monthKey]) {
         monthlyData[monthKey] = { despesas: 0, receitas: 0 };
       }
-      
+
       monthlyData[monthKey].receitas += receita.valor || 0;
     }
   });
-  
+
   // Converter para array e ordenar
   const data = Object.entries(monthlyData)
     .map(([month, values]) => {
       const [year, monthNum] = month.split('-');
       const date = new Date(parseInt(year), parseInt(monthNum) - 1, 1);
       const monthName = date.toLocaleDateString('pt-BR', { month: 'short' });
-      
+
       return {
         month: monthName.charAt(0).toUpperCase() + monthName.slice(1),
         despesas: values.despesas,
@@ -157,9 +171,9 @@ export const calculateMonthlyData = (despesas: Despesa[], receitas: any[]) => {
 
 export const calculateTotalsByCompany = (despesas: Despesa[], empresa: string) => {
   console.log(`=== CALCULATING TOTALS FOR ${empresa} ===`);
-  
+
   const filteredDespesas = despesas.filter(d => d.empresa === empresa);
-  
+
   const totalDespesas = filteredDespesas.reduce((sum, d) => sum + (d.valor_total || d.valor || 0), 0);
   const totalPagas = filteredDespesas
     .filter(d => d.status === 'PAGO')
@@ -169,7 +183,7 @@ export const calculateTotalsByCompany = (despesas: Despesa[], empresa: string) =
     .reduce((sum, d) => sum + (d.valor_total || d.valor || 0), 0);
 
   console.log(`Totais para ${empresa}:`, { totalDespesas, totalPagas, totalPendentes });
-  
+
   return {
     totalDespesas,
     totalPagas,
@@ -181,19 +195,19 @@ export const calculateTotalsByCompany = (despesas: Despesa[], empresa: string) =
 // Função para normalizar nomes de empresas
 export const normalizeCompanyName = (empresa: string | null | undefined): string => {
   if (!empresa) return 'unknown';
-  
+
   const normalized = empresa.toLowerCase().trim();
-  
+
   if (normalized.includes('camerino')) return 'camerino';
-  
+
   // Separar Churrasco em Cariri e Fortaleza
   if (normalized.includes('fortaleza')) return 'churrasco_fortaleza';
   if (normalized.includes('cariri')) return 'churrasco_cariri';
   // Dados legados sem especificação vão para Cariri
   if (normalized.includes('churrasco') || normalized.includes('companhia')) return 'churrasco_cariri';
-  
+
   if (normalized.includes('johnny')) return 'johnny';
-  
+
   return normalized;
 };
 
@@ -205,26 +219,26 @@ export const getTransactionValue = (transaction: any): number => {
 // Função para calcular totais por empresa (excluindo Camerino) com receitas
 export const calculateCompanyTotals = (despesas: Despesa[], receitas: any[] = []) => {
   const companies = {
-    churrasco_cariri: { 
-      total: 0, 
+    churrasco_cariri: {
+      total: 0,
       totalReceitas: 0,
-      expenses: [] as Despesa[], 
+      expenses: [] as Despesa[],
       receitas: [] as any[],
-      categories: { fixas: 0, insumos: 0, variaveis: 0, atrasados: 0, retiradas: 0, sem_categoria: 0 } 
+      categories: { fixas: 0, insumos: 0, variaveis: 0, atrasados: 0, retiradas: 0, sem_categoria: 0 }
     },
-    churrasco_fortaleza: { 
-      total: 0, 
+    churrasco_fortaleza: {
+      total: 0,
       totalReceitas: 0,
-      expenses: [] as Despesa[], 
+      expenses: [] as Despesa[],
       receitas: [] as any[],
-      categories: { fixas: 0, insumos: 0, variaveis: 0, atrasados: 0, retiradas: 0, sem_categoria: 0 } 
+      categories: { fixas: 0, insumos: 0, variaveis: 0, atrasados: 0, retiradas: 0, sem_categoria: 0 }
     },
-    johnny: { 
-      total: 0, 
+    johnny: {
+      total: 0,
       totalReceitas: 0,
-      expenses: [] as Despesa[], 
+      expenses: [] as Despesa[],
       receitas: [] as any[],
-      categories: { fixas: 0, insumos: 0, variaveis: 0, atrasados: 0, retiradas: 0, sem_categoria: 0 } 
+      categories: { fixas: 0, insumos: 0, variaveis: 0, atrasados: 0, retiradas: 0, sem_categoria: 0 }
     }
   };
 
@@ -264,10 +278,10 @@ export const calculateCompanyTotals = (despesas: Despesa[], receitas: any[] = []
   // Processar receitas
   console.log('\n💰 === PROCESSANDO RECEITAS ===');
   console.log('Total de receitas para processar:', receitas.length);
-  
+
   let receitasRecebidas = 0;
   let receitasPendentes = 0;
-  
+
   receitas.forEach(receita => {
     const normalizedCompany = normalizeCompanyName(receita.empresa);
     const valor = receita.valor || 0;
@@ -306,11 +320,11 @@ export const calculateCompanyTotals = (despesas: Despesa[], receitas: any[] = []
       console.log(`  ⚠️ Empresa não reconhecida: ${normalizedCompany}`);
     }
   });
-  
+
   console.log('\n📈 === ESTATÍSTICAS DE PROCESSAMENTO ===');
   console.log('Receitas RECEBIDAS contabilizadas:', receitasRecebidas);
   console.log('Receitas PENDENTES ignoradas:', receitasPendentes);
-  
+
   console.log('\n💰 === RESUMO DE RECEITAS POR EMPRESA ===');
   console.log('Churrasco Cariri - Total Receitas:', companies.churrasco_cariri.totalReceitas, '| Qtd:', companies.churrasco_cariri.receitas.length);
   console.log('Churrasco Fortaleza - Total Receitas:', companies.churrasco_fortaleza.totalReceitas, '| Qtd:', companies.churrasco_fortaleza.receitas.length);
