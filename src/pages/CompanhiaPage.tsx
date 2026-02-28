@@ -91,6 +91,19 @@ const CompanhiaPage = () => {
   const totalDespesasPeriodo = filteredDespesas.reduce((sum, d) => sum + (d.valor_total || d.valor), 0);
   const totalReceitasPeriodo = filteredReceitas.reduce((sum, r) => sum + r.valor, 0);
 
+  // === DEBUG EXCLUSIVO DE CARIRI ===
+  const debugPagas = filteredDespesas.filter(d => d.status === 'PAGO');
+  const debugPendentes = filteredDespesas.filter(d => d.status !== 'PAGO');
+  const debugPagasTotal = debugPagas.reduce((sum, d) => sum + (d.valor_total || d.valor), 0);
+  const debugPendentesTotal = debugPendentes.reduce((sum, d) => sum + (d.valor_total || d.valor), 0);
+
+  const debugPorEmpresa = filteredDespesas.reduce((acc, d) => {
+    const emp = d.empresa || 'Sem Empresa';
+    if (!acc[emp]) acc[emp] = 0;
+    acc[emp] += (d.valor_total || d.valor);
+    return acc;
+  }, {} as Record<string, number>);
+
   // Calcular lucro simples baseado nos dados já filtrados pelo período
   const lucroCalculado = totalReceitasPeriodo - totalDespesasPeriodo;
   const margemLucro = totalReceitasPeriodo > 0 ? (lucroCalculado / totalReceitasPeriodo) * 100 : 0;
@@ -203,6 +216,47 @@ const CompanhiaPage = () => {
               </Button>
             </div>
           </div>
+
+          {/* PAINEL DE DEBUG TEMPORÁRIO PARA O USUÁRIO */}
+          {selectedPeriod === 'month' && selectedCompany === 'cariri' && (
+            <Card className="mb-8 border-4 border-red-500 relative overflow-hidden bg-white">
+              <div className="absolute top-0 right-0 p-2 bg-red-500 text-white font-bold rounded-bl-lg">DEBUG</div>
+              <CardHeader>
+                <CardTitle className="text-red-700">PAINEL DE INVESTIGAÇÃO DE VALORES (Temporário)</CardTitle>
+                <CardDescription className="text-base text-gray-800">
+                  O sistema está calculando um TOTAL GERAL de <b>R$ {totalDespesasPeriodo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</b> em despesas que pertencem a este período de visualização.
+                  Abaixo mostramos exatamente como esse valor lido pelo site se decompõe, para descobrirmos a diferença com o seu cálculo:
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 bg-gray-50 border border-gray-200 p-4 rounded-lg">
+                  <div>
+                    <p className="font-bold text-lg text-gray-900">1. Por Status Atual:</p>
+                    <ul className="list-none space-y-2 mt-2">
+                      <li className="flex justify-between items-center p-2 bg-green-50 text-green-800 rounded">
+                        <span>Despesas PAGAS (<b>{debugPagas.length} contas</b>)</span>
+                        <span className="font-bold">R$ {debugPagasTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                      </li>
+                      <li className="flex justify-between items-center p-2 bg-red-50 text-red-800 rounded">
+                        <span>Não Pagas/Pendentes (<b>{debugPendentes.length} contas</b>)</span>
+                        <span className="font-bold">R$ {debugPendentesTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                      </li>
+                    </ul>
+                    <p className="text-sm text-gray-500 mt-2 italic">Dica: O seu cálculo de ~R$ 225k bate com as APENAS PAGAS?</p>
+                  </div>
+                  <div>
+                    <p className="font-bold text-lg text-gray-900">2. Por Nome Exato da Empresa lançada:</p>
+                    <ul className="list-disc ml-5 text-sm mt-2 text-gray-700">
+                      {Object.entries(debugPorEmpresa).map(([empresa, valor]) => (
+                        <li key={empresa}>{empresa}: <span className="font-bold">R$ {valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span></li>
+                      ))}
+                    </ul>
+                    <p className="text-sm text-gray-500 mt-2 italic">Dica: O seu cálculo incluiu os registros antigos agrupados como apenas "Companhia do Churrasco"?</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Stats Cards */}
           <CompanhiaStats

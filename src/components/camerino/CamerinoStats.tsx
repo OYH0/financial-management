@@ -24,12 +24,14 @@ const CamerinoStats: React.FC<CamerinoStatsProps> = ({ despesas, receitas, selec
     title: ''
   });
 
-  const { saldoMesAnterior, saldoRestante, despesasEfetivas, receitasVendas: totalReceitas } = calcularSaldoMesAnterior(receitas, despesas);
+  const despesasPagas = despesas.filter(d => d.status === 'PAGO');
 
-  const receitasVendas = receitas.filter(r => 
+  const { saldoMesAnterior, saldoRestante, despesasEfetivas, receitasVendas: totalReceitas } = calcularSaldoMesAnterior(receitas, despesasPagas);
+
+  const receitasVendas = receitas.filter(r =>
     r.categoria !== 'SALDO_MES_ANTERIOR' &&
-    r.categoria !== 'EM_COFRE' && 
-    r.categoria !== 'EM_CONTA' && 
+    r.categoria !== 'EM_COFRE' &&
+    r.categoria !== 'EM_CONTA' &&
     !r.descricao?.toUpperCase().includes('PAGAMENTO DE DESPESA') &&
     ((r as any).destino === 'total' || !(r as any).destino)
   );
@@ -48,7 +50,7 @@ const CamerinoStats: React.FC<CamerinoStatsProps> = ({ despesas, receitas, selec
 
   return (
     <>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-6 mb-8">
         <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl rounded-2xl">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
             <CardTitle className="text-sm font-medium text-gray-600">Receita Total</CardTitle>
@@ -84,8 +86,8 @@ const CamerinoStats: React.FC<CamerinoStatsProps> = ({ despesas, receitas, selec
               </p>
             )}
             <p className="text-xs text-gray-500 mt-1">
-              {saldoRestante > 0 
-                ? `R$ ${Math.min(saldoMesAnterior, totalDespesas).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} abatido` 
+              {saldoRestante > 0
+                ? `R$ ${Math.min(saldoMesAnterior, totalDespesas).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} abatido`
                 : saldoMesAnterior > 0 ? 'Totalmente consumido' : 'Sem saldo'}
             </p>
           </CardContent>
@@ -102,11 +104,31 @@ const CamerinoStats: React.FC<CamerinoStatsProps> = ({ despesas, receitas, selec
             </div>
             <div className="flex items-center justify-between">
               <p className="text-xs text-gray-500">
-                {totalDespesas !== despesasEfetivas 
-                  ? `Total: R$ ${totalDespesas.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` 
+                {totalDespesas !== despesasEfetivas
+                  ? `Total: R$ ${totalDespesas.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
                   : selectedPeriod === 'month' ? 'Este mês' : 'Período selecionado'}
               </p>
               <Button size="sm" variant="outline" onClick={() => openModal('despesas', 'Despesas')} className="h-6 px-2 text-xs">
+                <Eye className="h-3 w-3 mr-1" />Ver
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl rounded-2xl">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-sm font-medium text-gray-600">Despesas Pagas</CardTitle>
+            <DollarSign className="h-5 w-5 text-red-700" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl lg:text-3xl font-bold text-red-700 mb-2">
+              R$ {despesasPagas.reduce((sum, d) => sum + (d.valor_total || d.valor), 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+            </div>
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-gray-500">
+                {despesasPagas.length} despesas pagas
+              </p>
+              <Button size="sm" variant="outline" onClick={() => openModal('despesas', 'Despesas Pagas')} className="h-6 px-2 text-xs">
                 <Eye className="h-3 w-3 mr-1" />Ver
               </Button>
             </div>
@@ -131,7 +153,7 @@ const CamerinoStats: React.FC<CamerinoStatsProps> = ({ despesas, receitas, selec
         isOpen={modalState.isOpen}
         onClose={closeModal}
         type={modalState.type}
-        transactions={modalState.type === 'receitas' ? receitasVendas : despesas}
+        transactions={modalState.type === 'receitas' ? receitasVendas : (modalState.title === 'Despesas Pagas' ? despesasPagas : despesas)}
         empresa="Camerino"
         title={modalState.title}
       />

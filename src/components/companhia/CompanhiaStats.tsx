@@ -24,7 +24,9 @@ const CompanhiaStats: React.FC<CompanhiaStatsProps> = ({ despesas, receitas, sel
     title: ''
   });
 
-  const { saldoMesAnterior, saldoRestante, despesasEfetivas, receitasVendas: totalReceitas } = calcularSaldoMesAnterior(receitas, despesas);
+  const despesasPagas = despesas.filter(d => d.status === 'PAGO');
+
+  const { saldoMesAnterior, saldoRestante, despesasEfetivas, receitasVendas: totalReceitas } = calcularSaldoMesAnterior(receitas, despesasPagas);
 
   const receitasVendas = receitas.filter(r =>
     r.categoria !== 'SALDO_MES_ANTERIOR' &&
@@ -80,7 +82,7 @@ const CompanhiaStats: React.FC<CompanhiaStatsProps> = ({ despesas, receitas, sel
 
   return (
     <>
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-6 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 lg:gap-6 mb-8">
         <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl rounded-2xl">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
             <CardTitle className="text-sm font-medium text-gray-600">Receita Total</CardTitle>
@@ -147,6 +149,26 @@ const CompanhiaStats: React.FC<CompanhiaStatsProps> = ({ despesas, receitas, sel
 
         <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl rounded-2xl">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-sm font-medium text-gray-600">Despesas Pagas</CardTitle>
+            <DollarSign className="h-5 w-5 text-red-700" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl lg:text-3xl font-bold text-red-700 mb-2">
+              R$ {despesasPagas.reduce((sum, d) => sum + (d.valor_total || d.valor), 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+            </div>
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-gray-500">
+                {despesasPagas.length} despesas pagas
+              </p>
+              <Button size="sm" variant="outline" onClick={() => openModal('despesas', 'Despesas Pagas')} className="h-6 px-2 text-xs">
+                <Eye className="h-3 w-3 mr-1" />Ver
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl rounded-2xl">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
             <CardTitle className="text-sm font-medium text-gray-600">
               {selectedPeriod === 'month' ? 'Lucro Líquido Mensal' : 'Lucro Líquido'}
             </CardTitle>
@@ -182,7 +204,7 @@ const CompanhiaStats: React.FC<CompanhiaStatsProps> = ({ despesas, receitas, sel
         isOpen={modalState.isOpen}
         onClose={closeModal}
         type={modalState.type}
-        transactions={modalState.type === 'receitas' ? receitasVendas : despesas}
+        transactions={modalState.type === 'receitas' ? receitasVendas : (modalState.title === 'Despesas Pagas' ? despesasPagas : despesas)}
         empresa="Companhia do Churrasco"
         title={modalState.title}
       />

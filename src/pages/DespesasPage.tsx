@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
-import { Plus, TrendingDown, DollarSign, CheckCircle, Clock, AlertTriangle, Shield } from 'lucide-react';
+import { Plus, TrendingDown, DollarSign, CheckCircle, Clock, AlertTriangle, Shield, Download } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import TransactionTable from '@/components/TransactionTable';
 import AddTransactionModal from '@/components/AddTransactionModal';
@@ -16,7 +16,8 @@ import { useAdminAccess } from '@/hooks/useAdminAccess';
 import { useCamerinoAuth } from '@/hooks/useCamerinoAuth';
 import { Transaction } from '@/types/transaction';
 import { getTransactionStatus } from '@/utils/transactionUtils';
-import { filterDespesasCurrentMonth } from '@/utils/currentMonthFilter';
+import { filterDespesasCurrentMonth, parseDateFlexible } from '@/utils/currentMonthFilter';
+import { exportDespesasToPDF } from '@/utils/dataExport';
 
 const DespesasPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -177,6 +178,34 @@ const DespesasPage = () => {
     });
   }, [despesasAtrasadasBruto, searchTerm, filterEmpresa, filterCategoria, filterStatus]);
 
+  // Separar as despesas que são de meses passados mas foram pagas neste mês
+  const pastExpensesPaidThisMonth = useMemo(() => {
+    return filteredTransactions.filter(t => {
+      const status = getTransactionStatus(t);
+      if (status !== 'PAGO') return false;
+
+      const vencimento = parseDateFlexible(t.data_vencimento);
+      const pagamento = parseDateFlexible(t.date);
+
+      let periodStart = atrasadasDateRef;
+      if (dateFrom) {
+        periodStart = new Date(dateFrom + 'T00:00:00');
+      }
+
+      if (vencimento && pagamento) {
+        if (vencimento < periodStart && pagamento >= periodStart) {
+          return true;
+        }
+      }
+      return false;
+    });
+  }, [filteredTransactions, atrasadasDateRef, dateFrom]);
+
+  // A lista principal deve excluir essas despesas para não duplicar visualmente
+  const mainFilteredTransactions = useMemo(() => {
+    return filteredTransactions.filter(t => !pastExpensesPaidThisMonth.includes(t));
+  }, [filteredTransactions, pastExpensesPaidThisMonth]);
+
   // Calcular estatísticas usando valor_total
   const totalDespesas = filteredTransactions.reduce((sum, transaction) => sum + (transaction.valor_total || transaction.valor), 0);
   const totalJuros = filteredTransactions.reduce((sum, transaction) => sum + (transaction.valor_juros || 0), 0);
@@ -197,6 +226,18 @@ const DespesasPage = () => {
   const handleTransactionUpdated = () => {
     refetch();
     refetchAtrasadas();
+  };
+
+  const handleExportPDF = () => {
+    const filters = [
+      filterEmpresa !== 'all' ? `Empresa: ${filterEmpresa}` : '',
+      filterCategoria !== 'all' ? `Categoria: ${filterCategoria}` : '',
+      filterStatus !== 'all' ? `Status: ${filterStatus}` : '',
+      dateFrom ? `De: ${new Date(dateFrom).toLocaleDateString('pt-BR')}` : '',
+      dateTo ? `Até: ${new Date(dateTo).toLocaleDateString('pt-BR')}` : '',
+    ].filter(Boolean).join(' | ');
+
+    exportDespesasToPDF(filteredTransactions, filters);
   };
 
   // Handle filter empresa change with Camerino auth check
@@ -242,25 +283,36 @@ const DespesasPage = () => {
               </div>
             </div>
 
-            {isAdmin ? (
+            <div className="flex gap-2">
               <Button
-                onClick={() => setIsModalOpen(true)}
-                className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-lg transform hover:scale-105 transition-all duration-200 rounded-2xl"
+                onClick={handleExportPDF}
+                variant="outline"
+                className="bg-white border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800 shadow-sm rounded-2xl"
               >
-                <Plus className="w-4 h-4 mr-2" />
-                Nova Despesa
+                <Download className="w-4 h-4 mr-2" />
+                Exportar PDF
               </Button>
-            ) : (
-              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                <div className="flex items-center gap-3">
-                  <Shield className="h-5 w-5 text-blue-600" />
-                  <div>
-                    <p className="text-blue-800 font-medium">Modo Visualização</p>
-                    <p className="text-blue-600 text-sm">Apenas administradores podem adicionar novas despesas.</p>
+
+              {isAdmin ? (
+                <Button
+                  onClick={() => setIsModalOpen(true)}
+                  className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-lg transform hover:scale-105 transition-all duration-200 rounded-2xl"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Nova Despesa
+                </Button>
+              ) : (
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                  <div className="flex items-center gap-3">
+                    <Shield className="h-5 w-5 text-blue-600" />
+                    <div>
+                      <p className="text-blue-800 font-medium">Modo Visualização</p>
+                      <p className="text-blue-600 text-sm">Apenas administradores podem adicionar novas despesas.</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
           {/* Filters */}
@@ -292,7 +344,6 @@ const DespesasPage = () => {
             filteredTransactionsCount={filteredTransactions.length}
           />
 
-          {/* Past Atrasadas Section */}
           {pastAtrasadasFiltered.length > 0 && (
             <Card className="mb-8 bg-white/80 backdrop-blur-sm border border-red-200 shadow-xl rounded-2xl overflow-hidden">
               <div className="absolute top-0 left-0 w-1 h-full bg-red-500"></div>
@@ -316,14 +367,38 @@ const DespesasPage = () => {
             </Card>
           )}
 
+          {/* Past Expenses Paid THIS Month Section */}
+          {pastExpensesPaidThisMonth.length > 0 && (
+            <Card className="mb-8 bg-white/80 backdrop-blur-sm border border-blue-200 shadow-xl rounded-2xl overflow-hidden">
+              <div className="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
+              <CardHeader className="border-b border-blue-100 bg-blue-50/50">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-blue-500" />
+                  <div>
+                    <CardTitle className="text-xl text-blue-800">Despesas de Meses Passados (Pagas Neste Mês)</CardTitle>
+                    <CardDescription className="text-blue-600/80 font-medium">
+                      {pastExpensesPaidThisMonth.length} conta(s) que venceram no passado, mas foram pagas no período atual
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-6">
+                <TransactionTable
+                  transactions={pastExpensesPaidThisMonth}
+                  onTransactionUpdated={handleTransactionUpdated}
+                />
+              </CardContent>
+            </Card>
+          )}
+
           {/* Main Content Card */}
           <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl rounded-2xl">
             <CardHeader className="border-b border-gray-100">
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-xl text-gray-800">Lista de Despesas</CardTitle>
+                  <CardTitle className="text-xl text-gray-800">Lista de Despesas do Período</CardTitle>
                   <CardDescription className="text-gray-600">
-                    {filteredTransactions.length} despesa(s) encontrada(s) - Mês atual e pagamentos recentes
+                    {mainFilteredTransactions.length} despesa(s) gerada(s) ou vencendo neste período
                   </CardDescription>
                 </div>
                 <Button
@@ -338,7 +413,7 @@ const DespesasPage = () => {
             </CardHeader>
             <CardContent className="p-6">
               <TransactionTable
-                transactions={filteredTransactions}
+                transactions={mainFilteredTransactions}
                 onTransactionUpdated={handleTransactionUpdated}
               />
             </CardContent>

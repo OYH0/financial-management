@@ -2,7 +2,7 @@ import { Transaction } from '@/types/transaction';
 import { Receita } from '@/hooks/useReceitas';
 
 // Robust date parser that handles: 'DD/MM/YYYY', 'YYYY-MM-DD', and ISO strings with time
-const parseDateFlexible = (input?: string | null): Date | null => {
+export const parseDateFlexible = (input?: string | null): Date | null => {
   if (!input) return null;
   const s = String(input).trim();
   if (!s) return null;
@@ -45,7 +45,7 @@ export const filterDespesasCurrentMonth = (transactions: Transaction[], dateFrom
   // Se foram fornecidas datas específicas, usar elas
   if (dateFrom || dateTo) {
     console.log('Usando filtros de data manuais');
-    
+
     const filteredByDate = transactions.filter(transaction => {
       const transactionDateStr = transaction.data_vencimento || transaction.date;
       const itemDate = parseDateFlexible(transactionDateStr);
@@ -61,11 +61,11 @@ export const filterDespesasCurrentMonth = (transactions: Transaction[], dateFrom
     });
 
     // Aplicar filtro Camerino se necessário
-    const finalFiltered = excludeCamerino 
+    const finalFiltered = excludeCamerino
       ? filteredByDate.filter(transaction => {
-          const empresa = transaction.company?.toLowerCase().trim() || '';
-          return !empresa.includes('camerino');
-        })
+        const empresa = transaction.company?.toLowerCase().trim() || '';
+        return !empresa.includes('camerino');
+      })
       : filteredByDate;
 
     console.log('Total filtrado por data:', filteredByDate.length);
@@ -115,7 +115,7 @@ export const filterDespesasCurrentMonth = (transactions: Transaction[], dateFrom
       const vencimentoDate = parseDateFlexible(vencimento);
 
       const isInRange = vencimentoDate >= currentMonthStart && vencimentoDate <= currentMonthEnd;
-      
+
       if (vencimento && vencimento.includes('2025-09') && parseInt(vencimento.split('-')[2]) >= 16) {
         console.log('🔍 Debug vencimento:', {
           vencimento: vencimento,
@@ -126,7 +126,7 @@ export const filterDespesasCurrentMonth = (transactions: Transaction[], dateFrom
           descricao: transaction.description
         });
       }
-      
+
       if (isInRange) {
         includeTransaction = true;
         console.log('✅ Incluído por vencimento no mês atual:', vencimento, transaction.description);
@@ -141,11 +141,11 @@ export const filterDespesasCurrentMonth = (transactions: Transaction[], dateFrom
   });
 
   // Aplicar filtro Camerino se necessário
-  const finalFiltered = excludeCamerino 
+  const finalFiltered = excludeCamerino
     ? filtered.filter(transaction => {
-        const empresa = transaction.company?.toLowerCase().trim() || '';
-        return !empresa.includes('camerino');
-      })
+      const empresa = transaction.company?.toLowerCase().trim() || '';
+      return !empresa.includes('camerino');
+    })
     : filtered;
 
   console.log('Total filtrado para o mês atual:', filtered.length);
@@ -164,7 +164,7 @@ export const filterReceitasCurrentMonth = (receitas: Receita[], dateFrom?: strin
   // Se foram fornecidas datas específicas, usar elas
   if (dateFrom || dateTo) {
     console.log('Usando filtros de data manuais');
-    
+
     const filteredByDate = receitas.filter(receita => {
       const receitaDate = receita.data_recebimento || receita.data;
       if (!receitaDate) return false;
@@ -187,11 +187,11 @@ export const filterReceitasCurrentMonth = (receitas: Receita[], dateFrom?: strin
     });
 
     // Aplicar filtro Camerino se necessário
-    const finalFiltered = excludeCamerino 
+    const finalFiltered = excludeCamerino
       ? filteredByDate.filter(receita => {
-          const empresa = receita.empresa?.toLowerCase().trim() || '';
-          return !empresa.includes('camerino');
-        })
+        const empresa = receita.empresa?.toLowerCase().trim() || '';
+        return !empresa.includes('camerino');
+      })
       : filteredByDate;
 
     console.log('Total filtrado por data:', filteredByDate.length);
@@ -249,11 +249,11 @@ export const filterReceitasCurrentMonth = (receitas: Receita[], dateFrom?: strin
   });
 
   // Aplicar filtro Camerino se necessário
-  const finalFiltered = excludeCamerino 
+  const finalFiltered = excludeCamerino
     ? filtered.filter(receita => {
-        const empresa = receita.empresa?.toLowerCase().trim() || '';
-        return !empresa.includes('camerino');
-      })
+      const empresa = receita.empresa?.toLowerCase().trim() || '';
+      return !empresa.includes('camerino');
+    })
     : filtered;
 
   console.log('Total filtrado para o mês atual:', filtered.length);
