@@ -54,16 +54,16 @@ const ExpenseDistributionChart: React.FC<ExpenseDistributionChartProps> = ({ des
   };
 
   return (
-    <div className="flex items-center gap-8">
-      <div className="w-48 h-48">
+    <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
+      <div className="w-36 h-36 sm:w-48 sm:h-48 shrink-0">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
               data={data}
               cx="50%"
               cy="50%"
-              innerRadius={60}
-              outerRadius={90}
+              innerRadius={40}
+              outerRadius={65}
               dataKey="value"
             >
               {data.map((entry, index) => (
@@ -75,7 +75,7 @@ const ExpenseDistributionChart: React.FC<ExpenseDistributionChartProps> = ({ des
         </ResponsiveContainer>
       </div>
       
-      <div className="flex flex-col gap-4 min-w-[200px]">
+      <div className="flex flex-col gap-2 sm:gap-4 w-full sm:min-w-[200px]">
         {data.map((item, index) => (
           <div key={index} className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">

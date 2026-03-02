@@ -13,7 +13,7 @@ interface DashboardChartsProps {
 
 const DashboardCharts: React.FC<DashboardChartsProps> = ({ despesas, receitas, selectedPeriod, customYear }) => {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mb-6 lg:mb-8">
       {/* Distribuição por Categoria */}
       <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl rounded-2xl">
         <CardHeader>

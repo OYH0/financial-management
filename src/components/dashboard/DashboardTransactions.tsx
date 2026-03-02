@@ -16,7 +16,7 @@ const DashboardTransactions: React.FC<DashboardTransactionsProps> = ({ despesas 
   });
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-8 shadow-sm">
+    <div className="bg-white border border-gray-200 rounded-2xl p-3 sm:p-6 mb-6 lg:mb-8 shadow-sm">
       <div className="mb-6">
         <h3 className="text-lg font-semibold text-gray-800">Últimas Transações</h3>
       </div>
