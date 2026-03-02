@@ -21,8 +21,10 @@ export type Database = {
           data: string | null
           data_vencimento: string | null
           descricao: string | null
+          detalhe_subcategoria: string | null
           empresa: string | null
           id: number
+          numero_nota: string | null
           origem_pagamento: string | null
           status: string | null
           subcategoria: string | null
@@ -37,8 +39,10 @@ export type Database = {
           data?: string | null
           data_vencimento?: string | null
           descricao?: string | null
+          detalhe_subcategoria?: string | null
           empresa?: string | null
           id?: number
+          numero_nota?: string | null
           origem_pagamento?: string | null
           status?: string | null
           subcategoria?: string | null
@@ -53,8 +57,10 @@ export type Database = {
           data?: string | null
           data_vencimento?: string | null
           descricao?: string | null
+          detalhe_subcategoria?: string | null
           empresa?: string | null
           id?: number
+          numero_nota?: string | null
           origem_pagamento?: string | null
           status?: string | null
           subcategoria?: string | null
@@ -71,6 +77,7 @@ export type Database = {
           categoria: string
           created_at: string
           descricao: string
+          detalhe_subcategoria: string | null
           dia_vencimento: number
           empresa: string
           id: string
@@ -85,6 +92,7 @@ export type Database = {
           categoria: string
           created_at?: string
           descricao: string
+          detalhe_subcategoria?: string | null
           dia_vencimento: number
           empresa: string
           id?: string
@@ -99,6 +107,7 @@ export type Database = {
           categoria?: string
           created_at?: string
           descricao?: string
+          detalhe_subcategoria?: string | null
           dia_vencimento?: number
           empresa?: string
           id?: string

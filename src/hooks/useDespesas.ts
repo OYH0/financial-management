@@ -21,6 +21,7 @@ export interface Despesa {
   valor_juros?: number;
   valor_total?: number;
   origem_pagamento?: string;
+  numero_nota?: string;
 }
 
 export const useDespesas = (options?: { mode?: 'all' | 'month'; start?: Date; end?: Date; useCustomDateRange?: boolean }) => {

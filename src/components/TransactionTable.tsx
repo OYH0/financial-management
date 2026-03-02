@@ -284,6 +284,11 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                       {prettyLabel(transaction.subcategoria)} {transaction.detalhe_subcategoria ? `- ${prettyLabel(transaction.detalhe_subcategoria)}` : ''}
                     </Badge>
                   )}
+                  {transaction.numero_nota && (
+                    <Badge variant="outline" className="text-xs bg-gray-50">
+                      NF: {transaction.numero_nota}
+                    </Badge>
+                  )}
                 </div>
               </div>
 
@@ -342,6 +347,11 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                   {transaction.subcategoria && (
                     <Badge variant="outline" className="text-xs">
                       {prettyLabel(transaction.subcategoria)} {transaction.detalhe_subcategoria ? `- ${prettyLabel(transaction.detalhe_subcategoria)}` : ''}
+                    </Badge>
+                  )}
+                  {transaction.numero_nota && (
+                    <Badge variant="outline" className="text-xs bg-gray-50">
+                      NF: {transaction.numero_nota}
                     </Badge>
                   )}
                 </div>
