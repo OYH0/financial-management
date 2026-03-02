@@ -142,25 +142,26 @@ const MonthlyEvolutionChart: React.FC<MonthlyEvolutionChartProps> = ({ despesas,
   }
 
   return (
-    <div className="h-64 w-full">
+    <div className="h-48 sm:h-64 w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+        <LineChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
           <XAxis 
             dataKey="period" 
             axisLine={false} 
             tickLine={false} 
-            tick={{ fill: '#4B5563', fontSize: 11 }} 
+            tick={{ fill: '#4B5563', fontSize: 9 }} 
           />
           <YAxis 
             axisLine={false} 
             tickLine={false} 
-            tick={{ fill: '#4B5563', fontSize: 11 }} 
+            tick={{ fill: '#4B5563', fontSize: 9 }} 
+            width={45}
             tickFormatter={(value) => `${value.toLocaleString('pt-BR', { notation: 'compact' })}`}
           />
           <Tooltip content={<CustomTooltip />} />
           <Legend 
-            wrapperStyle={{ fontSize: '11px' }}
+            wrapperStyle={{ fontSize: '9px' }}
             formatter={(value) => {
               // Cariri
               if (value === 'receita_cariri') return '💰 Receita Cariri';

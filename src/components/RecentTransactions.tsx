@@ -62,48 +62,79 @@ const RecentTransactions: React.FC<RecentTransactionsProps> = ({ despesas }) => 
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full">
-        <thead>
-          <tr className="text-left text-gray-500 text-sm">
-            <th className="pb-4 font-medium">Data</th>
-            <th className="pb-4 font-medium">Empresa</th>
-            <th className="pb-4 font-medium">Descrição</th>
-            <th className="pb-4 font-medium">Categoria</th>
-            <th className="pb-4 font-medium">Valor</th>
-            <th className="pb-4 font-medium">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {transactions.map((transaction) => (
-            <tr key={transaction.id} className="border-t border-gray-200">
-              <td className="py-3 text-gray-800 text-sm">
-                {formatDate(transaction.date)}
-              </td>
-              <td className="py-3">
-                <span className={`px-2 py-1 rounded-2xl text-xs ${getCompanyColor(transaction.company)}`}>
-                  {transaction.company}
-                </span>
-              </td>
-              <td className="py-3 text-gray-800 text-sm">{transaction.description}</td>
-              <td className="py-3">
-                <span className={`px-2 py-1 rounded-2xl text-xs ${getCategoryColor(transaction.category)}`}>
-                  {transaction.category}
-                </span>
-              </td>
-              <td className="py-3 text-gray-800 font-medium">
+    <>
+      {/* Mobile: Card layout */}
+      <div className="sm:hidden space-y-3">
+        {transactions.map((transaction) => (
+          <div key={transaction.id} className="border border-gray-200 rounded-xl p-3 space-y-2">
+            <div className="flex justify-between items-start">
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-gray-800 truncate">{transaction.description}</p>
+                <p className="text-xs text-gray-500">{formatDate(transaction.date)}</p>
+              </div>
+              <p className="text-sm font-bold text-gray-800 shrink-0 ml-2">
                 {formatCurrency(transaction.value)}
-              </td>
-              <td className="py-3">
-                <span className={`px-2 py-1 rounded-2xl text-xs ${getStatusColor(transaction.status)}`}>
-                  {transaction.status}
-                </span>
-              </td>
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              <span className={`px-2 py-0.5 rounded-2xl text-[10px] ${getCompanyColor(transaction.company)}`}>
+                {transaction.company}
+              </span>
+              <span className={`px-2 py-0.5 rounded-2xl text-[10px] ${getCategoryColor(transaction.category)}`}>
+                {transaction.category}
+              </span>
+              <span className={`px-2 py-0.5 rounded-2xl text-[10px] ${getStatusColor(transaction.status)}`}>
+                {transaction.status}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop: Table layout */}
+      <div className="hidden sm:block overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="text-left text-gray-500 text-sm">
+              <th className="pb-4 font-medium">Data</th>
+              <th className="pb-4 font-medium">Empresa</th>
+              <th className="pb-4 font-medium">Descrição</th>
+              <th className="pb-4 font-medium">Categoria</th>
+              <th className="pb-4 font-medium">Valor</th>
+              <th className="pb-4 font-medium">Status</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {transactions.map((transaction) => (
+              <tr key={transaction.id} className="border-t border-gray-200">
+                <td className="py-3 text-gray-800 text-sm">
+                  {formatDate(transaction.date)}
+                </td>
+                <td className="py-3">
+                  <span className={`px-2 py-1 rounded-2xl text-xs ${getCompanyColor(transaction.company)}`}>
+                    {transaction.company}
+                  </span>
+                </td>
+                <td className="py-3 text-gray-800 text-sm">{transaction.description}</td>
+                <td className="py-3">
+                  <span className={`px-2 py-1 rounded-2xl text-xs ${getCategoryColor(transaction.category)}`}>
+                    {transaction.category}
+                  </span>
+                </td>
+                <td className="py-3 text-gray-800 font-medium">
+                  {formatCurrency(transaction.value)}
+                </td>
+                <td className="py-3">
+                  <span className={`px-2 py-1 rounded-2xl text-xs ${getStatusColor(transaction.status)}`}>
+                    {transaction.status}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 };
 
