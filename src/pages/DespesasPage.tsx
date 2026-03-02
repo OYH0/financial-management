@@ -72,7 +72,8 @@ const DespesasPage = () => {
     user_id: despesa.user_id,
     valor_juros: despesa.valor_juros || 0,
     valor_total: despesa.valor_total || despesa.valor,
-    origem_pagamento: despesa.origem_pagamento
+    origem_pagamento: despesa.origem_pagamento,
+    numero_nota: despesa.numero_nota || undefined
   }));
 
   // Aplicar filtro baseado nas datas selecionadas
@@ -148,7 +149,8 @@ const DespesasPage = () => {
       user_id: despesa.user_id,
       valor_juros: despesa.valor_juros || 0,
       valor_total: despesa.valor_total || despesa.valor,
-      origem_pagamento: despesa.origem_pagamento
+      origem_pagamento: despesa.origem_pagamento,
+      numero_nota: despesa.numero_nota || undefined
     }));
 
     return allPastTx.filter(transaction => {

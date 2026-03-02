@@ -248,7 +248,7 @@ const CompanhiaPage = () => {
                     <p className="font-bold text-lg text-gray-900">2. Por Nome Exato da Empresa lançada:</p>
                     <ul className="list-disc ml-5 text-sm mt-2 text-gray-700">
                       {Object.entries(debugPorEmpresa).map(([empresa, valor]) => (
-                        <li key={empresa}>{empresa}: <span className="font-bold">R$ {valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span></li>
+                        <li key={empresa}>{empresa}: <span className="font-bold">R$ {Number(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span></li>
                       ))}
                     </ul>
                     <p className="text-sm text-gray-500 mt-2 italic">Dica: O seu cálculo incluiu os registros antigos agrupados como apenas "Companhia do Churrasco"?</p>

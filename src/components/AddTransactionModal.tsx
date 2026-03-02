@@ -34,7 +34,8 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
     detalhe_subcategoria: '',
     data_vencimento: '',
     valor_juros: '',
-    origem_pagamento: 'conta' as 'conta' | 'cofre'
+    origem_pagamento: 'conta' as 'conta' | 'cofre',
+    numero_nota: ''
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isRecorrente, setIsRecorrente] = useState(false);
@@ -202,7 +203,8 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
           detalhe_subcategoria: '',
           data_vencimento: '',
           valor_juros: '',
-          origem_pagamento: 'conta'
+          origem_pagamento: 'conta',
+          numero_nota: ''
         });
         setIsRecorrente(false);
         setDiaVencimento(1);
@@ -251,6 +253,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
         valor_juros: formData.valor_juros ? parseFloat(formData.valor_juros) : 0,
         status: formData.data ? 'PAGO' : null,
         origem_pagamento: formData.data && formData.origem_pagamento ? formData.origem_pagamento : null,
+        numero_nota: formData.numero_nota || null,
         user_id: user.id
       };
 
@@ -316,7 +319,8 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
         detalhe_subcategoria: '',
         data_vencimento: '',
         valor_juros: '',
-        origem_pagamento: 'conta'
+        origem_pagamento: 'conta',
+        numero_nota: ''
       });
       setIsRecorrente(false);
       setDiaVencimento(1);
@@ -587,6 +591,18 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
               onChange={(e) => handleInputChange('descricao', e.target.value)}
               rows={3}
               className="rounded-2xl"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="numero_nota">Número da Nota</Label>
+            <Input
+              id="numero_nota"
+              type="text"
+              placeholder="Ex: NF-001234"
+              value={formData.numero_nota}
+              onChange={(e) => handleInputChange('numero_nota', e.target.value)}
+              className="rounded-full"
             />
           </div>
 

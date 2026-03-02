@@ -64,8 +64,9 @@ export const exportDespesasToPDF = (despesas: any[], filtros?: string) => {
   doc.setFontSize(10);
   doc.text('Venc/Pagamento', 20, y);
   doc.text('Empresa', 50, y);
-  doc.text('Descrição', 90, y);
-  doc.text('Categoria', 145, y);
+  doc.text('Descrição', 85, y);
+  doc.text('Nº Nota', 125, y);
+  doc.text('Categoria', 150, y);
   doc.text('Valor', 180, y);
 
   // Table content
@@ -78,8 +79,9 @@ export const exportDespesasToPDF = (despesas: any[], filtros?: string) => {
       doc.setFontSize(10);
       doc.text('Venc/Pagamento', 20, y);
       doc.text('Empresa', 50, y);
-      doc.text('Descrição', 90, y);
-      doc.text('Categoria', 145, y);
+      doc.text('Descrição', 85, y);
+      doc.text('Nº Nota', 125, y);
+      doc.text('Categoria', 150, y);
       doc.text('Valor', 180, y);
       y += 10;
     }
@@ -89,16 +91,18 @@ export const exportDespesasToPDF = (despesas: any[], filtros?: string) => {
     const parsed = parseDateFlexible(dateStr);
     const displayDate = parsed ? parsed.toLocaleDateString('pt-BR') : '--/--/----';
 
-    const empresaName = (despesa.company || despesa.empresa || '').substring(0, 18);
-    const descText = (despesa.description || despesa.descricao || '').substring(0, 30);
-    const catText = (despesa.category || despesa.categoria || '').substring(0, 18);
+    const empresaName = (despesa.company || despesa.empresa || '').substring(0, 15);
+    const descText = (despesa.description || despesa.descricao || '').substring(0, 22);
+    const notaText = (despesa.numero_nota || '').substring(0, 12);
+    const catText = (despesa.category || despesa.categoria || '').substring(0, 14);
     const valueNum = despesa.valor_total || despesa.valor || 0;
     const valueText = `R$ ${valueNum.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
 
     doc.text(displayDate, 20, y);
     doc.text(empresaName, 50, y);
-    doc.text(descText, 90, y);
-    doc.text(catText, 145, y);
+    doc.text(descText, 85, y);
+    doc.text(notaText, 125, y);
+    doc.text(catText, 150, y);
     doc.text(valueText, 180, y);
   });
 
