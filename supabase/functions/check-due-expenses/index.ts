@@ -1,6 +1,7 @@
 // Supabase Edge Function: check-due-expenses
 // Sends Web Push Notifications for expenses due in the next 3 days
 import { createClient } from 'jsr:@supabase/supabase-js@2'
+import webpush from 'npm:web-push@3.6.7'
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -9,61 +10,11 @@ const vapidPrivateKey = Deno.env.get('VAPID_PRIVATE_KEY')!;
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// VAPID signing using native WebCrypto API (Deno-compatible)
-async function importVapidPrivateKey(base64Key: string) {
-    const keyBytes = Uint8Array.from(atob(base64Key.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
-    return await crypto.subtle.importKey(
-        'pkcs8',
-        keyBytes,
-        { name: 'ECDSA', namedCurve: 'P-256' },
-        false,
-        ['sign']
-    );
-}
-
-async function buildVapidToken(audience: string): Promise<string> {
-    const header = { typ: 'JWT', alg: 'ES256' };
-    const payload = {
-        aud: audience,
-        exp: Math.floor(Date.now() / 1000) + 12 * 3600,
-        sub: 'mailto:admin@gestao.financeira'
-    };
-
-    const encode = (obj: object) =>
-        btoa(JSON.stringify(obj)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-
-    const unsignedToken = `${encode(header)}.${encode(payload)}`;
-    const privateKey = await importVapidPrivateKey(vapidPrivateKey);
-    const signatureBytes = await crypto.subtle.sign(
-        { name: 'ECDSA', hash: 'SHA-256' },
-        privateKey,
-        new TextEncoder().encode(unsignedToken)
-    );
-    const signature = btoa(String.fromCharCode(...new Uint8Array(signatureBytes)))
-        .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-    return `${unsignedToken}.${signature}`;
-}
-
-async function sendPushNotification(
-    subscription: { endpoint: string; p256dh: string; auth: string },
-    payload: string
-): Promise<boolean> {
-    const url = new URL(subscription.endpoint);
-    const audience = `${url.protocol}//${url.host}`;
-    const vapidToken = await buildVapidToken(audience);
-
-    const response = await fetch(subscription.endpoint, {
-        method: 'POST',
-        headers: {
-            'Authorization': `vapid t=${vapidToken}, k=${vapidPublicKey}`,
-            'Content-Type': 'application/octet-stream',
-            'Content-Encoding': 'aes128gcm',
-            'TTL': '86400',
-        },
-        body: new TextEncoder().encode(payload),
-    });
-    return response.ok || response.status === 201;
-}
+webpush.setVapidDetails(
+    'mailto:admin@gestao.financeira',
+    vapidPublicKey,
+    vapidPrivateKey
+);
 
 Deno.serve(async (_req) => {
     try {
@@ -113,14 +64,22 @@ Deno.serve(async (_req) => {
 
             for (const sub of subscriptions) {
                 try {
-                    const ok = await sendPushNotification(sub, payloadData);
-                    results.push({ endpoint: sub.endpoint.slice(0, 40) + '...', ok });
-                    if (!ok) {
-                        // Remove stale subscriptions (status 404 or 410)
-                        await (supabase.from('push_subscriptions') as any).delete().eq('endpoint', sub.endpoint);
-                    }
+                    const pushSubscription = {
+                        endpoint: sub.endpoint,
+                        keys: {
+                            p256dh: sub.p256dh,
+                            auth: sub.auth
+                        }
+                    };
+
+                    await webpush.sendNotification(pushSubscription, payloadData);
+                    results.push({ endpoint: sub.endpoint.slice(0, 40) + '...', ok: true });
                 } catch (err: any) {
                     results.push({ endpoint: sub.endpoint.slice(0, 40) + '...', error: err.message });
+                    // Remove stale subscriptions (status 404 or 410)
+                    if (err.statusCode === 404 || err.statusCode === 410) {
+                        await supabase.from('push_subscriptions').delete().eq('endpoint', sub.endpoint);
+                    }
                 }
             }
         }
