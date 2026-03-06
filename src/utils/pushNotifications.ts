@@ -14,7 +14,7 @@ export const urlBase64ToUint8Array = (base64String: string) => {
 };
 
 // VAPID Public Key precisa vir das variáveis de ambiente na produção
-const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || '3e0IiTm2el2vCqAR5N_O56i3tkAdA1dCbk_zomgrp8RA84zLQ20V6gYYG4p_Ml7WPUMHRNk1SGxICgnXm9vW7w';
+const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || 'BFHIlA-oCqcEeQz1vmCXCWVWvdg5CSmCjc8s_FQG1XpzvO3ihzfIIqtW9TM2YXXKfSmZwCrWxELUMNRjj5X5EgU';
 
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
