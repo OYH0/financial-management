@@ -70,7 +70,7 @@ const DespesasFilterSimple: React.FC<DespesasFilterSimpleProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4">
         {/* Search */}
         <div className="relative group lg:col-span-2">
           <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors">
@@ -132,20 +132,24 @@ const DespesasFilterSimple: React.FC<DespesasFilterSimpleProps> = ({
           </Select>
         </div>
 
-        {/* Datas ( agrupadas ) */}
-        <div className="lg:col-span-1 flex flex-col sm:flex-row gap-2">
+        {/* Data De */}
+        <div className="lg:col-span-1">
           <Input
             type="date"
             value={dateFrom}
             onChange={(e) => setDateFrom(e.target.value)}
-            className="h-11 rounded-2xl bg-gray-50/50 border-gray-200 hover:bg-white focus:bg-white transition-all shadow-sm flex-1 text-sm"
+            className="h-11 rounded-2xl bg-gray-50/50 border-gray-200 hover:bg-white focus:bg-white transition-all shadow-sm w-full text-sm"
             placeholder="De"
           />
+        </div>
+
+        {/* Data Até */}
+        <div className="lg:col-span-1">
           <Input
             type="date"
             value={dateTo}
             onChange={(e) => setDateTo(e.target.value)}
-            className="h-11 rounded-2xl bg-gray-50/50 border-gray-200 hover:bg-white focus:bg-white transition-all shadow-sm flex-1 text-sm"
+            className="h-11 rounded-2xl bg-gray-50/50 border-gray-200 hover:bg-white focus:bg-white transition-all shadow-sm w-full text-sm"
             placeholder="Até"
           />
         </div>
