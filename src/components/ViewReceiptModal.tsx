@@ -32,7 +32,7 @@ const ViewReceiptModal: React.FC<ViewReceiptModalProps> = ({
     setError(null);
     
     try {
-      console.log('Loading receipt:', receiptPath);
+
       
       const { data, error } = await supabase.storage
         .from('receipts')

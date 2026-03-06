@@ -20,8 +20,8 @@ const sanitizeDate = (dateStr: string | null | undefined): string | null => {
 export const filterDataByPeriod = (data: any[], period: string, customMonth?: number, customYear?: number) => {
   if (!data || data.length === 0) return [];
 
-  console.log(`\n=== FILTRO DE PERÍODO: ${period.toUpperCase()} ===`);
-  console.log('Total de dados para filtrar:', data.length);
+
+
 
   const now = new Date();
   let startDate: Date;
@@ -33,7 +33,7 @@ export const filterDataByPeriod = (data: any[], period: string, customMonth?: nu
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       startDate = today;
       endDate = new Date(today.getTime() + 24 * 60 * 60 * 1000); // Fim do dia
-      console.log('Filtro HOJE - Data:', today.toLocaleDateString('pt-BR'));
+
       break;
     case 'week':
       // Semana atual (domingo a sábado)
@@ -43,33 +43,33 @@ export const filterDataByPeriod = (data: any[], period: string, customMonth?: nu
       startDate = startOfWeek;
       endDate = new Date(now);
       endDate.setHours(23, 59, 59, 999);
-      console.log('Filtro SEMANA - De:', startOfWeek.toLocaleDateString('pt-BR'), 'até:', endDate.toLocaleDateString('pt-BR'));
+
       break;
     case 'month':
       // Mês atual
       startDate = new Date(now.getFullYear(), now.getMonth(), 1);
       endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
-      console.log('Filtro MÊS - De:', startDate.toLocaleDateString('pt-BR'), 'até:', endDate.toLocaleDateString('pt-BR'));
+
       break;
     case 'year':
       // Ano atual
       startDate = new Date(now.getFullYear(), 0, 1);
       endDate = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
-      console.log('Filtro ANO - De:', startDate.toLocaleDateString('pt-BR'), 'até:', endDate.toLocaleDateString('pt-BR'));
+
       break;
     case 'custom':
       // Período personalizado - APENAS o mês selecionado (não acumulado)
       if (customMonth && customYear) {
         startDate = new Date(customYear, customMonth - 1, 1); // Primeiro dia do mês selecionado
         endDate = new Date(customYear, customMonth, 0, 23, 59, 59, 999); // Último dia do mês selecionado
-        console.log('Filtro PERSONALIZADO - APENAS o mês selecionado - De:', startDate.toLocaleDateString('pt-BR'), 'até:', endDate.toLocaleDateString('pt-BR'));
+
       } else {
-        console.log('Período personalizado sem dados válidos, retornando todos os dados');
+
         return data;
       }
       break;
     default:
-      console.log('Período não reconhecido, retornando todos os dados');
+
       return data; // Return all data if period is not recognized
   }
 
@@ -89,7 +89,7 @@ export const filterDataByPeriod = (data: any[], period: string, customMonth?: nu
     if (item.data_vencimento) {
       const sanitizedDate = sanitizeDate(item.data_vencimento);
       if (!sanitizedDate) {
-        console.log('❌ data_vencimento inválida:', item.data_vencimento);
+
         return false;
       }
 
@@ -102,12 +102,12 @@ export const filterDataByPeriod = (data: any[], period: string, customMonth?: nu
         const [ano, mes, dia] = sanitizedDate.split('-');
         itemDate = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia || "1"));
       }
-      console.log(`[${tipoItem}] Usando data_vencimento:`, sanitizedDate, '| Empresa:', item.empresa, '| Descrição:', item.descricao);
+
     } else if (item.data) {
       // Para receitas com mes_referencia, usar mes_referencia como data de filtro
       const dateToUse = item.mes_referencia ? sanitizeDate(item.mes_referencia) : sanitizeDate(item.data);
       if (!dateToUse) {
-        console.log('❌ data inválida:', item.data);
+
         return false;
       }
 
@@ -123,11 +123,11 @@ export const filterDataByPeriod = (data: any[], period: string, customMonth?: nu
       // Para receitas, mostrar também data_recebimento se existir
       const dataRecebimentoInfo = item.data_recebimento ? ` | Data Recebimento: ${item.data_recebimento}` : ' | Pendente';
       const mesRefInfo = item.mes_referencia ? ` | Mês Ref: ${item.mes_referencia}` : '';
-      console.log(`[${tipoItem}] Usando data:`, dateToUse, dataRecebimentoInfo, mesRefInfo, '| Empresa:', item.empresa, '| Descrição:', item.descricao, '| Valor:', item.valor);
+
     } else if (item.data_pagamento) {
       const sanitizedDate = sanitizeDate(item.data_pagamento);
       if (!sanitizedDate) {
-        console.log('❌ data_pagamento inválida:', item.data_pagamento);
+
         return false;
       }
 
@@ -139,9 +139,9 @@ export const filterDataByPeriod = (data: any[], period: string, customMonth?: nu
         const [ano, mes, dia] = sanitizedDate.split('-');
         itemDate = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia || "1"));
       }
-      console.log(`[${tipoItem}] Usando data_pagamento:`, sanitizedDate, '| Empresa:', item.empresa, '| Descrição:', item.descricao);
+
     } else {
-      console.log('❌ Item sem data válida:', item);
+
       return false;
     }
 
@@ -152,7 +152,7 @@ export const filterDataByPeriod = (data: any[], period: string, customMonth?: nu
       const match = itemDateOnly.getTime() === todayOnly.getTime();
 
       if (match) {
-        console.log('Item de HOJE encontrado:', item.data_vencimento || item.data || item.data_pagamento, item.descricao || item.empresa);
+
       }
 
       return match;
@@ -161,13 +161,13 @@ export const filterDataByPeriod = (data: any[], period: string, customMonth?: nu
     const match = itemDate >= startDate && itemDate <= endDate;
 
     if (match) {
-      console.log(`Item do período ${period} encontrado:`, item.data_vencimento || item.data || item.data_pagamento, item.descricao || item.empresa);
+
     }
 
     return match;
   });
 
-  console.log(`Dados filtrados para ${period}:`, filtered.length, 'de', data.length);
+
   return filtered;
 };
 

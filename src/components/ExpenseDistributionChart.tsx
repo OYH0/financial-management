@@ -9,13 +9,13 @@ interface ExpenseDistributionChartProps {
 }
 
 const ExpenseDistributionChart: React.FC<ExpenseDistributionChartProps> = ({ despesas }) => {
-  console.log('=== EXPENSE DISTRIBUTION CHART ===');
-  console.log('Despesas recebidas:', despesas?.length || 0);
+
+
 
   // Usar função centralizada para calcular dados
   const data = calculateDistributionData(despesas || []);
 
-  console.log('Dados do gráfico de distribuição:', data);
+
 
   // If there's no data with values, show placeholder
   if (!data.length) {

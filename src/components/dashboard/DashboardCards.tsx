@@ -32,13 +32,13 @@ const generateChartData = (categories: Record<string, number>) => {
 };
 
 const DashboardCards: React.FC<DashboardCardsProps> = ({ despesas, receitas, period, stats }) => {
-  console.log('\n🎯 =========================');
-  console.log('🎯 DASHBOARD CARDS DEBUG');
-  console.log('🎯 =========================');
-  console.log('Total de despesas recebidas:', despesas.length);
-  console.log('Total de receitas recebidas:', receitas.length);
-  console.log('Período:', period);
-  console.log('Stats:', stats);
+
+
+
+
+
+
+
 
   // Filtrar despesas para excluir Camerino e Implementação
   const despesasSemCamerino = despesas.filter(despesa => {
@@ -52,12 +52,12 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ despesas, receitas, per
     return !empresa.includes('camerino') && !empresa.includes('implementação') && empresa !== 'implementação';
   });
 
-  console.log('Total de despesas após filtrar Camerino:', despesasSemCamerino.length);
-  console.log('Total de receitas após filtrar Camerino:', receitasSemCamerino.length);
+
+
 
   // Verificar integridade dos dados
   const integrity = verifyDataIntegrity(despesasSemCamerino);
-  console.log('Integridade dos dados:', integrity);
+
 
   // Debug das empresas
   debugCompanies(despesasSemCamerino);
@@ -65,7 +65,7 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ despesas, receitas, per
   // Usar função centralizada para calcular dados (sem Camerino) incluindo receitas
   const companyTotals = calculateCompanyTotals(despesasSemCamerino, receitasSemCamerino);
 
-  console.log('\n🎯 === TOTAIS FINAIS CALCULADOS (SEM CAMERINO) ===');
+
   console.log('Churrasco Cariri:', {
     totalDespesas: companyTotals.churrasco_cariri?.total || 0,
     totalReceitas: companyTotals.churrasco_cariri?.totalReceitas || 0,

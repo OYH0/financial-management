@@ -64,7 +64,7 @@ const CompanhiaPage = () => {
   const { filteredDespesas, filteredReceitas } = useMemo(() => {
     // Se for "month" (mês atual), usar a mesma lógica da ReceitasPage
     if (selectedPeriod === 'month') {
-      console.log('=== COMPANHIA - Usando filtro mês atual igual ReceitasPage ===');
+
       const currentMonthDespesas = filterDataByPeriod(companhiaDespesas, selectedPeriod, customMonth, customYear);
       const currentMonthReceitas = filterDataByPeriod(companhiaReceitas, selectedPeriod, customMonth, customYear);
 
@@ -81,11 +81,11 @@ const CompanhiaPage = () => {
     }
   }, [companhiaDespesas, companhiaReceitas, selectedPeriod, customMonth, customYear, selectedCompany]);
 
-  console.log('=== COMPANHIA DEBUG ===');
-  console.log('Churrasco - Receitas filtradas:', filteredReceitas.length);
-  console.log('Churrasco - Total receitas período:', filteredReceitas.reduce((sum, r) => sum + r.valor, 0));
-  console.log('Churrasco - Despesas filtradas:', filteredDespesas.length);
-  console.log('Churrasco - Total despesas período:', filteredDespesas.reduce((sum, d) => sum + (d.valor_total || d.valor), 0));
+
+
+
+
+
 
   // Calcular estatísticas - usar nova lógica de lucro por período
   const totalDespesasPeriodo = filteredDespesas.reduce((sum, d) => sum + (d.valor_total || d.valor), 0);
@@ -140,7 +140,7 @@ const CompanhiaPage = () => {
     <div className="flex min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50">
       <Sidebar />
 
-      <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 lg:p-8">
+      <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8 min-w-0">
         <div className="w-full">
           {/* Header Section */}
           <div className="mb-8">

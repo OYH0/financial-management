@@ -21,10 +21,10 @@ interface AddReceitaModalProps {
   defaultEmpresa?: string;
 }
 
-const AddReceitaModal: React.FC<AddReceitaModalProps> = ({ 
-  isOpen, 
-  onClose, 
-  defaultEmpresa 
+const AddReceitaModal: React.FC<AddReceitaModalProps> = ({
+  isOpen,
+  onClose,
+  defaultEmpresa
 }) => {
   const [formData, setFormData] = useState({
     data: '',
@@ -48,7 +48,7 @@ const AddReceitaModal: React.FC<AddReceitaModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const receitaData = {
       data: formData.data,
       valor: parseFloat(formData.valor),
@@ -62,8 +62,8 @@ const AddReceitaModal: React.FC<AddReceitaModalProps> = ({
 
     createReceita.mutate(receitaData, {
       onSuccess: () => {
-        console.log('Receita created successfully with destino:', formData.destino);
-        
+
+
         setFormData({
           data: '',
           valor: '',
@@ -81,14 +81,14 @@ const AddReceitaModal: React.FC<AddReceitaModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Nova Receita</DialogTitle>
-          <DialogDescription>
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto border-white/20 bg-white/95 backdrop-blur-xl shadow-2xl rounded-3xl">
+        <DialogHeader className="space-y-3 pb-4 border-b border-gray-100">
+          <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Nova Receita</DialogTitle>
+          <DialogDescription className="text-gray-500">
             Adicione uma nova receita ao sistema
           </DialogDescription>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Informações Básicas */}
           <div className="space-y-4">
@@ -135,7 +135,7 @@ const AddReceitaModal: React.FC<AddReceitaModalProps> = ({
           {/* Classificação */}
           <div className="space-y-4">
             <h4 className="text-sm font-medium text-muted-foreground border-b pb-2">Classificação</h4>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="empresa" className="text-sm font-medium">Empresa/Cliente *</Label>
@@ -153,7 +153,7 @@ const AddReceitaModal: React.FC<AddReceitaModalProps> = ({
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="categoria" className="text-sm font-medium">Categoria *</Label>
                 <Select onValueChange={(value) => setFormData({ ...formData, categoria: value })} value={formData.categoria}>
@@ -184,7 +184,7 @@ const AddReceitaModal: React.FC<AddReceitaModalProps> = ({
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="data_recebimento" className="text-sm font-medium">Data de Recebimento</Label>
                 <Input

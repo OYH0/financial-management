@@ -49,26 +49,26 @@ const JohnnyPage = () => {
 
   // Aplicar filtro de período
   const { filteredDespesas, filteredReceitas } = useMemo(() => {
-    console.log('=== JOHNNY DEBUG ===');
-    console.log('Despesas Johnny antes do filtro de período:', johnnyDespesas.length);
-    console.log('Receitas Johnny antes do filtro de período:', johnnyReceitas.length);
-    console.log('Período selecionado:', selectedPeriod);
-    console.log('Mês customizado:', customMonth, 'Ano customizado:', customYear);
+
+
+
+
+
 
     const filtered = {
       filteredDespesas: filterDataByPeriod(johnnyDespesas, selectedPeriod, customMonth, customYear),
       filteredReceitas: filterDataByPeriod(johnnyReceitas, selectedPeriod, customMonth, customYear)
     };
 
-    console.log('Despesas Johnny após filtro de período:', filtered.filteredDespesas.length);
-    console.log('Receitas Johnny após filtro de período:', filtered.filteredReceitas.length);
+
+
 
     // Debug dos totais
     const totalDespesasJohnny = filtered.filteredDespesas.reduce((sum, d) => sum + (d.valor_total || d.valor || 0), 0);
     const totalReceitasJohnny = filtered.filteredReceitas.reduce((sum, r) => sum + (r.valor || 0), 0);
 
-    console.log('Total Despesas Johnny:', totalDespesasJohnny.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
-    console.log('Total Receitas Johnny:', totalReceitasJohnny.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
+
+
 
     return filtered;
   }, [johnnyDespesas, johnnyReceitas, selectedPeriod, customMonth, customYear]);
@@ -82,7 +82,7 @@ const JohnnyPage = () => {
     <div className="flex min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <Sidebar />
 
-      <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 lg:p-8">
+      <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8 min-w-0">
         <div className="w-full">
           <div className="mb-8">
             <div className="flex flex-col gap-4 mb-6">

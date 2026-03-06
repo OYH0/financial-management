@@ -186,7 +186,7 @@ export const useCreateDespesa = () => {
     mutationFn: async (despesa: Omit<Despesa, 'id' | 'user_id'>) => {
       if (!user) throw new Error('Usuário não autenticado');
 
-      console.log('Creating despesa for user:', user.id);
+
 
       // Validate required fields
       if (!despesa.valor || despesa.valor <= 0) {
@@ -210,7 +210,7 @@ export const useCreateDespesa = () => {
         throw error;
       }
 
-      console.log('Despesa created successfully:', data);
+
       return data;
     },
     onSuccess: () => {
@@ -241,7 +241,7 @@ export const useUpdateDespesa = () => {
     mutationFn: async ({ id, originalData, ...despesa }: Partial<Despesa> & { id: number; originalData?: Despesa }) => {
       if (!user) throw new Error('Usuário não autenticado');
 
-      console.log('Updating despesa:', id);
+
 
       // Buscar dados originais se não fornecidos
       if (!originalData) {
@@ -268,7 +268,7 @@ export const useUpdateDespesa = () => {
       }
 
 
-      console.log('Despesa updated successfully:', data);
+
       return data;
     },
     onSuccess: () => {
@@ -299,7 +299,7 @@ export const useDeleteDespesa = () => {
     mutationFn: async (despesa: Despesa) => {
       if (!user) throw new Error('Usuário não autenticado');
 
-      console.log('Deleting despesa:', despesa.id);
+
 
       const { error } = await supabase
         .from('despesas')
@@ -311,7 +311,7 @@ export const useDeleteDespesa = () => {
         throw error;
       }
 
-      console.log('Despesa deleted successfully');
+
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['despesas'] });

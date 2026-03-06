@@ -24,9 +24,9 @@ const RelatoriosPage = () => {
     const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
     const currentYear = new Date().getFullYear();
     
-    console.log('=== DEBUG EVOLUÇÃO MENSAL ===');
-    console.log('Ano atual:', currentYear);
-    console.log('Total de receitas:', receitas?.length || 0);
+
+
+
     console.log('Primeiras 5 receitas:', receitas?.slice(0, 5).map(r => ({
       id: r.id,
       data: r.data,
@@ -42,7 +42,7 @@ const RelatoriosPage = () => {
         const isCurrentMonth = date.getMonth() === index && date.getFullYear() === currentYear;
         
         if (index === 0 || index === 5) { // Debug para Jan e Jun
-          console.log(`Despesa - ${month}: data=${d.data_vencimento || d.data}, parsedDate=${date.toISOString()}, month=${date.getMonth()}, isCurrentMonth=${isCurrentMonth}`);
+
         }
         
         return isCurrentMonth;
@@ -53,7 +53,7 @@ const RelatoriosPage = () => {
         const isCurrentMonth = date.getMonth() === index && date.getFullYear() === currentYear;
         
         if (index === 0 || index === 5) { // Debug para Jan e Jun
-          console.log(`Receita - ${month}: data=${r.data}, parsedDate=${date.toISOString()}, month=${date.getMonth()}, isCurrentMonth=${isCurrentMonth}, valor=${r.valor}`);
+
         }
         
         return isCurrentMonth;

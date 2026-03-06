@@ -37,8 +37,8 @@ const normalizeSubcategoria = (subcategoria: string): string => {
 };
 
 export const calculateDistributionData = (despesas: Despesa[]) => {
-  console.log('=== CALCULATING DISTRIBUTION DATA WITH SUBCATEGORIES ===');
-  console.log('Despesas para calcular:', despesas?.length || 0);
+
+
 
   if (!despesas || despesas.length === 0) {
     return [];
@@ -97,12 +97,12 @@ export const calculateDistributionData = (despesas: Despesa[]) => {
     }))
     .sort((a, b) => b.value - a.value);
 
-  console.log('Dados de distribuição calculados (sem Camerino):', data);
+
   return data;
 };
 
 export const calculateMonthlyData = (despesas: Despesa[], receitas: any[]) => {
-  console.log('=== CALCULATING MONTHLY DATA ===');
+
 
   const monthlyData: { [key: string]: { despesas: number; receitas: number } } = {};
 
@@ -165,12 +165,12 @@ export const calculateMonthlyData = (despesas: Despesa[], receitas: any[]) => {
       return monthOrder.indexOf(a.month) - monthOrder.indexOf(b.month);
     });
 
-  console.log('Dados mensais calculados (sem Camerino):', data);
+
   return data;
 };
 
 export const calculateTotalsByCompany = (despesas: Despesa[], empresa: string) => {
-  console.log(`=== CALCULATING TOTALS FOR ${empresa} ===`);
+
 
   const filteredDespesas = despesas.filter(d => d.empresa === empresa);
 
@@ -182,7 +182,7 @@ export const calculateTotalsByCompany = (despesas: Despesa[], empresa: string) =
     .filter(d => d.status !== 'PAGO')
     .reduce((sum, d) => sum + (d.valor_total || d.valor || 0), 0);
 
-  console.log(`Totais para ${empresa}:`, { totalDespesas, totalPagas, totalPendentes });
+
 
   return {
     totalDespesas,
@@ -276,8 +276,8 @@ export const calculateCompanyTotals = (despesas: Despesa[], receitas: any[] = []
   });
 
   // Processar receitas
-  console.log('\n💰 === PROCESSANDO RECEITAS ===');
-  console.log('Total de receitas para processar:', receitas.length);
+
+
 
   let receitasRecebidas = 0;
   let receitasPendentes = 0;
@@ -289,24 +289,24 @@ export const calculateCompanyTotals = (despesas: Despesa[], receitas: any[] = []
     const descricao = (receita.descricao || '').toUpperCase().trim();
     const isSaldoDia = descricao.includes('SALDO DO DIA') || descricao === 'SALDO DO DIA';
 
-    console.log(`📊 Receita: ${receita.descricao} | Empresa: ${receita.empresa} (normalizado: ${normalizedCompany}) | Valor: R$ ${valor} | Data: ${receita.data} | Data Recebimento: ${receita.data_recebimento || 'Pendente'} | Status: ${foiRecebida ? '✅ RECEBIDA' : '⏳ PENDENTE'}${isSaldoDia ? ' | 💰 SALDO' : ''}`);
+
 
     // Pular receitas da Camerino
     if (normalizedCompany === 'camerino') {
-      console.log('  ❌ Pulando receita da Camerino');
+
       return;
     }
 
     // IMPORTANTE: Só contabilizar receitas que já foram recebidas (data_recebimento preenchido)
     if (!foiRecebida) {
-      console.log('  ⏳ Receita pendente - NÃO será contabilizada no total');
+
       receitasPendentes++;
       return;
     }
 
     // IMPORTANTE: NÃO contabilizar "SALDO DO DIA" como receita (é apenas movimentação de caixa)
     if (isSaldoDia) {
-      console.log('  💰 SALDO DO DIA - NÃO será contabilizado como receita (apenas movimentação de caixa)');
+
       return;
     }
 
@@ -315,30 +315,30 @@ export const calculateCompanyTotals = (despesas: Despesa[], receitas: any[] = []
       company.totalReceitas += valor;
       company.receitas.push(receita);
       receitasRecebidas++;
-      console.log(`  ✅ Receita RECEBIDA adicionada a ${normalizedCompany} | Novo total receitas: R$ ${company.totalReceitas}`);
+
     } else {
-      console.log(`  ⚠️ Empresa não reconhecida: ${normalizedCompany}`);
+
     }
   });
 
-  console.log('\n📈 === ESTATÍSTICAS DE PROCESSAMENTO ===');
-  console.log('Receitas RECEBIDAS contabilizadas:', receitasRecebidas);
-  console.log('Receitas PENDENTES ignoradas:', receitasPendentes);
 
-  console.log('\n💰 === RESUMO DE RECEITAS POR EMPRESA ===');
-  console.log('Churrasco Cariri - Total Receitas:', companies.churrasco_cariri.totalReceitas, '| Qtd:', companies.churrasco_cariri.receitas.length);
-  console.log('Churrasco Fortaleza - Total Receitas:', companies.churrasco_fortaleza.totalReceitas, '| Qtd:', companies.churrasco_fortaleza.receitas.length);
-  console.log('Johnny - Total Receitas:', companies.johnny.totalReceitas, '| Qtd:', companies.johnny.receitas.length);
+
+
+
+
+
+
+
 
   return companies;
 };
 
 // Função para debug das empresas
 export const debugCompanies = (despesas: Despesa[]) => {
-  console.log('🔍 DEBUG: Empresas encontradas:');
+
   const empresas = [...new Set(despesas.map(d => d.empresa))];
   empresas.forEach(empresa => {
-    console.log(`- ${empresa} (normalizado: ${normalizeCompanyName(empresa)})`);
+
   });
 };
 

@@ -15,7 +15,7 @@ const DashboardCharts: React.FC<DashboardChartsProps> = ({ despesas, receitas, s
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mb-6 lg:mb-8">
       {/* Distribuição por Categoria */}
-      <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl rounded-2xl">
+      <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl rounded-2xl min-w-0 overflow-hidden">
         <CardHeader>
           <CardTitle className="text-xl text-gray-800">Distribuição por Categoria</CardTitle>
           <CardDescription>Despesas por categoria</CardDescription>
@@ -26,17 +26,17 @@ const DashboardCharts: React.FC<DashboardChartsProps> = ({ despesas, receitas, s
       </Card>
 
       {/* Evolução Mensal */}
-      <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl rounded-2xl">
+      <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl rounded-2xl min-w-0 overflow-hidden">
         <CardHeader>
           <CardTitle className="text-xl text-gray-800">Evolução Mensal de Lucro</CardTitle>
           <CardDescription>Lucro (Receitas - Despesas) ao longo dos meses</CardDescription>
         </CardHeader>
         <CardContent>
-          <MonthlyEvolutionChart 
-            despesas={despesas} 
+          <MonthlyEvolutionChart
+            despesas={despesas}
             receitas={receitas}
-            selectedPeriod={selectedPeriod} 
-            customYear={customYear} 
+            selectedPeriod={selectedPeriod}
+            customYear={customYear}
           />
         </CardContent>
       </Card>

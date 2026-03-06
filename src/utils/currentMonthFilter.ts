@@ -37,14 +37,14 @@ export const parseDateFlexible = (input?: string | null): Date | null => {
 export const filterDespesasCurrentMonth = (transactions: Transaction[], dateFrom?: string, dateTo?: string, excludeCamerino: boolean = true) => {
   if (!transactions || transactions.length === 0) return [];
 
-  console.log('=== FILTRO MÊS ATUAL ===');
-  console.log('Total de transações:', transactions.length);
-  console.log('Filtros de data - De:', dateFrom, 'Até:', dateTo);
-  console.log('Excluir Camerino?', excludeCamerino);
+
+
+
+
 
   // Se foram fornecidas datas específicas, usar elas
   if (dateFrom || dateTo) {
-    console.log('Usando filtros de data manuais');
+
 
     const filteredByDate = transactions.filter(transaction => {
       const transactionDateStr = transaction.data_vencimento || transaction.date;
@@ -68,8 +68,8 @@ export const filterDespesasCurrentMonth = (transactions: Transaction[], dateFrom
       })
       : filteredByDate;
 
-    console.log('Total filtrado por data:', filteredByDate.length);
-    console.log('Total após filtro Camerino:', finalFiltered.length);
+
+
     return finalFiltered;
   }
 
@@ -78,9 +78,9 @@ export const filterDespesasCurrentMonth = (transactions: Transaction[], dateFrom
   const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const currentMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
 
-  console.log('Filtro automático - Início do mês atual:', currentMonthStart.toLocaleDateString('pt-BR'));
-  console.log('Filtro automático - Fim do mês atual:', currentMonthEnd.toLocaleDateString('pt-BR'));
-  console.log('Data atual:', now.toLocaleDateString('pt-BR'));
+
+
+
 
   const filtered = transactions.filter(transaction => {
     const vencimento = transaction.data_vencimento;
@@ -105,9 +105,9 @@ export const filterDespesasCurrentMonth = (transactions: Transaction[], dateFrom
 
       if (pagamentoDate >= currentMonthStart && pagamentoDate <= currentMonthEnd) {
         includeTransaction = true;
-        console.log('✅ Incluído por pagamento no mês atual:', pagamento, transaction.description);
+
       } else {
-        console.log('❌ Excluído por pagamento fora do mês:', pagamento, transaction.description);
+
       }
     }
     // Se não foi paga ainda, usar data de vencimento
@@ -129,10 +129,10 @@ export const filterDespesasCurrentMonth = (transactions: Transaction[], dateFrom
 
       if (isInRange) {
         includeTransaction = true;
-        console.log('✅ Incluído por vencimento no mês atual:', vencimento, transaction.description);
+
       } else {
         if (vencimento && vencimento.includes('2025-09') && parseInt(vencimento.split('-')[2]) >= 16) {
-          console.log('❌ Excluído por vencimento fora do mês:', vencimento, transaction.description);
+
         }
       }
     }
@@ -148,22 +148,22 @@ export const filterDespesasCurrentMonth = (transactions: Transaction[], dateFrom
     })
     : filtered;
 
-  console.log('Total filtrado para o mês atual:', filtered.length);
-  console.log('Total após filtro Camerino:', finalFiltered.length);
+
+
   return finalFiltered;
 };
 
 export const filterReceitasCurrentMonth = (receitas: Receita[], dateFrom?: string, dateTo?: string, excludeCamerino: boolean = true) => {
   if (!receitas || receitas.length === 0) return [];
 
-  console.log('=== FILTRO MÊS ATUAL - RECEITAS ===');
-  console.log('Total de receitas:', receitas.length);
-  console.log('Filtros de data - De:', dateFrom, 'Até:', dateTo);
-  console.log('Excluir Camerino?', excludeCamerino);
+
+
+
+
 
   // Se foram fornecidas datas específicas, usar elas
   if (dateFrom || dateTo) {
-    console.log('Usando filtros de data manuais');
+
 
     const filteredByDate = receitas.filter(receita => {
       const receitaDate = receita.data_recebimento || receita.data;
@@ -194,8 +194,8 @@ export const filterReceitasCurrentMonth = (receitas: Receita[], dateFrom?: strin
       })
       : filteredByDate;
 
-    console.log('Total filtrado por data:', filteredByDate.length);
-    console.log('Total após filtro Camerino:', finalFiltered.length);
+
+
     return finalFiltered;
   }
 
@@ -204,8 +204,8 @@ export const filterReceitasCurrentMonth = (receitas: Receita[], dateFrom?: strin
   const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const currentMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
 
-  console.log('Filtro automático - Início do mês atual:', currentMonthStart.toLocaleDateString('pt-BR'));
-  console.log('Filtro automático - Fim do mês atual:', currentMonthEnd.toLocaleDateString('pt-BR'));
+
+
 
   const filtered = receitas.filter(receita => {
     const dataReceita = receita.data;
@@ -225,7 +225,7 @@ export const filterReceitasCurrentMonth = (receitas: Receita[], dateFrom?: strin
 
       if (receitaDate >= currentMonthStart && receitaDate <= currentMonthEnd) {
         includeReceita = true;
-        console.log('Incluído por data da receita no mês atual:', dataReceita, receita.descricao);
+
       }
     }
 
@@ -241,7 +241,7 @@ export const filterReceitasCurrentMonth = (receitas: Receita[], dateFrom?: strin
 
       if (recebimentoDate >= currentMonthStart && recebimentoDate <= currentMonthEnd) {
         includeReceita = true;
-        console.log('Incluído por recebimento no mês atual:', dataRecebimento, receita.descricao);
+
       }
     }
 
@@ -256,7 +256,7 @@ export const filterReceitasCurrentMonth = (receitas: Receita[], dateFrom?: strin
     })
     : filtered;
 
-  console.log('Total filtrado para o mês atual:', filtered.length);
-  console.log('Total após filtro Camerino:', finalFiltered.length);
+
+
   return finalFiltered;
 };

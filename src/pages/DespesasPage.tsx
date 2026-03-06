@@ -269,7 +269,7 @@ const DespesasPage = () => {
     <div className="flex min-h-screen bg-gradient-to-br from-gray-50 via-red-50 to-red-100">
       <Sidebar />
 
-      <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 lg:p-6">
+      <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8 min-w-0">
         <div className="w-full">
           {/* Header Section */}
           <div className="mb-4">

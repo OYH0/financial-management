@@ -28,16 +28,35 @@ const TransactionHistoryModal: React.FC<TransactionHistoryModalProps> = ({
         .from('transaction_history')
         .select('*')
         .eq('transaction_type', transactionType);
-      
+
       // Se transactionId for 0, buscar todo o histórico do tipo
       if (transactionId !== 0) {
         query = query.eq('transaction_id', transactionId);
       }
-      
+
       const { data, error } = await query.order('timestamp', { ascending: false });
 
       if (error) throw error;
-      return data;
+
+      if (!data || data.length === 0) return [];
+
+      const userIds = [...new Set(data.filter(item => item.user_id).map(item => item.user_id))];
+
+      if (userIds.length > 0) {
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('id, email')
+          .in('id', userIds);
+
+        const profilesMap = new Map(profilesData?.map(p => [p.id, p.email]) || []);
+
+        return data.map(item => ({
+          ...item,
+          user_email: profilesMap.get(item.user_id) || 'Usuário desconhecido'
+        }));
+      }
+
+      return data.map(item => ({ ...item, user_email: 'Usuário desconhecido' }));
     },
     enabled: isOpen
   });
@@ -89,7 +108,7 @@ const TransactionHistoryModal: React.FC<TransactionHistoryModalProps> = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Clock className="h-5 w-5" />
-            {transactionId === 0 
+            {transactionId === 0
               ? `Histórico Completo de ${transactionType === 'despesa' ? 'Despesas' : 'Receitas'}`
               : 'Histórico da Transação'
             }
@@ -117,14 +136,21 @@ const TransactionHistoryModal: React.FC<TransactionHistoryModalProps> = ({
                         )}
                       </CardTitle>
                     </div>
-                    <Badge variant="outline">
-                      {formatDate(entry.timestamp)}
-                    </Badge>
+                    <div className="flex flex-col items-end gap-1">
+                      <Badge variant="outline" className="flex items-center gap-1.5 py-1 px-2.5">
+                        <Clock className="w-3.5 h-3.5 text-gray-400" />
+                        {formatDate(entry.timestamp)}
+                      </Badge>
+                      <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100">
+                        <User className="w-3.5 h-3.5 text-blue-500" />
+                        {(entry as any).user_email}
+                      </div>
+                    </div>
                   </div>
                   {transactionId === 0 && entry.new_data && (
                     <div className="mt-2 text-sm text-gray-600">
                       <span className="font-medium">Descrição: </span>
-                      {(entry.new_data as any)?.descricao || 'N/A'} - 
+                      {(entry.new_data as any)?.descricao || 'N/A'} -
                       <span className="font-medium"> Empresa: </span>
                       {(entry.new_data as any)?.empresa || 'N/A'}
                     </div>
@@ -135,14 +161,14 @@ const TransactionHistoryModal: React.FC<TransactionHistoryModalProps> = ({
                     {entry.changed_fields && entry.changed_fields.length > 0 && (
                       <div>
                         <span className="text-sm font-medium text-gray-700">
-                          Campos alterados: 
+                          Campos alterados:
                         </span>
                         <span className="text-sm text-gray-600 ml-1">
                           {getChangedFieldsText(entry.changed_fields)}
                         </span>
                       </div>
                     )}
-                    
+
                     {entry.action_type === 'update' && entry.old_data && entry.new_data && (
                       <div className="grid grid-cols-2 gap-4 mt-4">
                         <div>
@@ -200,7 +226,7 @@ const TransactionHistoryModal: React.FC<TransactionHistoryModalProps> = ({
           ) : (
             <div className="text-center py-8">
               <p className="text-gray-500">
-                {transactionId === 0 
+                {transactionId === 0
                   ? `Nenhum histórico encontrado para ${transactionType === 'despesa' ? 'despesas' : 'receitas'}.`
                   : 'Nenhum histórico encontrado para esta transação.'
                 }

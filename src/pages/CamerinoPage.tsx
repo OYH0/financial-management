@@ -70,7 +70,7 @@ const CamerinoPage = () => {
     return <CamerinoPasswordProtection onPasswordCorrect={() => setIsAuthenticated(true)} />;
   }
 
-  console.log('Camerino - Despesas filtradas:', filteredDespesas.length);
+
   console.log('Camerino - Despesas por categoria:', filteredDespesas.reduce((acc, d) => {
     const cat = d.categoria || 'SEM_CATEGORIA';
     acc[cat] = (acc[cat] || 0) + 1;
@@ -81,7 +81,7 @@ const CamerinoPage = () => {
     <div className="flex min-h-screen bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50">
       <Sidebar />
 
-      <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 lg:p-8">
+      <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8 min-w-0">
         <div className="w-full">
           {/* Header Section */}
           <div className="mb-8">

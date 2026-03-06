@@ -11,10 +11,10 @@ interface MonthlyEvolutionChartProps {
 }
 
 const MonthlyEvolutionChart: React.FC<MonthlyEvolutionChartProps> = ({ despesas, receitas, selectedPeriod, customYear }) => {
-  console.log('=== MONTHLY EVOLUTION CHART ===');
-  console.log('Despesas recebidas:', despesas?.length || 0);
-  console.log('Receitas recebidas:', receitas?.length || 0);
-  console.log('Período selecionado:', selectedPeriod);
+
+
+
+
   
   // Gerar dados anuais (Jan-Dez) - ano atual ou customYear no filtro personalizado
   const chartData = React.useMemo(() => {
@@ -91,7 +91,7 @@ const MonthlyEvolutionChart: React.FC<MonthlyEvolutionChartProps> = ({ despesas,
     });
 
     const result = data.sort((a, b) => a.index - b.index);
-    console.log('Dados finais do gráfico anual:', result);
+
     return result;
   }, [despesas, receitas, selectedPeriod, customYear]);
   

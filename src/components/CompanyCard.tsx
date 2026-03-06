@@ -49,10 +49,10 @@ const CompanyCard: React.FC<CompanyCardProps> = ({
   ].filter(item => item.value > 0);
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm relative">
-      {/* Borda lateral vermelha que se estende por toda a altura */}
-      <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-500"></div>
-      
+    <div className="bg-white/90 backdrop-blur-md rounded-2xl border border-gray-100 overflow-hidden shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-1 transition-all duration-300 relative group cursor-pointer">
+      {/* Borda lateral colorida que se estende por toda a altura */}
+      <div className="absolute left-0 top-0 bottom-0 w-1.5 transition-all duration-300 group-hover:w-2" style={{ backgroundColor: chartColor }}></div>
+
       <div className="p-4 lg:p-6 ml-2 lg:ml-3">
         <div className="flex justify-between items-start mb-3 lg:mb-4">
           <div className="min-w-0 flex-1 mr-2">
@@ -63,7 +63,7 @@ const CompanyCard: React.FC<CompanyCardProps> = ({
             {status}
           </span>
         </div>
-        
+
         {/* Resumo Financeiro */}
         <div className="grid grid-cols-2 gap-2 lg:gap-3 mb-3 lg:mb-4">
           <div>
@@ -138,10 +138,10 @@ const CompanyCard: React.FC<CompanyCardProps> = ({
         <div className="h-16 mb-2">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData}>
-              <Line 
-                type="monotone" 
-                dataKey="value" 
-                stroke={chartColor} 
+              <Line
+                type="monotone"
+                dataKey="value"
+                stroke={chartColor}
                 strokeWidth={3}
                 dot={{ fill: chartColor, strokeWidth: 2, r: 4 }}
                 activeDot={{ r: 6, fill: chartColor }}
@@ -155,8 +155,8 @@ const CompanyCard: React.FC<CompanyCardProps> = ({
           <div className="flex flex-wrap gap-2 mt-3">
             {categoryData.map((category, index) => (
               <div key={index} className="flex items-center gap-1">
-                <div 
-                  className="w-2 h-2 rounded-full" 
+                <div
+                  className="w-2 h-2 rounded-full"
                   style={{ backgroundColor: category.color }}
                 />
                 <span className="text-xs text-gray-600">{category.name}</span>

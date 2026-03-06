@@ -50,7 +50,7 @@ export const useAdminAccess = () => {
                 email: user.email,
                 is_admin: false
               });
-              console.log('Created new user profile');
+
             } catch (insertError) {
               console.error('Error creating user profile:', insertError);
             }

@@ -127,7 +127,7 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
   // Function to create corresponding receita for Retiradas subcategory Implementação
   const createImplementacaoReceita = async (despesaData: any) => {
     try {
-      console.log('Creating Implementação receita from edit with data:', despesaData);
+
 
       const receitaData = {
         data: despesaData.data_vencimento,
@@ -139,7 +139,7 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
         user_id: user.id
       };
 
-      console.log('Inserting receita data from edit:', receitaData);
+
 
       const { data: insertedReceita, error: receitaError } = await supabase
         .from('receitas')
@@ -155,7 +155,7 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
           variant: "destructive"
         });
       } else {
-        console.log('Receita de Implementação criada com sucesso no edit:', insertedReceita);
+
         toast({
           title: "Sucesso!",
           description: "Receita de Implementação criada automaticamente.",
@@ -195,7 +195,7 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
     setIsLoading(true);
 
     try {
-      console.log('=== EDITANDO DESPESA ===');
+
       console.log('Valores originais:', {
         valor: transaction.valor,
         valor_juros: transaction.valor_juros,
@@ -224,7 +224,7 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
         origem_pagamento: formData.origem_pagamento || null
       };
 
-      console.log('Updating despesa with data:', updateData);
+
 
       // Usar o hook de atualização que já gerencia o saldo
       await updateDespesa.mutateAsync({

@@ -104,7 +104,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
   // Function to create corresponding receita for Retiradas subcategory Implementação
   const createImplementacaoReceita = async (despesaData: any) => {
     try {
-      console.log('Creating Implementação receita with data:', despesaData);
+
 
       const receitaData = {
         data: despesaData.data_vencimento,
@@ -116,7 +116,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
         user_id: user.id
       };
 
-      console.log('Inserting receita data:', receitaData);
+
 
       const { data: insertedReceita, error: receitaError } = await supabase
         .from('receitas')
@@ -132,7 +132,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
           variant: "destructive"
         });
       } else {
-        console.log('Receita de Implementação criada com sucesso:', insertedReceita);
+
         toast({
           title: "Sucesso!",
           description: "Receita de Implementação criada automaticamente.",
@@ -259,24 +259,24 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
 
       // Se foi marcado como pago na criação e tem origem de pagamento, subtrair do saldo correspondente
       if (formData.data && formData.origem_pagamento) {
-        console.log('=== DESPESA PAGA - DEBITANDO SALDO ===');
-        console.log('Data de pagamento:', formData.data);
-        console.log('Origem do pagamento:', formData.origem_pagamento);
-        console.log('Valor:', formData.valor);
-        console.log('Valor juros:', formData.valor_juros);
+
+
+
+
+
 
         const valorTotal = parseFloat(formData.valor) + (formData.valor_juros ? parseFloat(formData.valor_juros) : 0);
-        console.log('Valor total calculado:', valorTotal);
 
-        console.log('Transação criada com sucesso');
+
+
       } else {
-        console.log('=== SALDO NÃO DEBITADO ===');
-        console.log('Data de pagamento:', formData.data);
-        console.log('Origem do pagamento:', formData.origem_pagamento);
-        console.log('Condições para débito: data preenchida E origem selecionada');
+
+
+
+
       }
 
-      console.log('Inserting despesa with data:', insertData);
+
 
       const { data: insertedDespesa, error } = await supabase
         .from('despesas')
@@ -294,7 +294,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
         return;
       }
 
-      console.log('Despesa inserted successfully:', insertedDespesa);
+
 
       // If subcategoria is Implementação in RETIRADAS, create corresponding receita
       if (formData.categoria === 'RETIRADAS' && formData.subcategoria === 'IMPLEMENTACAO') {
@@ -368,9 +368,9 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] max-h-[85vh] overflow-y-auto rounded-3xl">
-        <DialogHeader>
-          <DialogTitle>Nova Transação</DialogTitle>
+      <DialogContent className="sm:max-w-[425px] max-h-[85vh] overflow-y-auto rounded-3xl border-white/20 bg-white/95 backdrop-blur-xl shadow-2xl">
+        <DialogHeader className="space-y-3 pb-4 border-b border-gray-100">
+          <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Nova Transação</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">

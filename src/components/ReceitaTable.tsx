@@ -33,7 +33,7 @@ const ReceitaTable: React.FC<ReceitaTableProps> = ({ receitas }) => {
   const handleDelete = () => {
     if (deleteId) {
       const receita = receitas.find(r => r.id === deleteId);
-      
+
       deleteReceita.mutate(deleteId, {
         onSuccess: () => {
           setDeleteId(null);
@@ -90,9 +90,9 @@ const ReceitaTable: React.FC<ReceitaTableProps> = ({ receitas }) => {
       <div className="hidden lg:block space-y-3">
         {receitas.map((receita) => {
           const canEdit = canEditReceita(receita);
-          
+
           return (
-            <div key={receita.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
+            <div key={receita.id} className="bg-white/80 backdrop-blur-sm rounded-xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-green-100/50 p-4 hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:border-green-200 hover:-translate-y-0.5 transition-all duration-300">
               <div className="grid grid-cols-12 gap-3 items-start">
                 {/* Coluna 1: Data e Empresa (2 colunas) */}
                 <div className="col-span-2 text-sm">
@@ -139,8 +139,8 @@ const ReceitaTable: React.FC<ReceitaTableProps> = ({ receitas }) => {
                 {/* Coluna 5: Ações (2 colunas) */}
                 <div className="col-span-2 flex justify-end gap-2">
                   {canEdit ? (
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="sm"
                       onClick={() => setEditingReceita(receita)}
                     >
@@ -151,10 +151,10 @@ const ReceitaTable: React.FC<ReceitaTableProps> = ({ receitas }) => {
                       <Lock size={16} className="text-gray-400" />
                     </Button>
                   )}
-                  
+
                   {canEdit ? (
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="sm"
                       onClick={() => setDeleteId(receita.id)}
                       className="text-red-500 hover:text-red-700"
@@ -177,9 +177,9 @@ const ReceitaTable: React.FC<ReceitaTableProps> = ({ receitas }) => {
       <div className="lg:hidden space-y-3">
         {receitas.map((receita) => {
           const canEdit = canEditReceita(receita);
-          
+
           return (
-            <div key={receita.id} className="bg-white rounded-lg shadow-sm p-3 border border-gray-200">
+            <div key={receita.id} className="bg-white/90 backdrop-blur-sm rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] p-4 border border-gray-100 active:scale-[0.98] transition-all">
               <div className="flex justify-between items-start mb-2">
                 <div className="flex-1">
                   <div className="font-medium text-sm text-gray-900 mb-1 break-words">
@@ -222,8 +222,8 @@ const ReceitaTable: React.FC<ReceitaTableProps> = ({ receitas }) => {
 
               <div className="flex justify-end gap-2 pt-1 border-t border-gray-100">
                 {canEdit ? (
-                  <Button 
-                    variant="ghost" 
+                  <Button
+                    variant="ghost"
                     size="sm"
                     onClick={() => setEditingReceita(receita)}
                   >
@@ -234,10 +234,10 @@ const ReceitaTable: React.FC<ReceitaTableProps> = ({ receitas }) => {
                     <Lock size={16} className="text-gray-400" />
                   </Button>
                 )}
-                
+
                 {canEdit ? (
-                  <Button 
-                    variant="ghost" 
+                  <Button
+                    variant="ghost"
                     size="sm"
                     onClick={() => setDeleteId(receita.id)}
                     className="text-red-500 hover:text-red-700"
@@ -273,7 +273,7 @@ const ReceitaTable: React.FC<ReceitaTableProps> = ({ receitas }) => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={handleDelete}
               className="bg-red-600 hover:bg-red-700"
             >

@@ -66,12 +66,12 @@ export const calculateProfitByPeriod = (
   let startDate: Date;
   let endDate: Date;
 
-  console.log('=== CALCULANDO LUCRO POR PERÍODO ===');
-  console.log('Período selecionado:', selectedPeriod);
-  console.log('Mês personalizado:', customMonth);
-  console.log('Ano personalizado:', customYear);
-  console.log('Total despesas:', allDespesas?.length || 0);
-  console.log('Total receitas:', allReceitas?.length || 0);
+
+
+
+
+
+
 
   switch (selectedPeriod) {
     case 'today':
@@ -108,9 +108,9 @@ export const calculateProfitByPeriod = (
       if (customMonth && customYear) {
         startDate = new Date(customYear, customMonth - 1, 1); // Primeiro dia do mês selecionado
         endDate = new Date(customYear, customMonth, 0, 23, 59, 59, 999); // Último dia do mês selecionado
-        console.log('Período personalizado definido - APENAS o mês selecionado - De:', startDate, 'até:', endDate);
+
       } else {
-        console.log('Dados insuficientes para período personalizado');
+
         return 0;
       }
       break;
@@ -119,7 +119,7 @@ export const calculateProfitByPeriod = (
       return 0;
   }
 
-  console.log('Período de cálculo - De:', startDate.toLocaleDateString('pt-BR'), 'até:', endDate.toLocaleDateString('pt-BR'));
+
 
   // Filtrar despesas
   const filteredDespesas = allDespesas.filter(item => {
@@ -135,7 +135,7 @@ export const calculateProfitByPeriod = (
     
     const isInRange = itemDate >= startDate && itemDate <= endDate;
     if (isInRange) {
-      console.log('Despesa incluída:', item.descricao, item.valor_total || item.valor, itemDate.toLocaleDateString('pt-BR'));
+
     }
     return isInRange;
   });
@@ -154,7 +154,7 @@ export const calculateProfitByPeriod = (
     
     const isInRange = itemDate >= startDate && itemDate <= endDate;
     if (isInRange) {
-      console.log('Receita incluída:', item.descricao, item.valor, itemDate.toLocaleDateString('pt-BR'));
+
     }
     return isInRange;
   });
@@ -162,9 +162,9 @@ export const calculateProfitByPeriod = (
   const totalDespesas = filteredDespesas.reduce((sum, d) => sum + (d.valor_total || d.valor), 0);
   const totalReceitas = filteredReceitas.reduce((sum, r) => sum + r.valor, 0);
   
-  console.log('Total despesas filtradas:', totalDespesas);
-  console.log('Total receitas filtradas:', totalReceitas);
-  console.log('Lucro calculado:', totalReceitas - totalDespesas);
+
+
+
   
   return totalReceitas - totalDespesas;
 };

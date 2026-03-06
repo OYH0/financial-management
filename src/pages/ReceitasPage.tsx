@@ -23,7 +23,7 @@ const ReceitasPage = () => {
   const [filterCategoria, setFilterCategoria] = useState('all');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
-  
+
   const { data: receitas, stats, isLoading } = useReceitas();
   const { isAdmin } = useAdminAccess();
   const { isAuthenticated, authenticate } = useCamerinoAuth();
@@ -41,15 +41,15 @@ const ReceitasPage = () => {
   const filteredReceitas = useMemo(() => {
     return currentMonthReceitas.filter(receita => {
       const matchesSearch = receita.descricao.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           receita.empresa.toLowerCase().includes(searchTerm.toLowerCase());
-      
+        receita.empresa.toLowerCase().includes(searchTerm.toLowerCase());
+
       // Filtro de empresa com suporte a dados legados
       let matchesEmpresa = filterEmpresa === 'all';
       if (!matchesEmpresa) {
         if (filterEmpresa === 'Companhia do Churrasco Cariri') {
           // Incluir tanto "Companhia do Churrasco Cariri" quanto "Companhia do Churrasco" (dados legados)
-          matchesEmpresa = receita.empresa === 'Companhia do Churrasco Cariri' || 
-                          receita.empresa === 'Companhia do Churrasco';
+          matchesEmpresa = receita.empresa === 'Companhia do Churrasco Cariri' ||
+            receita.empresa === 'Companhia do Churrasco';
         } else if (filterEmpresa === 'Companhia do Churrasco Fortaleza') {
           // Apenas "Companhia do Churrasco Fortaleza"
           matchesEmpresa = receita.empresa === 'Companhia do Churrasco Fortaleza';
@@ -57,27 +57,27 @@ const ReceitasPage = () => {
           matchesEmpresa = receita.empresa === filterEmpresa;
         }
       }
-      
+
       const matchesCategoria = filterCategoria === 'all' || receita.categoria === filterCategoria;
-      
+
       return matchesSearch && matchesEmpresa && matchesCategoria;
     });
   }, [currentMonthReceitas, searchTerm, filterEmpresa, filterCategoria]);
 
   // Calcular estatísticas baseadas nas receitas exibidas (excluindo apenas pagamentos de despesas e receitas de conta/cofre dos totais)
-  const receitasParaEstatisticas = filteredReceitas.filter(r => 
+  const receitasParaEstatisticas = filteredReceitas.filter(r =>
     r.descricao !== 'PAGAMENTO DE DESPESA' &&
     ((r as any).destino === 'total' || !(r as any).destino) // Excluir receitas de conta/cofre apenas dos cálculos
   );
-  
+
   // Calcular totais apenas das receitas de vendas (para estatísticas)
-  const receitasVendas = receitasParaEstatisticas.filter(r => 
-    r.categoria !== 'EM_COFRE' && 
+  const receitasVendas = receitasParaEstatisticas.filter(r =>
+    r.categoria !== 'EM_COFRE' &&
     r.categoria !== 'EM_CONTA'
   );
-  
+
   const totalReceitas = receitasVendas.reduce((sum, receita) => sum + receita.valor, 0);
-  
+
 
   // Handle filter empresa change with Camerino auth check
   const handleFilterEmpresaChange = (value: string) => {
@@ -105,8 +105,8 @@ const ReceitasPage = () => {
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-gray-50 via-green-50 to-emerald-100">
       <Sidebar />
-      
-      <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 lg:p-6">
+
+      <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8 min-w-0">
         <div className="w-full">
           {/* Header Section */}
           <div className="mb-4">
@@ -121,9 +121,9 @@ const ReceitasPage = () => {
                 <p className="text-gray-600 text-xs lg:text-sm">Gerencie todas as receitas do negócio</p>
               </div>
             </div>
-            
+
             {isAdmin ? (
-              <Button 
+              <Button
                 onClick={() => setIsModalOpen(true)}
                 className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg transform hover:scale-105 transition-all duration-200 rounded-2xl"
               >

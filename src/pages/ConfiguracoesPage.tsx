@@ -14,19 +14,38 @@ import { useSettings } from '@/hooks/useSettings';
 import { useDarkMode } from '@/hooks/useDarkMode';
 import SecurityModal from '@/components/SecurityModal';
 import { exportDataToPDF, exportDataToJSON, importDataFromJSON } from '@/utils/dataExport';
+import { registerPushNotifications, unregisterPushNotifications } from '@/utils/pushNotifications';
 
 const ConfiguracoesPage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const { settings, updateSettings } = useSettings();
-  
+
   // Use dark mode effect
   useDarkMode(settings.darkMode);
-  
+
   const [securityModal, setSecurityModal] = useState<{
     isOpen: boolean;
     type: 'password' | '2fa' | 'delete';
   }>({ isOpen: false, type: 'password' });
+
+  const handleToggleNotifications = async (checked: boolean) => {
+    if (checked) {
+      if (!user) {
+        toast({ title: 'Erro', description: 'Você precisa estar logado para ativar notificações.', variant: 'destructive' });
+        return;
+      }
+      const success = await registerPushNotifications(user.id);
+      if (success) {
+        updateSettings({ notifications: true });
+      }
+    } else {
+      const success = await unregisterPushNotifications();
+      if (success) {
+        updateSettings({ notifications: false });
+      }
+    }
+  };
 
   const handleSaveSettings = () => {
     toast({
@@ -71,19 +90,19 @@ const ConfiguracoesPage = () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.json';
-    
+
     input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) return;
-      
+
       try {
         const data = await importDataFromJSON(file);
-        
+
         // Restore data to localStorage
         if (data.despesas) localStorage.setItem('despesas', JSON.stringify(data.despesas));
         if (data.receitas) localStorage.setItem('receitas', JSON.stringify(data.receitas));
         if (data.configuracoes) localStorage.setItem('app-settings', JSON.stringify(data.configuracoes));
-        
+
         toast({
           title: "Dados importados",
           description: "Backup foi restaurado com sucesso! Recarregue a página para ver as mudanças.",
@@ -96,7 +115,7 @@ const ConfiguracoesPage = () => {
         });
       }
     };
-    
+
     input.click();
   };
 
@@ -110,8 +129,8 @@ const ConfiguracoesPage = () => {
   return (
     <div className={`flex min-h-screen ${settings.darkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 via-purple-50 to-indigo-100'}`}>
       <Sidebar />
-      
-      <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 lg:p-8">
+
+      <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8 min-w-0">
         <div className="max-w-4xl mx-auto">
           {/* Header Section */}
           <div className="mb-8">
@@ -148,29 +167,29 @@ const ConfiguracoesPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="email">Email</Label>
-                    <Input 
-                      id="email" 
-                      value={user?.email || ''} 
-                      disabled 
+                    <Input
+                      id="email"
+                      value={user?.email || ''}
+                      disabled
                       className={`rounded-xl ${settings.darkMode ? 'bg-gray-700' : 'bg-gray-50'}`}
                     />
                   </div>
                   <div>
                     <Label htmlFor="nome">Nome</Label>
-                    <Input 
-                      id="nome" 
+                    <Input
+                      id="nome"
                       value={settings.userProfile.nome}
                       onChange={(e) => updateSettings({
                         userProfile: { ...settings.userProfile, nome: e.target.value }
                       })}
-                      placeholder="Seu nome completo" 
+                      placeholder="Seu nome completo"
                       className="rounded-xl"
                     />
                   </div>
                 </div>
                 <div>
                   <Label htmlFor="empresa">Empresa Principal</Label>
-                  <Select 
+                  <Select
                     value={settings.userProfile.empresaPrincipal}
                     onValueChange={(value) => updateSettings({
                       userProfile: { ...settings.userProfile, empresaPrincipal: value }
@@ -188,7 +207,7 @@ const ConfiguracoesPage = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <Button 
+                <Button
                   onClick={handleProfileUpdate}
                   className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-2xl"
                 >
@@ -218,12 +237,12 @@ const ConfiguracoesPage = () => {
                       Receba notificações no navegador
                     </p>
                   </div>
-                  <Switch 
+                  <Switch
                     checked={settings.notifications}
-                    onCheckedChange={(checked) => updateSettings({ notifications: checked })}
+                    onCheckedChange={handleToggleNotifications}
                   />
                 </div>
-                
+
                 {settings.notifications && (
                   <>
                     <Separator />
@@ -234,16 +253,16 @@ const ConfiguracoesPage = () => {
                           Receba notificações quando despesas estão prestes a vencer
                         </p>
                       </div>
-                      <Switch 
+                      <Switch
                         checked={settings.reminderDueExpenses}
                         onCheckedChange={(checked) => updateSettings({ reminderDueExpenses: checked })}
                       />
                     </div>
-                    
+
                     {settings.reminderDueExpenses && (
                       <div className="ml-6">
                         <Label htmlFor="reminderDays">Dias de antecedência</Label>
-                        <Select 
+                        <Select
                           value={settings.reminderDaysBeforeDue.toString()}
                           onValueChange={(value) => updateSettings({ reminderDaysBeforeDue: parseInt(value) })}
                         >
@@ -262,9 +281,9 @@ const ConfiguracoesPage = () => {
                     )}
                   </>
                 )}
-                
+
                 <Separator />
-                
+
                 <div className="flex items-center justify-between">
                   <div>
                     <Label className="text-base font-medium">Alertas por Email</Label>
@@ -272,12 +291,12 @@ const ConfiguracoesPage = () => {
                       Receba alertas importantes por email
                     </p>
                   </div>
-                  <Switch 
+                  <Switch
                     checked={settings.emailAlerts}
                     onCheckedChange={(checked) => updateSettings({ emailAlerts: checked })}
                   />
                 </div>
-                
+
                 {settings.emailAlerts && (
                   <>
                     <Separator />
@@ -288,16 +307,16 @@ const ConfiguracoesPage = () => {
                           Receba emails quando despesas estão prestes a vencer
                         </p>
                       </div>
-                      <Switch 
+                      <Switch
                         checked={settings.emailReminderDueExpenses}
                         onCheckedChange={(checked) => updateSettings({ emailReminderDueExpenses: checked })}
                       />
                     </div>
                   </>
                 )}
-                
+
                 <Separator />
-                
+
                 <div className="flex items-center justify-between">
                   <div>
                     <Label className="text-base font-medium">Relatórios Automáticos</Label>
@@ -305,7 +324,7 @@ const ConfiguracoesPage = () => {
                       Receba relatórios mensais por email
                     </p>
                   </div>
-                  <Switch 
+                  <Switch
                     checked={settings.monthlyReports}
                     onCheckedChange={(checked) => updateSettings({ monthlyReports: checked })}
                   />
@@ -334,19 +353,19 @@ const ConfiguracoesPage = () => {
                       Usar tema escuro na interface
                     </p>
                   </div>
-                  <Switch 
+                  <Switch
                     checked={settings.darkMode}
                     onCheckedChange={(checked) => updateSettings({ darkMode: checked })}
                   />
                 </div>
-                
+
                 <Separator />
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label>Idioma</Label>
-                    <Select 
-                      value={settings.language} 
+                    <Select
+                      value={settings.language}
                       onValueChange={(value: 'pt-BR' | 'en-US' | 'es-ES') => updateSettings({ language: value })}
                     >
                       <SelectTrigger className="rounded-xl">
@@ -359,11 +378,11 @@ const ConfiguracoesPage = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                  
+
                   <div>
                     <Label>Moeda</Label>
-                    <Select 
-                      value={settings.currency} 
+                    <Select
+                      value={settings.currency}
                       onValueChange={(value: 'BRL' | 'USD' | 'EUR') => updateSettings({ currency: value })}
                     >
                       <SelectTrigger className="rounded-xl">
@@ -401,18 +420,18 @@ const ConfiguracoesPage = () => {
                       Fazer backup automático dos dados
                     </p>
                   </div>
-                  <Switch 
+                  <Switch
                     checked={settings.autoBackup}
                     onCheckedChange={(checked) => updateSettings({ autoBackup: checked })}
                   />
                 </div>
-                
+
                 <Separator />
-                
+
                 <div>
                   <Label>Frequência do Backup</Label>
-                  <Select 
-                    value={settings.backupFrequency} 
+                  <Select
+                    value={settings.backupFrequency}
                     onValueChange={(value: 'daily' | 'weekly' | 'monthly') => updateSettings({ backupFrequency: value })}
                   >
                     <SelectTrigger className="rounded-xl">
@@ -425,29 +444,29 @@ const ConfiguracoesPage = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <Separator />
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Button 
+                  <Button
                     onClick={handleExportPDF}
-                    variant="outline" 
+                    variant="outline"
                     className="rounded-2xl"
                   >
                     <Download className="w-4 h-4 mr-2" />
                     Exportar PDF
                   </Button>
-                  <Button 
+                  <Button
                     onClick={handleExportData}
-                    variant="outline" 
+                    variant="outline"
                     className="rounded-2xl"
                   >
                     <Download className="w-4 h-4 mr-2" />
                     Exportar Dados
                   </Button>
-                  <Button 
+                  <Button
                     onClick={handleImportData}
-                    variant="outline" 
+                    variant="outline"
                     className="rounded-2xl"
                   >
                     <Upload className="w-4 h-4 mr-2" />
@@ -471,23 +490,23 @@ const ConfiguracoesPage = () => {
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <Button 
+                <Button
                   onClick={() => setSecurityModal({ isOpen: true, type: 'password' })}
-                  variant="outline" 
+                  variant="outline"
                   className="w-full rounded-2xl"
                 >
                   Alterar Senha
                 </Button>
-                <Button 
+                <Button
                   onClick={() => setSecurityModal({ isOpen: true, type: '2fa' })}
-                  variant="outline" 
+                  variant="outline"
                   className="w-full rounded-2xl"
                 >
                   Configurar Autenticação em Duas Etapas
                 </Button>
-                <Button 
+                <Button
                   onClick={() => setSecurityModal({ isOpen: true, type: 'delete' })}
-                  variant="destructive" 
+                  variant="destructive"
                   className="w-full rounded-2xl"
                 >
                   Excluir Conta
@@ -497,7 +516,7 @@ const ConfiguracoesPage = () => {
 
             {/* Botão de Salvar */}
             <div className="flex justify-end">
-              <Button 
+              <Button
                 onClick={handleSaveSettings}
                 className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg rounded-2xl px-8"
               >
@@ -509,7 +528,7 @@ const ConfiguracoesPage = () => {
         </div>
       </div>
 
-      <SecurityModal 
+      <SecurityModal
         isOpen={securityModal.isOpen}
         onClose={() => setSecurityModal({ ...securityModal, isOpen: false })}
         type={securityModal.type}

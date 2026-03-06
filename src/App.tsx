@@ -21,12 +21,12 @@ import ImplementacaoPage from "./pages/ImplementacaoPage";
 import AdminPage from "./pages/AdminPage";
 import NotFound from "./pages/NotFound";
 
-console.log('App.tsx loading...');
+
 
 const queryClient = new QueryClient();
 
 const App = () => {
-  console.log('App component rendering...');
+
   
   try {
     return (

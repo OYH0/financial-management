@@ -97,7 +97,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
     try {
       const today = getCurrentDate();
 
-      console.log('Marking transaction as paid:', transaction.id, 'Setting payment date to:', today);
+
 
       const updateData: any = {
         data: today, // Now this represents the payment date
@@ -130,7 +130,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
         ...updateData
       });
 
-      console.log('Transaction updated successfully');
+
 
       const formattedDate = new Date(today).toLocaleDateString('pt-BR');
       const sourceText = paymentSource === 'cofre' ? 'cofre' : 'conta';
@@ -176,7 +176,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
         const fileExt = file.name.split('.').pop();
         const fileName = `${user.id}/${transaction.id}_${Date.now()}.${fileExt}`;
 
-        console.log('Uploading file:', fileName);
+
 
         const { error: uploadError } = await supabase.storage
           .from('receipts')
@@ -187,7 +187,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
           throw uploadError;
         }
 
-        console.log('File uploaded successfully, updating database...');
+
 
         const { error: updateError } = await supabase
           .from('despesas')
@@ -260,7 +260,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
       {/* Versão desktop - Cards compactos ao invés de tabela larga */}
       <div className="hidden lg:block space-y-3">
         {sortedTransactions.map((transaction) => (
-          <div key={transaction.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
+          <div key={transaction.id} className="bg-white/80 backdrop-blur-sm rounded-xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-blue-100/50 p-4 hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:border-blue-200 hover:-translate-y-0.5 transition-all duration-300">
             <div className="grid grid-cols-12 gap-3 items-start">
               {/* Coluna 1: Data e Empresa (2 colunas) */}
               <div className="col-span-2 text-sm">
@@ -333,7 +333,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
       {/* Versão mobile - Cards */}
       <div className="lg:hidden space-y-3">
         {sortedTransactions.map((transaction) => (
-          <div key={transaction.id} className="bg-white rounded-lg shadow-sm p-3 border border-gray-200">
+          <div key={transaction.id} className="bg-white/90 backdrop-blur-sm rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] p-4 border border-gray-100 active:scale-[0.98] transition-all">
             <div className="flex justify-between items-start mb-2">
               <div className="flex-1">
                 <div className="font-medium text-sm text-gray-900 mb-1 break-words">

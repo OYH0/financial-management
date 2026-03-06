@@ -26,11 +26,11 @@ const ImplementacaoPage = () => {
     return allReceitas?.filter(receita => {
       const empresa = receita.empresa?.toLowerCase().trim() || '';
       const isImplementacao = empresa === 'implementação' || empresa === 'implementacao';
-      
+
       // Excluir receitas com destino "conta" ou "cofre"
       const destino = (receita as any).destino;
       const isDestinoProd = destino === 'total' || !destino;
-      
+
       return isImplementacao && isDestinoProd;
     }) || [];
   }, [allReceitas]);
@@ -51,8 +51,8 @@ const ImplementacaoPage = () => {
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-gray-50 via-orange-50 to-amber-100">
       <Sidebar />
-      
-      <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 lg:p-8">
+
+      <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8 min-w-0">
         <div className="w-full">
           {/* Header Section */}
           <div className="mb-8">
@@ -67,7 +67,7 @@ const ImplementacaoPage = () => {
                 <p className="text-gray-600 text-sm lg:text-lg">Gestão financeira de projetos de implementação</p>
               </div>
             </div>
-            
+
             {!isAdmin && (
               <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
                 <div className="flex items-center gap-3">
@@ -82,8 +82,8 @@ const ImplementacaoPage = () => {
           </div>
 
           {/* Stats Cards */}
-          <ImplementacaoStats 
-            despesas={implementacaoDespesas} 
+          <ImplementacaoStats
+            despesas={implementacaoDespesas}
             receitas={implementacaoReceitas}
             allDespesas={implementacaoDespesas}
             allReceitas={implementacaoReceitas}

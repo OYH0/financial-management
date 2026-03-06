@@ -32,7 +32,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       (event, newSession) => {
         if (!mounted) return;
         
-        console.log('Auth state changed:', event, newSession?.user?.email);
+
 
         // Only update state, don't do additional operations for most events
         if (event !== 'TOKEN_REFRESHED' && event !== 'SIGNED_OUT') {
@@ -46,7 +46,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (event === 'TOKEN_REFRESHED') {
           const now = Date.now();
           if (now - lastRefreshTime < refreshThrottleTime) {
-            console.log('Throttling token refresh event - too frequent');
+
             return;
           }
           lastRefreshTime = now;
@@ -63,7 +63,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
       if (!mounted) return;
       
-      console.log('Initial session:', initialSession?.user?.email);
+
       setSession(initialSession);
       setUser(initialSession?.user ?? null);
       setLoading(false);
@@ -76,7 +76,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    console.log('Attempting to sign in with:', email);
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -85,14 +85,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (error) {
       console.error('Sign in error:', error);
     } else {
-      console.log('Sign in successful');
+
     }
     
     return { error };
   };
 
   const signUp = async (email: string, password: string) => {
-    console.log('Attempting to sign up with:', email);
+
     const redirectUrl = `${window.location.origin}/`;
     
     const { error } = await supabase.auth.signUp({
@@ -106,7 +106,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (error) {
       console.error('Sign up error:', error);
     } else {
-      console.log('Sign up successful - check email for confirmation');
+
     }
     
     return { error };
@@ -114,7 +114,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     try {
-      console.log('Signing out user:', user?.email);
+
       
       // Clear local state first
       setUser(null);
@@ -126,7 +126,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error) {
         console.error('Sign out error:', error);
       } else {
-        console.log('Sign out successful');
+
         // Force redirect to auth page
         window.location.href = '/auth';
       }

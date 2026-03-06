@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
-import { Filter, X, Calendar } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Filter, X, Calendar, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
@@ -32,8 +31,8 @@ const ReceitasFilter: React.FC<ReceitasFilterProps> = ({
   dateTo,
   setDateTo
 }) => {
-  const hasActiveFilters = searchTerm !== '' || 
-    filterEmpresa !== 'all' || 
+  const hasActiveFilters = searchTerm !== '' ||
+    filterEmpresa !== 'all' ||
     filterCategoria !== 'all' ||
     (dateFrom && dateFrom !== '') ||
     (dateTo && dateTo !== '');
@@ -47,97 +46,98 @@ const ReceitasFilter: React.FC<ReceitasFilterProps> = ({
   };
 
   return (
-    <Card className="bg-white/80 backdrop-blur-sm border-white/20 shadow-xl rounded-2xl mb-6">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Filter className="h-5 w-5 text-gray-600" />
-            <CardTitle className="text-xl text-gray-800">Filtros</CardTitle>
+    <div className="bg-white/90 backdrop-blur-xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-3xl p-5 mb-6 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+      <div className="flex items-center justify-between mb-4 border-b border-gray-50 pb-3">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-gray-50 rounded-xl">
+            <Filter className="h-4 w-4 text-gray-600" />
           </div>
+          <h3 className="text-base font-semibold text-gray-800">Filtros de Busca</h3>
+        </div>
+        <div className="flex gap-2">
           {hasActiveFilters && (
             <Button
               variant="ghost"
               size="sm"
               onClick={clearFilters}
-              className="text-gray-500 hover:text-gray-700 rounded-full h-8 px-3"
+              className="text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-xl text-xs transition-colors"
             >
               <X className="h-4 w-4 mr-1" />
-              Limpar
+              Limpar Filtros
             </Button>
           )}
         </div>
-      </CardHeader>
-      <CardContent className="pt-0">
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex-1 min-w-[280px]">
-            <Input
-              placeholder="Buscar por descrição ou empresa..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="rounded-xl h-9"
-            />
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        {/* Search */}
+        <div className="relative group lg:col-span-2">
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors">
+            <Search className="h-4 w-4" />
           </div>
-          <div className="min-w-[140px]">
-            <Select value={filterEmpresa} onValueChange={setFilterEmpresa}>
-              <SelectTrigger className="rounded-xl h-9 text-sm">
-                <SelectValue placeholder="Empresa" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas as empresas</SelectItem>
-                <SelectItem value="Companhia do Churrasco Cariri">Churrasco - Cariri</SelectItem>
-                <SelectItem value="Companhia do Churrasco Fortaleza">Churrasco - Fortaleza</SelectItem>
-                <SelectItem value="Johnny">Johnny Rockets</SelectItem>
-                <SelectItem value="Camerino">Camerino</SelectItem>
-                <SelectItem value="Implementação">Implementação</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="min-w-[130px]">
-            <Select value={filterCategoria} onValueChange={setFilterCategoria}>
-              <SelectTrigger className="rounded-xl h-9 text-sm">
-                <SelectValue placeholder="Categoria" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas as categorias</SelectItem>
-                <SelectItem value="VENDAS">{prettyLabel('VENDAS')}</SelectItem>
-                <SelectItem value="VENDAS_DIARIAS">{prettyLabel('VENDAS_DIARIAS')}</SelectItem>
-                <SelectItem value="OUTROS">{prettyLabel('OUTROS')}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          {/* Filtros de Data */}
+          <Input
+            placeholder="Buscar por descrição ou empresa..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 h-11 rounded-2xl bg-gray-50/50 border-gray-200 hover:bg-white focus:bg-white transition-all shadow-sm"
+          />
+        </div>
+
+        {/* Empresa */}
+        <div className="lg:col-span-1">
+          <Select value={filterEmpresa} onValueChange={setFilterEmpresa}>
+            <SelectTrigger className="h-11 rounded-2xl bg-gray-50/50 border-gray-200 hover:bg-white transition-all shadow-sm">
+              <SelectValue placeholder="Empresa" />
+            </SelectTrigger>
+            <SelectContent className="rounded-2xl shadow-xl border-gray-100">
+              <SelectItem value="all" className="rounded-xl">Todas Empresas</SelectItem>
+              <SelectItem value="Companhia do Churrasco Cariri" className="rounded-xl">Churrasco - Cariri</SelectItem>
+              <SelectItem value="Companhia do Churrasco Fortaleza" className="rounded-xl">Churrasco - Fortaleza</SelectItem>
+              <SelectItem value="Johnny" className="rounded-xl">Johnny</SelectItem>
+              <SelectItem value="Camerino" className="rounded-xl">Camerino</SelectItem>
+              <SelectItem value="Implementação" className="rounded-xl">Implementação</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Categoria */}
+        <div className="lg:col-span-1">
+          <Select value={filterCategoria} onValueChange={setFilterCategoria}>
+            <SelectTrigger className="h-11 rounded-2xl bg-gray-50/50 border-gray-200 hover:bg-white transition-all shadow-sm">
+              <SelectValue placeholder="Categoria" />
+            </SelectTrigger>
+            <SelectContent className="rounded-2xl shadow-xl border-gray-100">
+              <SelectItem value="all" className="rounded-xl">Todas Categorias</SelectItem>
+              <SelectItem value="VENDAS" className="rounded-xl">{prettyLabel('VENDAS')}</SelectItem>
+              <SelectItem value="VENDAS_DIARIAS" className="rounded-xl">{prettyLabel('VENDAS_DIARIAS')}</SelectItem>
+              <SelectItem value="OUTROS" className="rounded-xl">{prettyLabel('OUTROS')}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Datas ( agrupadas ) */}
+        <div className="lg:col-span-1 flex flex-col sm:flex-row gap-2">
           {setDateFrom && setDateTo && (
             <>
-              <div className="min-w-[130px]">
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
-                  <Input
-                    type="date"
-                    placeholder="Data inicial"
-                    value={dateFrom || ''}
-                    onChange={(e) => setDateFrom(e.target.value)}
-                    className="rounded-xl pl-8 h-9 text-sm"
-                  />
-                </div>
-              </div>
-              <div className="min-w-[130px]">
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
-                  <Input
-                    type="date"
-                    placeholder="Data final"
-                    value={dateTo || ''}
-                    onChange={(e) => setDateTo(e.target.value)}
-                    className="rounded-xl pl-8 h-9 text-sm"
-                  />
-                </div>
-              </div>
+              <Input
+                type="date"
+                value={dateFrom || ''}
+                onChange={(e) => setDateFrom(e.target.value)}
+                className="h-11 rounded-2xl bg-gray-50/50 border-gray-200 hover:bg-white focus:bg-white transition-all shadow-sm flex-1 text-sm"
+                placeholder="De"
+              />
+              <Input
+                type="date"
+                value={dateTo || ''}
+                onChange={(e) => setDateTo(e.target.value)}
+                className="h-11 rounded-2xl bg-gray-50/50 border-gray-200 hover:bg-white focus:bg-white transition-all shadow-sm flex-1 text-sm"
+                placeholder="Até"
+              />
             </>
           )}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 

@@ -25,7 +25,7 @@ export const useReceitas = () => {
   const query = useQuery({
     queryKey: ['receitas'],
     queryFn: async () => {
-      console.log('Fetching receitas from Supabase');
+
       const { data, error } = await supabase
         .from('receitas')
         .select('*')
@@ -36,7 +36,7 @@ export const useReceitas = () => {
         throw error;
       }
       
-      console.log('Receitas fetched successfully:', data?.length || 0, 'records');
+
       return data as Receita[];
     },
     enabled: true,

@@ -97,8 +97,8 @@ const AdminPage = () => {
     <AdminRoute>
       <div className="flex min-h-screen bg-gradient-to-br from-gray-50 via-red-50 to-pink-100">
         <Sidebar />
-        
-        <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 lg:p-8">
+
+        <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8 min-w-0">
           <div className="max-w-6xl mx-auto">
             {/* Header Section */}
             <div className="mb-8">
@@ -206,7 +206,7 @@ const AdminPage = () => {
                             </div>
                           </div>
                           <div className="flex items-center gap-3">
-                            <Badge 
+                            <Badge
                               variant={profile.is_admin ? "default" : "secondary"}
                               className={profile.is_admin ? "bg-green-100 text-green-800" : ""}
                             >
@@ -216,8 +216,8 @@ const AdminPage = () => {
                               onClick={() => toggleAdminStatus(profile.id, profile.is_admin)}
                               variant={profile.is_admin ? "destructive" : "default"}
                               size="sm"
-                              className={profile.is_admin 
-                                ? "bg-red-500 hover:bg-red-600" 
+                              className={profile.is_admin
+                                ? "bg-red-500 hover:bg-red-600"
                                 : "bg-green-500 hover:bg-green-600 text-white"
                               }
                             >

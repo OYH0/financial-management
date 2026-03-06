@@ -65,7 +65,7 @@ export const logger = {
    */
   log: (...args: any[]): void => {
     if (isLoggingEnabled()) {
-      console.log(...formatMessage('LOG', ...args));
+
     }
   },
 

@@ -10,9 +10,9 @@ interface ExpenseDistributionProps {
 }
 
 const ExpenseDistribution: React.FC<ExpenseDistributionProps> = ({ despesas, empresa }) => {
-  console.log('=== EXPENSE DISTRIBUTION ===');
-  console.log('Empresa:', empresa);
-  console.log('Despesas recebidas (já filtradas):', despesas?.length || 0);
+
+
+
 
   // Calcular dados de distribuição diretamente das despesas passadas
   const data = React.useMemo(() => {
@@ -65,7 +65,7 @@ const ExpenseDistribution: React.FC<ExpenseDistributionProps> = ({ despesas, emp
       }))
       .sort((a, b) => b.value - a.value);
 
-    console.log('Dados de distribuição calculados:', result);
+
     return result;
   }, [despesas]);
 

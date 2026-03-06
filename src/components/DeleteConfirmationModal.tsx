@@ -37,16 +37,16 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
     if (!transaction) return;
 
     try {
-      console.log('=== EXCLUINDO TRANSAÇÃO ===');
-      console.log('Tipo:', type);
-      console.log('Status:', transaction.status);
-      console.log('Origem pagamento:', transaction.origem_pagamento);
-      console.log('Valor total:', transaction.valor_total || transaction.valor);
+
+
+
+
+
 
       // Para despesas, o ajuste de saldo agora é feito automaticamente no hook useDeleteDespesa
 
       // SEGUNDO: Agora excluir a transação
-      console.log('EXCLUINDO TRANSAÇÃO DO BANCO...');
+
       if (type === 'despesa') {
         // Converter Transaction para Despesa
         const despesa = {
@@ -70,7 +70,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
         await deleteReceita.mutateAsync(transaction.id);
       }
       
-      console.log('TRANSAÇÃO EXCLUÍDA COM SUCESSO');
+
       onTransactionDeleted();
       onClose();
     } catch (error) {

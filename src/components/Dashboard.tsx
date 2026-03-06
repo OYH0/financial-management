@@ -21,10 +21,20 @@ const Dashboard = () => {
   const [customMonth, setCustomMonth] = useState<number>(new Date().getMonth() + 1);
   const [customYear, setCustomYear] = useState<number>(new Date().getFullYear());
 
-  console.log('Dashboard - despesas count:', despesas?.length || 0);
-  console.log('Dashboard - receitas count:', receitas?.length || 0);
-  console.log('Dashboard - despesas stats:', despesasStats);
-  console.log('Dashboard - receitas stats:', receitasStats);
+
+
+
+
+
+  const isLoading = isLoadingDespesas || isLoadingReceitas;
+
+  // Memoize filtered data for better performance
+  const { filteredDespesas, filteredReceitas } = useMemo(() => {
+    return {
+      filteredDespesas: filterDataByPeriod(despesas || [], selectedPeriod, customMonth, customYear),
+      filteredReceitas: filterDataByPeriod(receitas || [], selectedPeriod, customMonth, customYear)
+    };
+  }, [despesas, receitas, selectedPeriod, customMonth, customYear]);
 
   // Verificar se o usuário está autenticado
   if (!user) {
@@ -46,16 +56,6 @@ const Dashboard = () => {
     );
   }
 
-  const isLoading = isLoadingDespesas || isLoadingReceitas;
-
-  // Memoize filtered data for better performance
-  const { filteredDespesas, filteredReceitas } = useMemo(() => {
-    return {
-      filteredDespesas: filterDataByPeriod(despesas || [], selectedPeriod, customMonth, customYear),
-      filteredReceitas: filterDataByPeriod(receitas || [], selectedPeriod, customMonth, customYear)
-    };
-  }, [despesas, receitas, selectedPeriod, customMonth, customYear]);
-
   const period = getPeriodString(selectedPeriod, customMonth, customYear);
 
   const handleCustomDateChange = (month: number, year: number) => {
@@ -66,9 +66,9 @@ const Dashboard = () => {
   return (
     <div className="flex min-h-screen bg-gray-100">
       <Sidebar />
-      
-      <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 lg:p-8 pt-16 lg:pt-8">
-        <div className="w-full">
+
+      <div className="flex-1 lg:ml-64 transition-all duration-300 p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8 min-w-0">
+        <div className="w-full max-w-full">
           {/* Header Section */}
           <div className="mb-8">
             <div className="flex flex-col gap-4 mb-6">
@@ -106,15 +106,15 @@ const Dashboard = () => {
             </div>
           ) : (
             <>
-              <DashboardCards 
-                despesas={filteredDespesas} 
+              <DashboardCards
+                despesas={filteredDespesas}
                 receitas={filteredReceitas}
-                period={period} 
+                period={period}
                 stats={despesasStats}
               />
               <DashboardTransactions despesas={filteredDespesas} />
-              <DashboardCharts 
-                despesas={despesas || []} 
+              <DashboardCharts
+                despesas={despesas || []}
                 receitas={receitas || []}
                 selectedPeriod={selectedPeriod}
                 customYear={customYear}
