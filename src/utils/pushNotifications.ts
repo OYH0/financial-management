@@ -14,7 +14,7 @@ export const urlBase64ToUint8Array = (base64String: string) => {
 };
 
 // VAPID Public Key precisa vir das variáveis de ambiente na produção
-const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || 'BEl62iWAMdfvrTgPpMIhmY-GjMEjN44wD08eK_H3OHEqlyLXXEwHYZ8eT8bWbQ9s2O5u0F4sR6fB4CksM5E-X8M';
+const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || '3e0IiTm2el2vCqAR5N_O56i3tkAdA1dCbk_zomgrp8RA84zLQ20V6gYYG4p_Ml7WPUMHRNk1SGxICgnXm9vW7w';
 
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -73,8 +73,25 @@ export const registerPushNotifications = async (userId: string) => {
         toast.success('Notificações ativadas neste dispositivo com sucesso!');
         return true;
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('Erro na configuração de Push:', error);
+
+        // Se o erro for de chave inválida e já existir uma inscrição, tentar limpar
+        if (error.name === 'InvalidAccessError') {
+            try {
+                const registration = await navigator.serviceWorker.ready;
+                const subscription = await registration.pushManager.getSubscription();
+                if (subscription) {
+                    await subscription.unsubscribe();
+                    console.log('Inscrição antiga removida. Tente ativar as notificações novamente.');
+                    toast.error('A chave de notificação mudou. Por favor, clique em ativar novamente.');
+                    return false;
+                }
+            } catch (e) {
+                console.error('Erro ao tentar limpar a inscrição antiga', e);
+            }
+        }
+
         toast.error('Ocorreu um erro ao configurar as notificações.');
         return false;
     }
