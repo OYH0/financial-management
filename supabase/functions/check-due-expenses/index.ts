@@ -18,27 +18,49 @@ webpush.setVapidDetails(
 
 Deno.serve(async (_req) => {
     try {
-        // 1. Find expenses due in the next 3 days
+        let payload: any = {};
+
+        // Only try to parse JSON if it's a POST request with a body
+        if (_req.method === 'POST') {
+            try {
+                payload = await _req.json();
+                console.log("Recebido payload:", payload);
+            } catch (e) {
+                console.log("Nenhum payload válido detectado, executando como Cron Job");
+            }
+        } else {
+            console.log("Requisição GET ou sem corpo, executando como Cron Job");
+        }
+
+        // 1. Encontrar despesas (se vier 1 via Trigger, pega só ela. Se for Cron, pega todas)
         const today = new Date();
         const threeDaysFromNow = new Date();
         threeDaysFromNow.setDate(today.getDate() + 3);
 
-        const { data: dueExpenses, error: expensesError } = await supabase
+        let query = supabase
             .from('despesas')
             .select('id, user_id, descricao, valor, data_vencimento')
-            .eq('status', 'PENDENTE')
-            .gte('data_vencimento', today.toISOString().split('T')[0])
-            .lte('data_vencimento', threeDaysFromNow.toISOString().split('T')[0]);
+            .eq('status', 'PENDENTE');
+
+        if (payload.expense_id) {
+            query = query.eq('id', payload.expense_id);
+        } else {
+            query = query
+                .gte('data_vencimento', today.toISOString().split('T')[0])
+                .lte('data_vencimento', threeDaysFromNow.toISOString().split('T')[0]);
+        }
+
+        const { data: dueExpenses, error: expensesError } = await query;
 
         if (expensesError) throw expensesError;
 
         if (!dueExpenses || dueExpenses.length === 0) {
-            return new Response(JSON.stringify({ message: 'Nenhuma despesa próxima ao vencimento.' }), {
+            return new Response(JSON.stringify({ message: 'Nenhuma despesa para notificar.' }), {
                 headers: { 'Content-Type': 'application/json' },
             });
         }
 
-        // 2. Group expenses by user
+        // 2. Agrupar despesas por usuário
         const userExpenses = dueExpenses.reduce((acc, expense) => {
             if (!acc[expense.user_id]) acc[expense.user_id] = [];
             acc[expense.user_id].push(expense);
@@ -57,8 +79,10 @@ Deno.serve(async (_req) => {
             if (!subscriptions || subscriptions.length === 0) continue;
 
             const payloadData = JSON.stringify({
-                title: '⚠️ Despesa prestes a vencer!',
-                body: `Você tem ${expenses.length} despesa(s) vencendo nos próximos 3 dias.`,
+                title: payload.expense_id ? '⚠️ Despesa vencendo!' : '⚠️ Despesas prestes a vencer!',
+                body: payload.expense_id
+                    ? `A despesa "${expenses[0]?.descricao || ''}" no valor de R$ ${expenses[0]?.valor} está vencendo.`
+                    : `Você tem ${expenses.length} despesa(s) vencendo nos próximos 3 dias.`,
                 data: { url: '/despesas' }
             });
 
