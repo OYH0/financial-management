@@ -2,23 +2,15 @@ import { createClient } from '@supabase/supabase-js';
 import webpush from 'web-push';
 import fs from 'fs';
 
-const env = Object.fromEntries(
-  fs.readFileSync('.env.local', 'utf-8')
-    .split('\n')
-    .filter(Boolean)
-    .map(line => line.split('='))
-);
+const env: Record<string, string> = {};
 
 const supabaseUrl = 'https://jkrwxxnhutxpsxkddbym.supabase.co';
-// A key anônima para testar a comunicação
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imprcnd4eG5odXR4cHN4a2RkYnltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjA1MDQ5NjksImV4cCI6MjAzNjA4MDk2OX0...';
-// Vou usar a key anon do env
-const realSupabaseKey = env.VITE_SUPABASE_ANON_KEY || 'dummy';
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imprcnd4eG5odXR4cHN4a2RkYnltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5MDYxMjIsImV4cCI6MjA2NDQ4MjEyMn0.OUwW3uDeSt4LspWOncdGcX_euW7kzSm7zFy9d7HAk3s";
 
 const vapidPublicKey = 'BFHIlA-oCqcEeQz1vmCXCWVWvdg5CSmCjc8s_FQG1XpzvO3ihzfIIqtW9TM2YXXKfSmZwCrWxELUMNRjj5X5EgU';
 const vapidPrivateKey = 'FnuaZrfkfuy5CIvzYwdhLCuZoCNNks-TBI97uWfuJAw';
 
-const supabase = createClient(supabaseUrl, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imprcnd4eG5odXR4cHN4a2RkYnltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyMzMzMTcsImV4cCI6MjA1NjgyOTMxN30.CDBgqR9s416Lg3V5LwG07hS4n1C8T6_22S5a5E9b22A");
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 webpush.setVapidDetails(
     'mailto:admin@gestao.financeira',
@@ -41,9 +33,9 @@ async function testPush() {
         console.log("Nenhum dispositivo registrado encontrado ('push_subscriptions' está vazio). O backend não tem para quem enviar.");
         return;
     }
-    
+
     console.log(`-> Encontrados ${subscriptions.length} dispositivos registrados.`);
-    
+
     const payloadData = JSON.stringify({
         title: '🔔 Notificação Via Backend!',
         body: `As notificações do Gestão Financeira agora estão criptografadas e chegam corretamente!`,
