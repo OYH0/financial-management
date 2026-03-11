@@ -43,7 +43,8 @@ Deno.serve(async (_req) => {
             .or('status.eq.PENDENTE,status.is.null');
 
         if (payload.expense_id) {
-            query = query.eq('id', payload.expense_id);
+            // Convert to string to prevent Supabase type inference from treating it as bigint
+            query = query.eq('id', String(payload.expense_id));
         } else {
             query = query
                 .gte('data_vencimento', today.toISOString().split('T')[0])
