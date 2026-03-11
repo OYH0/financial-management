@@ -5,7 +5,7 @@ import fs from 'fs';
 const env: Record<string, string> = {};
 
 const supabaseUrl = 'https://jkrwxxnhutxpsxkddbym.supabase.co';
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imprcnd4eG5odXR4cHN4a2RkYnltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5MDYxMjIsImV4cCI6MjA2NDQ4MjEyMn0.OUwW3uDeSt4LspWOncdGcX_euW7kzSm7zFy9d7HAk3s";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imprcnd4eG5odXR4cHN4a2RkYnltIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0ODkwNjEyMiwiZXhwIjoyMDY0NDgyMTIyfQ.jbH30wDFEBIfp2zCwy3iQrShigh9O0-3zwxUhNn7aYU";
 
 const vapidPublicKey = 'BFHIlA-oCqcEeQz1vmCXCWVWvdg5CSmCjc8s_FQG1XpzvO3ihzfIIqtW9TM2YXXKfSmZwCrWxELUMNRjj5X5EgU';
 const vapidPrivateKey = 'FnuaZrfkfuy5CIvzYwdhLCuZoCNNks-TBI97uWfuJAw';

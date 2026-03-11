@@ -54,7 +54,10 @@ export const registerPushNotifications = async (userId: string) => {
         }
 
         // 5. Salvar/Atualizar a inscrição no Supabase `push_subscriptions`
-        const { error } = await (supabase.from('push_subscriptions' as any) as any).upsert(
+        console.log("Tentando salvar inscrição no Supabase...");
+        console.log("Variáveis:", { userId, endpoint: endpoint.slice(0, 30) + '...', p256dh: p256dh.slice(0, 10) + '...', auth: auth.slice(0, 10) + '...' });
+
+        const supabaseResponse = await supabase.from('push_subscriptions').upsert(
             {
                 user_id: userId,
                 endpoint: endpoint,
@@ -64,9 +67,11 @@ export const registerPushNotifications = async (userId: string) => {
             { onConflict: 'endpoint' } // Evita duplicatas do mesmo navegador
         );
 
-        if (error) {
-            console.error('Erro ao salvar inscrição no Supabase:', error);
-            toast.error('Erro ao ativar notificações no servidor.');
+        console.log("Resposta do Supabase:", supabaseResponse);
+
+        if (supabaseResponse.error) {
+            console.error('Erro detalhado ao salvar inscrição no Supabase:', supabaseResponse.error.message, supabaseResponse.error.details, supabaseResponse.error.hint);
+            toast.error(`Erro ao ativar notificações: ${supabaseResponse.error.message}`);
             return false;
         }
 
