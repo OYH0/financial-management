@@ -40,7 +40,7 @@ Deno.serve(async (_req) => {
         let query = supabase
             .from('despesas')
             .select('id, user_id, descricao, valor, data_vencimento')
-            .eq('status', 'PENDENTE');
+            .or('status.eq.PENDENTE,status.is.null');
 
         if (payload.expense_id) {
             query = query.eq('id', payload.expense_id);

@@ -16,11 +16,12 @@ select cron.schedule(
   '0 11 * * *',                   -- Cron expression: Todos os dias às 11:00 (Hora UTC)
   $$
     -- Faz um POST vazio para a Edge Function rodar no modo "Cron Job"
-    select http_post(
+    perform extensions.http((
+      'POST',
       'https://jkrwxxnhutxpsxkddbym.supabase.co/functions/v1/check-due-expenses',
-      '', 
+      ARRAY[extensions.http_header('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imprcnd4eG5odXR4cHN4a2RkYnltIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0ODkwNjEyMiwiZXhwIjoyMDY0NDgyMTIyfQ.jbH30wDFEBIfp2zCwy3iQrShigh9O0-3zwxUhNn7aYU')],
       'application/json',
-      '{"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imprcnd4eG5odXR4cHN4a2RkYnltIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0ODkwNjEyMiwiZXhwIjoyMDY0NDgyMTIyfQ.jbH30wDFEBIfp2zCwy3iQrShigh9O0-3zwxUhNn7aYU"}' 
-    );
+      ''
+    )::extensions.http_request);
   $$
 );
